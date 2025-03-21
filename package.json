@@ -1,0 +1,38 @@
+{
+  "name": "cualprofe-new",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "tailwind": "npx tailwindcss init",
+    "upload-teachers": "node scripts/upload-teachers.cjs",
+    "upload-teachers-ts": "ts-node --project tsconfig.scripts.json scripts/upload-teachers.cjs",
+    "upload-teachers-debug": "node --inspect-brk scripts/upload-teachers.cjs"
+  },
+  "dependencies": {
+    "@builder.io/react": "^8.0.10",
+    "firebase": "^11.4.0",
+    "next": "15.2.1",
+    "papaparse": "^5.5.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.17.23",
+    "@types/papaparse": "^5.3.15",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
