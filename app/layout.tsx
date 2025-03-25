@@ -19,14 +19,17 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;900&family=Poppins:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen font-roboto">
         <AuthProvider>
           <HeaderWrapper />
-          <main className="pt-24 pb-16 px-4 flex-grow">
-            {children}
-          </main>
+          <div className="page-content-wrapper">
+            <main className="flex-grow">
+              {children}
+            </main>
+          </div>
           <Footer />
         </AuthProvider>
       </body>

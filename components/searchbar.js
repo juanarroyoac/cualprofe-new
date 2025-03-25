@@ -11,7 +11,14 @@ const UNIVERSITY_ABBREVIATIONS = {
   // Add more as needed
 };
 
-export default function SearchBar() {
+export default function SearchBar({ 
+  textColor = "text-gray-800", 
+  largerHeading = false, 
+  headlineText = "Buscando con quién meter las materias este semestre?",
+  containerClass = "",
+  headingWeight = "font-semibold", // Add this prop with a default
+  headingSize = "" // Add this prop for custom size override
+}) {
   // Initialize with empty string instead of undefined
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -20,7 +27,7 @@ export default function SearchBar() {
   const [initialized, setInitialized] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  // const [isMounted, setIsMounted] = useState(false); // Unused state
   const dropdownRef = useRef(null);
   const router = useRouter();
   const MAX_SUGGESTIONS = 4;
@@ -30,11 +37,6 @@ export default function SearchBar() {
     id,
     name
   }));
-
-  // Set isMounted after component mounts
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -171,19 +173,26 @@ export default function SearchBar() {
     setSearchQuery(e.target.value);
   };
 
+  // Determine text color classes
+  const textColorClass = textColor === "white" ? "text-white" : "text-gray-800";
+  const dropdownTextClass = textColor === "white" ? "text-white hover:text-gray-200" : "text-gray-700 hover:text-[#00103f]";
+
+  // Determine heading size class - use headingSize if provided, otherwise use default
+  const headingSizeClass = headingSize || (largerHeading ? 'text-5xl md:text-6xl' : 'text-2xl');
+
   return (
-    <div className="flex flex-col items-center w-full max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold text-center mb-8 mt-12">
-        Buscando con quién meter las materias este semestre?
+    <div className={`flex flex-col items-center max-w-2xl mx-auto ${containerClass}`}>
+      <h1 className={`${headingSizeClass} ${headingWeight} ${textColorClass} text-center mb-8`}>
+        {headlineText}
       </h1>
       
       <div className="w-full flex flex-col">
-        {/* Search input with results - NOW FIRST */}
-        <div className="relative w-full mb-4">
+        {/* Search input with results */}
+        <div className="relative w-full mb-6">
           <input
             type="text"
             placeholder="Buscar por profesor o materia..."
-            className="w-full py-3 px-5 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0F17FF] focus:border-transparent"
+            className="w-full py-4 px-6 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-transparent text-base"
             value={searchQuery} 
             onChange={handleInputChange}
           />
@@ -214,7 +223,7 @@ export default function SearchBar() {
           {/* Search results */}
           {results.length > 0 && (
             <div className="absolute w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
-              {results.map((teacher, index) => (
+              {results.map((teacher) => (
                 <div
                   key={teacher.id}
                   className="p-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
@@ -237,11 +246,11 @@ export default function SearchBar() {
           )}
         </div>
         
-        {/* University selector - NOW AFTER SEARCH BAR */}
-        <div className="relative flex justify-center mt-2" ref={dropdownRef}>
+        {/* University selector */}
+        <div className="relative flex justify-center" ref={dropdownRef}>
           <button
             onClick={toggleDropdown}
-            className="flex items-center gap-2 text-gray-700 hover:text-[#0F17FF] transition-colors text-base font-medium"
+            className={`flex items-center gap-2 ${dropdownTextClass} transition-colors text-lg font-bold`}
           >
             <span>
               {selectedUniversity 
@@ -250,7 +259,7 @@ export default function SearchBar() {
             </span>
             {/* Inline SVG for dropdown arrow */}
             <svg 
-              className="h-5 w-5" 
+              className={`h-5 w-5 ${textColor === "white" ? "text-white" : ""}`}
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 20 20" 
               fill="currentColor"
@@ -263,13 +272,13 @@ export default function SearchBar() {
             </svg>
           </button>
           
-          {/* Dropdown menu - CENTERED with larger font */}
+          {/* Dropdown menu */}
           {isDropdownOpen && (
             <div className="absolute left-1/2 transform -translate-x-1/2 mt-10 w-72 bg-white rounded-md shadow-lg z-40 overflow-hidden border border-gray-200">
               {universities.map((uni) => (
                 <button
                   key={uni.id}
-                  className="block w-full text-left px-4 py-3 text-base text-gray-700 hover:bg-gray-100 hover:text-[#0F17FF]"
+                  className="block w-full text-left px-4 py-3 text-base text-gray-700 hover:bg-gray-100 hover:text-[#00103f]"
                   onClick={() => selectUniversity(uni)}
                 >
                   {uni.name}

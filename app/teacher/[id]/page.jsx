@@ -1,15 +1,15 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import RatingDistribution from '../../../components/RatingDistribution';
 import TagsList from '../../../components/TagsList';
-import RateButton from '../../../components/RateButton';
 import { db } from '../../../lib/firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
   const { id } = useParams();
+  const router = useRouter();
   const [teacher, setTeacher] = useState(null);
   const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +18,40 @@ export default function Page() {
   const [wouldTakeAgainPercent, setWouldTakeAgainPercent] = useState(0);
   const [distributionData, setDistributionData] = useState([0, 0, 0, 0, 0]);
   const [topTags, setTopTags] = useState([]);
+
+  // Function to split name into first and last name
+  const formatTeacherName = (fullName) => {
+    if (!fullName) return '';
+    const nameParts = fullName.split(' ');
+    // If there's only one word, return it as is
+    if (nameParts.length <= 1) return fullName;
+    
+    // Otherwise, find a good split point
+    if (nameParts.length === 2) {
+      // Simple first and last name
+      return (
+        <>
+          {nameParts[0]}<br />{nameParts[1]}
+        </>
+      );
+    } else {
+      // For names with more than 2 parts, try to divide intelligently
+      const midpoint = Math.floor(nameParts.length / 2);
+      const firstName = nameParts.slice(0, midpoint).join(' ');
+      const lastName = nameParts.slice(midpoint).join(' ');
+      
+      return (
+        <>
+          {firstName}<br />{lastName}
+        </>
+      );
+    }
+  };
+
+  // Handle rating button click
+  const handleRateClick = () => {
+    router.push(`/rate/${id}`);
+  };
 
   useEffect(() => {
     const fetchTeacherAndRatings = async () => {
@@ -101,7 +135,7 @@ export default function Page() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#0F17FF]"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#00248c]"></div>
       </div>
     );
   }
@@ -115,82 +149,125 @@ export default function Page() {
     );
   }
 
+  // Get first name for tags section
+  const firstName = teacher.name.split(' ')[0];
+
+  // Rating label constants for custom distribution
+  const ratingLabels = ["Excelente", "Muy Bueno", "Bueno", "Regular", "Terrible"];
+  const ratingValues = [5, 4, 3, 2, 1];
+  const totalRatings = distributionData.reduce((sum, count) => sum + count, 0);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Top rating section */}
-      <div className="bg-gray-100 p-6 rounded-md mb-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
+      {/* Top section - SPLIT INTO TWO SEPARATE ELEMENTS */}
+      <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+        {/* Left side - Rating OUTSIDE gray box with professor info BELOW it */}
+        <div className="md:w-1/2">
+          {/* Rating section - With Nunito Sans Black font */}
+          <div className="mb-6">
             <div className="flex items-baseline">
-              <h1 className="text-5xl font-bold mr-2">{averageRating}</h1>
-              <p className="text-sm text-gray-500">/5</p>
+              <h1 className="text-7xl font-black text-black mr-2 font-nunito-sans">{averageRating}</h1>
+              <p className="text-2xl text-black font-bold font-nunito-sans">/5</p>
             </div>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-black mt-1 font-medium font-roboto">
               Calidad General basada en {ratings.length} calificaciones
             </p>
           </div>
-          <RatingDistribution distribution={distributionData} />
+          
+          {/* Professor name with Nunito Sans Black font - Removed favorite button */}
+          <div className="mb-4">
+            <h2 className="text-5xl font-bold text-black font-nunito-sans">
+              {formatTeacherName(teacher.name)}
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Profesor/a de la facultad de {teacher.school}
+              {teacher.university && (
+                <>
+                  {' '}
+                  de la{' '}
+                  <span className="text-[#00248c]">
+                    {teacher.university}
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
+          
+          {/* Stats MOVED HERE - Full black text */}
+          <div className="flex mb-6 border-t border-b border-gray-200 py-4">
+            <div className="w-1/2 border-r border-gray-200 px-4">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-black font-nunito-sans">{wouldTakeAgainPercent}%</div>
+                <div className="text-sm text-black">Lo tomaría otra vez</div>
+              </div>
+            </div>
+            <div className="w-1/2 px-4">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-black font-nunito-sans">{averageDifficulty}</div>
+                <div className="text-sm text-black">Nivel de dificultad</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Rate button - Using updated #00248c blue color */}
+          <div className="mb-8">
+            <button
+              onClick={handleRateClick}
+              className="bg-[#00248c] hover:bg-[#001e7a] text-white rounded-full px-8 py-3 text-lg font-medium"
+            >
+              Calificar
+            </button>
+          </div>
+        </div>
+        
+        {/* Right side - ONLY distribution in gray box - 10% smaller height */}
+        <div className="md:w-1/2">
+          <div className="bg-gray-100 p-6 rounded-md" style={{ minHeight: '360px' }}>
+            <h3 className="text-xl font-bold mb-5 font-roboto">Calificaciones de Alumnos</h3>
+            
+            {/* Custom Rating Distribution with Roboto bold font */}
+            <div className="w-full">
+              {ratingLabels.map((label, index) => {
+                const count = distributionData[4 - index]; // Reversed to show 5 to 1
+                const percentage = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
+                
+                return (
+                  <div key={label} className="flex items-center mb-5">
+                    <div className="w-28 flex items-center">
+                      <span className="font-bold mr-2 text-base font-roboto">{label}</span>
+                      <span className="text-gray-500 text-base font-bold font-roboto">{ratingValues[index]}</span>
+                    </div>
+                    <div className="flex-1 bg-gray-200 h-8 mr-2 rounded-sm overflow-hidden">
+                      <div
+                        className="h-full"
+                        style={{ 
+                          width: `${percentage}%`,
+                          backgroundColor: '#00248c' // Updated blue color
+                        }}
+                      ></div>
+                    </div>
+                    <div className="w-6 text-right font-bold text-base font-roboto">{count}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Professor info */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold flex items-center">
-          {teacher.name}
-          <button className="ml-2 text-gray-400 hover:text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-            </svg>
-          </button>
-        </h1>
-        <p className="text-gray-600 mt-1">
-          Profesor/a en {teacher.school}
-          {teacher.university && (
-            <>
-              {' '}
-              de{' '}
-              <a href="#" className="text-blue-600 underline">
-                {teacher.university}
-              </a>
-            </>
-          )}
-        </p>
-
-        {/* Stats */}
-        <div className="flex mt-6 border-t border-b border-gray-200 py-4">
-          <div className="w-1/2 border-r border-gray-200 px-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">{wouldTakeAgainPercent}%</div>
-              <div className="text-sm text-gray-500">Lo tomaría otra vez</div>
-            </div>
-          </div>
-          <div className="w-1/2 px-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">{averageDifficulty}</div>
-              <div className="text-sm text-gray-500">Nivel de dificultad</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Action buttons - Removed Comparar button */}
-      <div className="flex mb-8">
-        <RateButton teacherId={id} teacherName={teacher.name} />
-      </div>
-
-      {/* Removed "I'm Professor X" button section */}
-
-      {/* Top tags */}
+      {/* Top tags - Updated title to avoid gendered language */}
       {topTags.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-bold mb-4">Etiquetas Principales del Profesor {teacher.name.split(' ')[0]}</h2>
+        <div className="mb-8 mt-8">
+          <h2 className="text-lg font-bold mb-4 font-poppins">
+            Etiquetas usadas para describir a {firstName}
+          </h2>
           <TagsList tags={topTags} selectable={false} />
         </div>
       )}
 
       {/* Ratings list */}
       <div>
-        <h2 className="text-lg font-bold mb-4">{ratings.length} Calificaciones de Estudiantes</h2>
+        <h2 className="text-lg font-bold mb-4 font-poppins">{ratings.length} Calificaciones de Estudiantes</h2>
         
         {/* Filter dropdown could go here */}
         <div className="mb-4">

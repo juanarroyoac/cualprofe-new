@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -23,7 +24,8 @@ interface Teacher {
   school?: string;
   university?: string;
   normalizedName: string;
-  [key: string]: any; // For other potential properties
+  // More specific type definition instead of any
+  [key: string]: string | number | boolean | undefined | null;
 }
 
 interface HeaderWithSearchProps {
@@ -105,11 +107,14 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
       try {
         const teachersCollection = collection(db, 'teachers');
         const snapshot = await getDocs(teachersCollection);
-        const teachersList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          normalizedName: normalizeText(doc.data().name || '')
-        })) as Teacher[];
+        const teachersList = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            normalizedName: normalizeText(data.name || '')
+          };
+        }) as Teacher[];
         
         setAllTeachers(teachersList);
         setInitialized(true);
@@ -136,7 +141,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
         const normalizedQuery = normalizeText(searchQuery);
         
         // Filter teachers client-side
-        let filteredTeachers = allTeachers.filter(teacher => {
+        const filteredTeachers = allTeachers.filter(teacher => {
           // Check if name contains search query (case insensitive, accent insensitive)
           const nameMatch = teacher.normalizedName.includes(normalizedQuery);
           
@@ -207,63 +212,74 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-[#0F17FF] text-white shadow-md z-50">
+    <header className="fixed top-0 left-0 w-full bg-[#00248c] text-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3 flex items-center">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold mr-6">
-          cualprofe
+        <Link href="/" className="flex items-center mr-6">
+          <Image 
+            src="/CualProfeLogoTransparent.png" 
+            alt="CuálProfe" 
+            width={240} 
+            height={64} 
+            className="h-8 w-auto" 
+            priority
+            quality={100}
+            unoptimized={true}
+          />
         </Link>
         
-        {/* University dropdown */}
-        <div className="relative mr-4 w-56" ref={dropdownRef}>
-          <button
-            onClick={toggleDropdown}
-            className="w-full bg-[#0F17FF] text-white px-3 py-2 flex items-center justify-between"
-            type="button"
-          >
-            <span className="text-white text-sm font-semibold truncate">
-              {selectedUniversity ? selectedUniversity.name : "Seleccionar universidad"}
-            </span>
-            <svg 
-              className="h-4 w-4 ml-0.5 text-white flex-shrink-0" 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 20 20" 
-              fill="currentColor"
+        {/* Center container for dropdown and search */}
+        <div className="flex items-center mx-auto">
+          {/* University dropdown */}
+          <div className="relative mr-4 w-56" ref={dropdownRef}>
+            <button
+              onClick={toggleDropdown}
+              className="w-full bg-[#00248c] text-white px-3 py-2 flex items-center justify-between"
+              type="button"
             >
-              <path 
-                fillRule="evenodd" 
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                clipRule="evenodd" 
-              />
-            </svg>
-          </button>
+              <span className="text-white text-sm font-semibold truncate">
+                {selectedUniversity ? selectedUniversity.name : "Seleccionar universidad"}
+              </span>
+              <svg 
+                className="h-4 w-4 ml-0.5 text-white flex-shrink-0" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
+                <path 
+                  fillRule="evenodd" 
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                  clipRule="evenodd" 
+                />
+              </svg>
+            </button>
+            
+            {/* University dropdown with WHITE background */}
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 mt-0 w-56 bg-white rounded-md shadow-lg z-40 overflow-hidden">
+                {universities.map((uni) => (
+                  <button
+                    key={uni.id}
+                    className="block w-full text-left px-4 py-2 text-sm text-black font-medium hover:bg-gray-100 truncate"
+                    onClick={() => selectUniversity(uni)}
+                  >
+                    {uni.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           
-          {/* University dropdown with WHITE background */}
-          {isDropdownOpen && (
-            <div className="absolute top-full left-0 mt-0 w-56 bg-white rounded-md shadow-lg z-40 overflow-hidden">
-              {universities.map((uni) => (
-                <button
-                  key={uni.id}
-                  className="block w-full text-left px-4 py-2 text-sm text-black font-medium hover:bg-gray-100 truncate"
-                  onClick={() => selectUniversity(uni)}
-                >
-                  {uni.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        
-        {/* Search bar */}
-        <div className="relative w-80" ref={searchRef}>
-          <input
-            type="text"
-            placeholder="Buscar por profesor o materia..."
-            className="w-full py-2 px-4 pr-8 rounded border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-white focus:border-transparent text-sm"
-            value={searchQuery}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-          />
+          {/* Search bar */}
+          <div className="relative w-80" ref={searchRef}>
+            <input
+              type="text"
+              placeholder="Buscar por profesor o materia..."
+              className="w-full py-2 px-4 pr-8 rounded-lg border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-white focus:border-transparent text-sm"
+              value={searchQuery}
+              onChange={handleInputChange}
+              onFocus={handleInputFocus}
+            />
           
           {/* Search icon or loading spinner */}
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -308,9 +324,10 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             </div>
           )}
         </div>
+        </div>
         
         {/* Spacer */}
-        <div className="flex-grow"></div>
+        <div className="ml-auto"></div>
         
         {/* Auth button or User Menu */}
         {isLoggedIn ? (

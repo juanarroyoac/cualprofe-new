@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface HeaderProps {
   onAuthClick: () => void;
@@ -25,10 +26,19 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-[#0F17FF] text-white shadow-md z-50">
+    <header className="fixed top-0 left-0 w-full bg-[#00248c] text-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold">
-          cualprofe
+        <Link href="/" className="flex items-center">
+          <Image 
+            src="/CualProfeLogoTransparent.png" 
+            alt="CuálProfe" 
+            width={240} 
+            height={64} 
+            className="h-8 w-auto" 
+            priority
+            quality={100}
+            unoptimized={true}
+          />
         </Link>
         
         {isLoggedIn ? (

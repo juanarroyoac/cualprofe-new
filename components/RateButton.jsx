@@ -13,7 +13,7 @@ export default function RateButton({ teacherId, teacherName }) {
   return (
     <button
       onClick={handleClick}
-      className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2"
+      className="bg-[#00248c] hover:bg-[#001e7a] text-white rounded-full px-8 py-3 text-lg font-medium"
     >
       Calificar
     </button>

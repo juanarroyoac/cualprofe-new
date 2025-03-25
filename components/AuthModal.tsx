@@ -6,12 +6,18 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
+interface FirebaseError {
+  code: string;
+  message: string;
+}
+
 const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [university, setUniversity] = useState('');
+  // Commented out unused state
+  // const [university, setUniversity] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -46,8 +52,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
         await register(email, password);
         // You can save additional user data like name and university to Firestore here
       }
-    } catch (error: any) {
-      setError(getErrorMessage(error.code));
+    } catch (error: unknown) {
+      // Type check the error before using it
+      if (typeof error === 'object' && error !== null && 'code' in error) {
+        setError(getErrorMessage((error as FirebaseError).code));
+      } else {
+        setError('Ha ocurrido un error inesperado');
+      }
     } finally {
       setLoading(false);
     }
@@ -60,8 +71,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     try {
       await signInWithGoogle();
       // The modal will close automatically due to the useEffect that watches currentUser
-    } catch (error: any) {
-      setError(getErrorMessage(error.code));
+    } catch (error: unknown) {
+      // Type check the error before using it
+      if (typeof error === 'object' && error !== null && 'code' in error) {
+        setError(getErrorMessage((error as FirebaseError).code));
+      } else {
+        setError('Ha ocurrido un error inesperado');
+      }
       setLoading(false);
     }
   };
