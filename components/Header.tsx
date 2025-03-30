@@ -32,12 +32,12 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
           <Image 
             src="/CualProfeLogoTransparent.png" 
             alt="CuálProfe" 
-            width={240} 
-            height={64} 
+            width={180} 
+            height={48} 
             className="h-8 w-auto" 
             priority
-            quality={100}
-            unoptimized={true}
+            quality={90}
+            unoptimized={false} /* Changed to false for better mobile performance */
           />
         </Link>
         
@@ -45,7 +45,9 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
           <div className="relative" ref={userMenuRef}>
             <button 
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors"
+              className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors min-h-[44px]"
+              aria-expanded={showUserMenu}
+              aria-haspopup="true"
             >
               <span className="hidden sm:inline">{userName}</span>
               <svg 
@@ -53,6 +55,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
                 className="h-5 w-5" 
                 viewBox="0 0 20 20" 
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path 
                   fillRule="evenodd" 
@@ -66,14 +69,14 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
                 <Link 
                   href="/profile" 
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  className="block px-4 py-3 text-sm hover:bg-gray-100" /* Increased touch target size */
                   onClick={() => setShowUserMenu(false)}
                 >
                   Mi perfil
                 </Link>
                 <Link 
                   href="/my-ratings" 
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  className="block px-4 py-3 text-sm hover:bg-gray-100" /* Increased touch target size */
                   onClick={() => setShowUserMenu(false)}
                 >
                   Mis calificaciones
@@ -83,7 +86,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
                     onLogout();
                     setShowUserMenu(false);
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
+                  className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600" /* Increased touch target size */
                 >
                   Cerrar sesión
                 </button>
@@ -93,7 +96,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
         ) : (
           <button 
             onClick={onAuthClick}
-            className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors"
+            className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors min-h-[44px]" /* Min height for better touch target */
           >
             Iniciar sesión / Registrarse
           </button>

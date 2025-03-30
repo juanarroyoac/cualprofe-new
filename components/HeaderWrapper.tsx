@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function HeaderWrapper() {
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [modalMountedOnce, setModalMountedOnce] = useState<boolean>(false); // Track if modal has mounted once
   const pathname = usePathname();
   const { currentUser, logout } = useAuth();
   
@@ -17,6 +18,7 @@ export default function HeaderWrapper() {
   const handleOpenModal = () => {
     console.log("Opening auth modal");
     setShowAuthModal(true);
+    setModalMountedOnce(true); // Mark that we've mounted the modal at least once
   };
   
   const handleCloseModal = () => {
@@ -43,6 +45,27 @@ export default function HeaderWrapper() {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [showAuthModal]);
+  
+  // Handle iOS-specific issues with scroll locking when modal is open
+  useEffect(() => {
+    if (showAuthModal) {
+      // Lock scroll on body when modal is open
+      document.body.style.overflow = 'hidden';
+      // Add padding to account for scrollbar disappearance and prevent layout shift
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    } else if (modalMountedOnce) {
+      // Only restore these if we've mounted the modal at least once
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+    
+    return () => {
+      // Cleanup function to ensure we restore normal scrolling
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [showAuthModal, modalMountedOnce]);
   
   return (
     <>
