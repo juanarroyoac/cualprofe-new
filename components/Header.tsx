@@ -28,14 +28,10 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
   return (
     <header className="fixed top-0 left-0 w-full bg-[#00248c] text-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3">
-        {/* Mobile Layout (centered logo) */}
+        {/* Mobile Layout (left-aligned logo) */}
         <div className="sm:hidden flex items-center justify-between">
-          <div className="w-16">
-            {/* Empty space to balance the login button */}
-          </div>
-          
-          {/* Centered Logo */}
-          <Link href="/" className="flex items-center justify-center">
+          {/* Left-aligned Logo */}
+          <Link href="/" className="flex items-center">
             <div className="w-[160px] h-[40px] relative">
               <Image 
                 src="/CualProfeLogoTransparent.png" 
