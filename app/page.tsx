@@ -23,10 +23,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-black bg-opacity-70"></div>
         </div>
         
-        {/* Content container - moved higher with less spacing */}
+        {/* Content container - position stays exactly the same */}
         <div className="absolute inset-x-0 top-[32%] sm:top-[30%] z-10 flex flex-col items-center px-4">
-          {/* Main heading with reduced margin below */}
-          <h1 className="text-white text-4xl sm:text-5xl font-bold leading-[1.15] md:leading-[1.2] mb-2 text-center font-poppins">
+          {/* Main heading with reduced size ONLY on mobile (about 40% smaller) */}
+          <h1 className="text-white text-2xl sm:text-5xl font-bold leading-[1.15] md:leading-[1.2] mb-2 text-center font-poppins">
             Busca los mejores profesores <span className="hidden md:inline"><br /></span>antes de inscribirte.
           </h1>
           

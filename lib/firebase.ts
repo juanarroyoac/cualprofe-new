@@ -4,7 +4,7 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: "AIzaSyBDMJUGfwF2b274LVEUiJ1d-sOoUHApHLU",
-    authDomain: "cualprofe-fd43b.firebaseapp.com",
+    authDomain: "cualprofe.com", // Updated from firebaseapp.com to custom domain
     projectId: "cualprofe-fd43b",
     storageBucket: "cualprofe-fd43b.firebasestorage.app",
     messagingSenderId: "115544240669",
