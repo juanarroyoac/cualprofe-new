@@ -6,8 +6,8 @@ import Image from 'next/image';
 export default function Home() {
   return (
     <div className="min-h-screen w-full overflow-hidden landing-page">
-      {/* Hero section with background image - FULL WIDTH */}
-      <div className="relative w-full h-[500px] sm:h-[600px] -mt-16"> {/* Reduced height on mobile */}
+      {/* Hero section with background image - FULL WIDTH but SHORTER HEIGHT */}
+      <div className="relative w-full h-[400px] sm:h-[480px] -mt-16"> {/* Reduced height significantly */}
         {/* Background image - stretched to full width */}
         <div className="absolute inset-0 w-full">
           <Image 
@@ -16,36 +16,34 @@ export default function Home() {
             fill
             priority
             className="object-cover w-screen"
-            quality={85} /* Reduced quality slightly for better mobile performance */
-            sizes="100vw" /* Responsive sizing */
+            quality={85}
+            sizes="100vw"
           />
           {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black bg-opacity-70"></div> {/* Increased opacity for mobile readability */}
+          <div className="absolute inset-0 bg-black bg-opacity-70"></div>
         </div>
         
-        {/* Content container with responsive padding */}
-        <div className="relative z-10 h-full flex items-start justify-center pt-24 sm:pt-48">
-          <div className="w-full max-w-5xl px-4">
-            {/* Custom responsive heading for better mobile display */}
-            <div className="text-center mb-8">
-              <h1 className="text-white text-4xl sm:text-5xl md:text-5xl font-bold leading-snug sm:leading-tight tracking-normal font-poppins">
-                Elige tus profesores con confianza.
-              </h1>
-            </div>
-            
-            {/* SearchBar component */}
+        {/* Content container - moved higher with less spacing */}
+        <div className="absolute inset-x-0 top-[32%] sm:top-[30%] z-10 flex flex-col items-center px-4">
+          {/* Main heading with reduced margin below */}
+          <h1 className="text-white text-4xl sm:text-5xl font-bold leading-[1.15] md:leading-[1.2] mb-2 text-center font-poppins">
+            Busca los mejores profesores <span className="hidden md:inline"><br /></span>antes de inscribirte.
+          </h1>
+          
+          {/* SearchBar component */}
+          <div className="w-full max-w-lg">
             <SearchBar 
               textColor="white" 
-              largerHeading={false} /* Disable larger heading in the component */
-              headlineText="" /* Empty as we're using custom heading above */
+              largerHeading={false}
+              headlineText=""
               headingWeight="font-bold" 
             />
             
-            {/* Add Professor Link - more visible now */}
-            <div className="mt-6 text-center">
+            {/* Add Professor Link - closer to search bar */}
+            <div className="mt-4 text-center">
               <Link 
                 href="/add-professor" 
-                className="text-base text-white hover:underline font-medium px-4 py-2 inline-block"
+                className="text-sm text-white hover:underline font-medium"
               >
                 ¿No encuentras a un profesor? Agrégalo aquí
               </Link>
