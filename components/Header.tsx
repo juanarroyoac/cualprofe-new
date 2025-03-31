@@ -27,80 +27,168 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
 
   return (
     <header className="fixed top-0 left-0 w-full bg-[#00248c] text-white shadow-md z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <Image 
-            src="/CualProfeLogoTransparent.png" 
-            alt="CuálProfe" 
-            width={180} 
-            height={48} 
-            className="h-8 w-auto" 
-            priority
-            quality={90}
-            unoptimized={false} /* Changed to false for better mobile performance */
-          />
-        </Link>
-        
-        {isLoggedIn ? (
-          <div className="relative" ref={userMenuRef}>
-            <button 
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors min-h-[44px]"
-              aria-expanded={showUserMenu}
-              aria-haspopup="true"
-            >
-              <span className="hidden sm:inline">{userName}</span>
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-5 w-5" 
-                viewBox="0 0 20 20" 
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path 
-                  fillRule="evenodd" 
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                  clipRule="evenodd" 
-                />
-              </svg>
-            </button>
-            
-            {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
-                <Link 
-                  href="/profile" 
-                  className="block px-4 py-3 text-sm hover:bg-gray-100" /* Increased touch target size */
-                  onClick={() => setShowUserMenu(false)}
-                >
-                  Mi perfil
-                </Link>
-                <Link 
-                  href="/my-ratings" 
-                  className="block px-4 py-3 text-sm hover:bg-gray-100" /* Increased touch target size */
-                  onClick={() => setShowUserMenu(false)}
-                >
-                  Mis calificaciones
-                </Link>
-                <button 
-                  onClick={() => {
-                    onLogout();
-                    setShowUserMenu(false);
-                  }}
-                  className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600" /* Increased touch target size */
-                >
-                  Cerrar sesión
-                </button>
-              </div>
-            )}
+      <div className="container mx-auto px-4 py-3">
+        {/* Mobile Layout (centered logo) */}
+        <div className="sm:hidden flex items-center justify-between">
+          <div className="w-16">
+            {/* Empty space to balance the login button */}
           </div>
-        ) : (
-          <button 
-            onClick={onAuthClick}
-            className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors min-h-[44px]" /* Min height for better touch target */
-          >
-            Iniciar sesión / Registrarse
-          </button>
-        )}
+          
+          {/* Centered Logo */}
+          <Link href="/" className="flex items-center justify-center">
+            <div className="w-[160px] h-[40px] relative">
+              <Image 
+                src="/CualProfeLogoTransparent.png" 
+                alt="CuálProfe" 
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+                quality={90}
+              />
+            </div>
+          </Link>
+          
+          {/* Smaller Login Button for Mobile */}
+          {isLoggedIn ? (
+            <div className="relative" ref={userMenuRef}>
+              <button 
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center justify-center bg-blue-700 text-white p-2 rounded hover:bg-blue-800 transition-colors w-10 h-10"
+                aria-expanded={showUserMenu}
+                aria-haspopup="true"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-5 w-5" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path 
+                    fillRule="evenodd" 
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                    clipRule="evenodd" 
+                  />
+                </svg>
+              </button>
+              
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
+                  <div className="py-2 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
+                    {userName}
+                  </div>
+                  <Link 
+                    href="/profile" 
+                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    Mi perfil
+                  </Link>
+                  <Link 
+                    href="/my-ratings" 
+                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    Mis calificaciones
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      onLogout();
+                      setShowUserMenu(false);
+                    }}
+                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button 
+              onClick={onAuthClick}
+              className="bg-white text-black px-2 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors"
+            >
+              Ingresar
+            </button>
+          )}
+        </div>
+        
+        {/* Desktop Layout */}
+        <div className="hidden sm:flex sm:justify-between sm:items-center">
+          <Link href="/" className="flex items-center">
+            <div className="w-[180px] h-[48px] relative">
+              <Image 
+                src="/CualProfeLogoTransparent.png" 
+                alt="CuálProfe" 
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+                quality={90}
+              />
+            </div>
+          </Link>
+          
+          {isLoggedIn ? (
+            <div className="relative" ref={userMenuRef}>
+              <button 
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors min-h-[44px]"
+                aria-expanded={showUserMenu}
+                aria-haspopup="true"
+              >
+                <span>{userName}</span>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-5 w-5" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path 
+                    fillRule="evenodd" 
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                    clipRule="evenodd" 
+                  />
+                </svg>
+              </button>
+              
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
+                  <Link 
+                    href="/profile" 
+                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    Mi perfil
+                  </Link>
+                  <Link 
+                    href="/my-ratings" 
+                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    Mis calificaciones
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      onLogout();
+                      setShowUserMenu(false);
+                    }}
+                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button 
+              onClick={onAuthClick}
+              className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors min-h-[44px]"
+            >
+              Iniciar sesión / Registrarse
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );

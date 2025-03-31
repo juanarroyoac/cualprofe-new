@@ -46,7 +46,12 @@ body {
 /* Mobile-specific header padding adjustment */
 @media (max-width: 640px) {
   .page-content-wrapper {
-    padding-top: 72px; /* Slightly more space on mobile */
+    padding-top: 61px; /* Match exact mobile header height */
+  }
+  
+  /* Add extra padding when mobile search is open */
+  body.mobile-search-open .page-content-wrapper {
+    padding-top: 160px; /* Adjust based on mobile search panel height */
   }
 }
 
@@ -69,6 +74,22 @@ body {
   font-weight: 900 !important;
 }
 
+/* Animation for slide-down elements */
+@keyframes slideDown {
+  from { 
+    transform: translateY(-10px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.2s ease-out forwards;
+}
+
 /* Mobile-specific fixes */
 @media (max-width: 640px) {
   /* Prevent zooming on input fields in iOS */
@@ -87,6 +108,20 @@ body {
     min-height: 44px;
     min-width: 44px;
   }
+  
+  /* Ensure logo maintains proper dimensions */
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo-container img,
+  .logo-container svg {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 }
 
 /* iOS Safari specific fixes */
@@ -99,5 +134,33 @@ body {
   /* Safe area insets for notched devices */
   .ios-safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Fix for iOS input padding */
+  input, select, textarea {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* Fix for small buttons */
+.btn-small {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* Fix for overlapping header content */
+@media (max-width: 640px) {
+  .mobile-header-height {
+    height: 61px;
+  }
+  
+  /* When mobile search is open */
+  body.mobile-search-open .mobile-header-spacer {
+    height: 160px;
   }
 }
