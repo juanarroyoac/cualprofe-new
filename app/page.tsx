@@ -24,20 +24,28 @@ export default function Home() {
         </div>
         
         {/* Content container with responsive padding */}
-        <div className="relative z-10 h-full flex items-start justify-center pt-28 sm:pt-48">
+        <div className="relative z-10 h-full flex items-start justify-center pt-20 sm:pt-48">
           <div className="w-full max-w-5xl px-4">
+            {/* Custom responsive heading for better mobile display */}
+            <div className="text-center mb-8">
+              <h1 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold leading-tight sm:leading-tight tracking-wide font-poppins">
+                Elige tus profesores<br className="hidden sm:inline" /> con confianza.
+              </h1>
+            </div>
+            
+            {/* SearchBar component */}
             <SearchBar 
               textColor="white" 
-              largerHeading={true}
-              headlineText="Elige tus profesores con confianza."
+              largerHeading={false} /* Disable larger heading in the component */
+              headlineText="" /* Empty as we're using custom heading above */
               headingWeight="font-bold" 
             />
             
-            {/* Add Professor Link */}
-            <div className="mt-6 text-center">
+            {/* Add Professor Link - more visible now */}
+            <div className="mt-8 text-center">
               <Link 
                 href="/add-professor" 
-                className="text-base text-white hover:underline font-medium px-4 py-2 inline-block"
+                className="text-base text-white hover:underline font-medium px-4 py-2 inline-block bg-blue-700 bg-opacity-50 rounded-lg hover:bg-opacity-70 transition-all"
               >
                 ¿No encuentras a un profesor? Agrégalo aquí
               </Link>
