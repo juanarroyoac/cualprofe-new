@@ -24,12 +24,12 @@ export default function Home() {
         </div>
         
         {/* Content container with responsive padding */}
-        <div className="relative z-10 h-full flex items-start justify-center pt-20 sm:pt-48">
+        <div className="relative z-10 h-full flex items-start justify-center pt-24 sm:pt-48">
           <div className="w-full max-w-5xl px-4">
             {/* Custom responsive heading for better mobile display */}
             <div className="text-center mb-8">
-              <h1 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold leading-tight sm:leading-tight tracking-wide font-poppins">
-                Elige tus profesores<br className="hidden sm:inline" /> con confianza.
+              <h1 className="text-white text-4xl sm:text-5xl md:text-5xl font-bold leading-snug sm:leading-tight tracking-normal font-poppins">
+                Elige tus profesores con confianza.
               </h1>
             </div>
             
@@ -42,10 +42,10 @@ export default function Home() {
             />
             
             {/* Add Professor Link - more visible now */}
-            <div className="mt-8 text-center">
+            <div className="mt-6 text-center">
               <Link 
                 href="/add-professor" 
-                className="text-base text-white hover:underline font-medium px-4 py-2 inline-block bg-blue-700 bg-opacity-50 rounded-lg hover:bg-opacity-70 transition-all"
+                className="text-base text-white hover:underline font-medium px-4 py-2 inline-block"
               >
                 ¿No encuentras a un profesor? Agrégalo aquí
               </Link>
