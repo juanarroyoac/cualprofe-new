@@ -26,7 +26,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-[#00248c] text-white shadow-md z-50">
+    <header className="fixed top-0 left-0 w-full bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8] text-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3">
         {/* Mobile Layout (left-aligned logo) */}
         <div className="sm:hidden flex items-center justify-between">
@@ -49,7 +49,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center justify-center bg-blue-700 text-white p-2 rounded hover:bg-blue-800 transition-colors w-10 h-10"
+                className="flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-700 text-white p-2 rounded hover:from-blue-900 hover:to-blue-800 transition-colors w-10 h-10"
                 aria-expanded={showUserMenu}
                 aria-haspopup="true"
               >
@@ -102,7 +102,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-white text-black px-2 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors"
+              className="bg-gradient-to-r from-white to-gray-100 text-black px-2 py-1 rounded text-xs font-medium hover:from-gray-100 hover:to-gray-200 transition-colors"
             >
               Ingresar
             </button>
@@ -128,7 +128,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors min-h-[44px]"
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-700 text-white px-4 py-2 rounded hover:from-blue-900 hover:to-blue-800 transition-colors min-h-[44px]"
                 aria-expanded={showUserMenu}
                 aria-haspopup="true"
               >
@@ -179,7 +179,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors min-h-[44px]"
+              className="bg-gradient-to-r from-white to-gray-100 text-black px-4 py-2 rounded font-medium hover:from-gray-100 hover:to-gray-200 transition-colors min-h-[44px]"
             >
               Iniciar sesión / Registrarse
             </button>

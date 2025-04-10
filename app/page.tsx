@@ -52,7 +52,10 @@ export default function Home() {
         </div>
       </div>
       
-      {/* Welcome section with "What is CualProfe" style layout */}
+      {/* Empty space to push content down */}
+      <div className="py-8 bg-white"></div>
+      
+      {/* What is CualProfe section */}
       <div className="py-16 px-4 bg-white">
         <div className="w-full max-w-6xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-3 font-poppins text-[#00103f]">
@@ -111,7 +114,7 @@ export default function Home() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              <path d="M12 17h.01"></path>
             </svg>
             Preguntas frecuentes
           </Link>

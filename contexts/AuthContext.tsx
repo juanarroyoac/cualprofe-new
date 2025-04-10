@@ -6,7 +6,9 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  AuthError // Add this import for typing
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 
@@ -44,9 +46,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signInWithGoogle() {
     try {
+      // Configure the provider to force account selection
+      googleProvider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
+      // Use signInWithPopup but with better error handling
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error during Google sign-in:', error);
+      
+      // Type check to ensure error is an AuthError with a code property
+      if (typeof error === 'object' && error !== null && 'code' in error) {
+        const authError = error as AuthError;
+        if (authError.code === 'auth/popup-closed-by-user' || authError.code === 'auth/cancelled-popup-request') {
+          console.log('Authentication popup was closed or cancelled');
+        }
+      }
+      
       throw error;
     }
   }

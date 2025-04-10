@@ -231,7 +231,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-[#00248c] text-white shadow-md z-50">
+    <header className="fixed top-0 left-0 w-full bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8] text-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3">
         {/* Mobile Layout (centered logo + search icon) */}
         <div className="sm:hidden">
@@ -239,7 +239,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             {/* Search Icon Button */}
             <button 
               onClick={() => setShowMobileSearch(!showMobileSearch)}
-              className="flex items-center justify-center bg-blue-700 text-white p-2 rounded-full hover:bg-blue-800 transition-colors w-10 h-10"
+              className="flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-700 text-white p-2 rounded-full hover:from-blue-900 hover:to-blue-800 transition-colors w-10 h-10"
               aria-label="Search"
             >
               <svg 
@@ -275,7 +275,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
               <div className="relative" ref={userMenuRef}>
                 <button 
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center justify-center bg-blue-700 text-white p-2 rounded-full hover:bg-blue-800 transition-colors w-10 h-10"
+                  className="flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-700 text-white p-2 rounded-full hover:from-blue-900 hover:to-blue-800 transition-colors w-10 h-10"
                   aria-expanded={showUserMenu}
                   aria-haspopup="true"
                 >
@@ -328,7 +328,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             ) : (
               <button 
                 onClick={onAuthClick}
-                className="bg-white text-black px-2 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors"
+                className="bg-gradient-to-r from-white to-gray-100 text-black px-2 py-1 rounded text-xs font-medium hover:from-gray-100 hover:to-gray-200 transition-colors"
               >
                 Ingresar
               </button>
@@ -446,7 +446,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             <div className="relative mr-4 w-56" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
-                className="w-full bg-[#00248c] text-white px-3 py-2 flex items-center justify-between"
+                className="w-full bg-gradient-to-r from-[#001f78] to-[#00236b] text-white px-3 py-2 flex items-center justify-between rounded-md"
                 type="button"
               >
                 <span className="text-white text-sm font-semibold truncate">
@@ -551,7 +551,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors"
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-700 text-white px-4 py-2 rounded hover:from-blue-900 hover:to-blue-800 transition-colors"
               >
                 <span>{userName}</span>
                 <svg 
@@ -599,7 +599,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-gray-100 transition-colors"
+              className="bg-gradient-to-r from-white to-gray-100 text-black px-4 py-2 rounded font-medium hover:from-gray-100 hover:to-gray-200 transition-colors"
             >
               Iniciar sesión / Registrarse
             </button>
