@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Header from './Header';
 import HeaderWithSearch from './HeaderWithSearch';
-import AuthModal from './AuthModal';
+import AuthModal from './auth/AuthModal';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function HeaderWrapper() {
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [modalMountedOnce, setModalMountedOnce] = useState<boolean>(false); // Track if modal has mounted once
   const pathname = usePathname();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, signOut } = useAuth(); // Changed from logout to signOut
   
   // Check if we're on the home/landing page
   const isHomePage = pathname === '/';
@@ -28,7 +28,7 @@ export default function HeaderWrapper() {
   
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut(); // Changed from logout to signOut
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -84,7 +84,7 @@ export default function HeaderWrapper() {
           userName={currentUser?.displayName || currentUser?.email?.split('@')[0] || ''}
         />
       )}
-      {showAuthModal && <AuthModal onClose={handleCloseModal} />}
+      {showAuthModal && <AuthModal isOpen={showAuthModal} onClose={handleCloseModal} />}
     </>
   );
 }

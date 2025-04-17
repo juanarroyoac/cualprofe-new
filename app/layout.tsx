@@ -1,8 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import HeaderWrapper from '../components/HeaderWrapper';
-import Footer from '../components/Footer';
-import { AuthProvider } from '../contexts/AuthContext';
+import HeaderWrapper from './components/HeaderWrapper';
+import Footer from './components/Footer';
+import { AuthProvider } from './contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'CuálProfe? - Calificaciones de profesores',

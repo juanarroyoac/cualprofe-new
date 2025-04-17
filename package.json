@@ -14,9 +14,11 @@
   },
   "dependencies": {
     "@builder.io/react": "^8.0.10",
+    "@headlessui/react": "^2.2.2",
     "@vercel/analytics": "^1.5.0",
     "firebase": "^11.4.0",
     "firebase-admin": "^13.2.0",
+    "lucide-react": "^0.488.0",
     "next": "^15.2.4",
     "papaparse": "^5.5.2",
     "react": "^19.0.0",
