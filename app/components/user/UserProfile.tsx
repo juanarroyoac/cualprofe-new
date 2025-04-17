@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
-import { User, updateProfile, updateEmail, updatePassword, 
+import { updateProfile, updateEmail, updatePassword, 
          EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { AlertCircle, CheckCircle, Lock, Mail, User as UserIcon } from 'lucide-react';
 
 interface AlertProps {
@@ -63,7 +63,7 @@ export default function UserProfile() {
       });
 
       setProfileSuccess('Perfil actualizado correctamente');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating profile:', error);
       setProfileError('Error al actualizar el perfil. Intenta de nuevo.');
     } finally {
@@ -111,13 +111,14 @@ export default function UserProfile() {
       // Send verification email to the new address
       await sendEmailVerification();
       setVerificationSent(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating email:', error);
-      if (error.code === 'auth/wrong-password') {
+      const errorObj = error as { code?: string };
+      if (errorObj.code === 'auth/wrong-password') {
         setEmailError('Contraseña incorrecta');
-      } else if (error.code === 'auth/requires-recent-login') {
+      } else if (errorObj.code === 'auth/requires-recent-login') {
         setEmailError('Por favor, cierra sesión y vuelve a iniciar sesión para actualizar tu correo');
-      } else if (error.code === 'auth/email-already-in-use') {
+      } else if (errorObj.code === 'auth/email-already-in-use') {
         setEmailError('Este correo ya está registrado');
       } else {
         setEmailError('Error al actualizar el correo. Intenta de nuevo.');
@@ -170,11 +171,12 @@ export default function UserProfile() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating password:', error);
-      if (error.code === 'auth/wrong-password') {
+      const errorObj = error as { code?: string };
+      if (errorObj.code === 'auth/wrong-password') {
         setPasswordError('Contraseña actual incorrecta');
-      } else if (error.code === 'auth/requires-recent-login') {
+      } else if (errorObj.code === 'auth/requires-recent-login') {
         setPasswordError('Por favor, cierra sesión y vuelve a iniciar sesión para actualizar tu contraseña');
       } else {
         setPasswordError('Error al actualizar la contraseña. Intenta de nuevo.');

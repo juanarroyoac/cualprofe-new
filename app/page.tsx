@@ -34,7 +34,6 @@ const HelpCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 export default function Home() {
   return (
     // Ensure the main layout above this component handles the header height appropriately

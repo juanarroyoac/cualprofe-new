@@ -3,13 +3,12 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { 
   User,
-  UserCredential,
   onAuthStateChanged, 
   signOut as firebaseSignOut,
   sendEmailVerification as firebaseSendEmailVerification
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, updateDoc, serverTimestamp, DocumentData } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, serverTimestamp, DocumentData, Timestamp } from 'firebase/firestore';
 // Update this import path to match your project structure
 import ProfileCompletionModal from '@/app/components/auth/ProfileCompletionModal';
 
@@ -17,8 +16,8 @@ interface UserProfile extends DocumentData {
   email: string;
   displayName?: string;
   photoURL?: string | null;
-  createdAt: any; // FirebaseTimestamp
-  lastLogin: any; // FirebaseTimestamp
+  createdAt: Timestamp | null; // Changed from any to Timestamp
+  lastLogin: Timestamp | null; // Changed from any to Timestamp
   emailVerified: boolean;
   profileCompleted?: boolean;
 }
@@ -134,11 +133,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         await firebaseSendEmailVerification(currentUser);
         return { success: true };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error sending verification email:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return { 
           success: false, 
-          error: error.message 
+          error: errorMessage 
         };
       }
     }

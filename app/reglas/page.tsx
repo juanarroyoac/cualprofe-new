@@ -1,3 +1,13 @@
+export const metadata = {
+  title: 'Reglas del Sitio - CuálProfe',
+  description: 'Normativas y directrices para el uso adecuado de CuálProfe'
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1
+};
+
 export default function GuidelinesPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

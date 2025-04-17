@@ -1,123 +1,149 @@
-export default function TermsPage() {
+export const metadata = {
+  title: 'Términos y Condiciones - CuálProfe',
+  description: 'Términos y condiciones de uso de la plataforma CuálProfe'
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1
+};
+
+export default function TerminosPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Términos y Condiciones</h1>
       
       <div className="prose max-w-none">
-        <h2 className="text-xl font-semibold mt-8 mb-4">1. INTRODUCCIÓN</h2>
         <p className="mb-4">
-          CuálProfe (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;la plataforma&quot;) es un servicio de calificaciones de profesores 
-          operado de forma independiente para estudiantes universitarios en Venezuela. Al acceder o utilizar nuestro sitio web, 
-          aplicación móvil o cualquier servicio ofrecido por CuálProfe, usted acepta estar sujeto a estos Términos y Condiciones.
-          Si no está de acuerdo con alguna parte de estos términos, le pedimos que no utilice nuestros servicios.
+          Última actualización: Abril 2025
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">2. ELEGIBILIDAD Y CUENTAS DE USUARIO</h2>
         <p className="mb-4">
-          2.1. Para utilizar CuálProfe, debe ser estudiante universitario actual o reciente en una institución educativa venezolana.
-        </p>
-        <p className="mb-4">
-          2.2. Usted es responsable de mantener la confidencialidad de su contraseña y de todas las actividades realizadas bajo su cuenta.
-        </p>
-        <p className="mb-4">
-          2.3. CuálProfe se reserva el derecho de suspender o terminar su cuenta si viola estos Términos y Condiciones 
-          o las Reglas del Sitio, o si participa en actividades que puedan dañar o perjudicar a la plataforma o a otros usuarios.
+          Bienvenido a CuálProfe. Estos Términos y Condiciones rigen tu uso de CuálProfe y establecen los 
+          derechos y responsabilidades entre tú y nosotros. Al acceder o utilizar nuestro sitio web, aceptas 
+          estos Términos y Condiciones en su totalidad. Si no estás de acuerdo con estos Términos y Condiciones
+          o cualquier parte de ellos, no debes utilizar CuálProfe.
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">3. USO DEL SERVICIO</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4">1. DEFINICIONES</h2>
         <p className="mb-4">
-          3.1. CuálProfe proporciona una plataforma donde los estudiantes pueden compartir y consultar calificaciones y opiniones 
-          sobre profesores universitarios en Venezuela.
+          &quot;CuálProfe&quot; se refiere a nuestra plataforma web accesible en [URL del sitio].
         </p>
         <p className="mb-4">
-          3.2. Usted acepta utilizar nuestros servicios de acuerdo con nuestras Reglas del Sitio, que forman parte integral 
-          de estos Términos y Condiciones.
+          &quot;Nosotros&quot;, &quot;nos&quot; y &quot;nuestro&quot; se refiere a los administradores y propietarios de CuálProfe.
         </p>
         <p className="mb-4">
-          3.3. Está prohibido utilizar la plataforma para publicar contenido difamatorio, ofensivo, obsceno o que viole 
-          derechos de terceros, incluidos los derechos de propiedad intelectual.
-        </p>
-        
-        <h2 className="text-xl font-semibold mt-8 mb-4">4. CONTENIDO DEL USUARIO</h2>
-        <p className="mb-4">
-          4.1. Al publicar calificaciones, comentarios u otro contenido en CuálProfe, usted conserva todos sus derechos de 
-          propiedad intelectual sobre dicho contenido.
+          &quot;Tú&quot; y &quot;tu&quot; se refiere al usuario o visitante de CuálProfe.
         </p>
         <p className="mb-4">
-          4.2. Sin embargo, al publicar contenido, usted otorga a CuálProfe una licencia mundial, no exclusiva, libre de regalías, 
-          sublicenciable y transferible para usar, reproducir, modificar, adaptar, publicar, traducir, distribuir y mostrar dicho 
-          contenido en relación con el servicio proporcionado por la plataforma.
-        </p>
-        <p className="mb-4">
-          4.3. Usted declara y garantiza que tiene derecho a publicar el contenido en CuálProfe y que dicho contenido no viola 
-          ninguna ley ni los derechos de terceros.
+          &quot;Contenido&quot; se refiere a cualquier información, texto, gráficos, fotos u otros materiales cargados, 
+          descargados o que aparezcan en CuálProfe.
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">5. PROPIEDAD INTELECTUAL</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4">2. USO DEL SITIO</h2>
         <p className="mb-4">
-          5.1. El nombre &quot;CuálProfe&quot;, el logotipo, diseño, software, tecnología y todo el contenido creado por nosotros son 
-          propiedad exclusiva de CuálProfe y están protegidos por leyes de propiedad intelectual.
+          CuálProfe es una plataforma que permite a los estudiantes compartir y acceder a calificaciones y 
+          opiniones sobre profesores universitarios en Venezuela. Al utilizar nuestro sitio, aceptas lo siguiente:
         </p>
+        <ul className="list-disc pl-6 mb-4">
+          <li>Proporcionar información precisa y actualizada durante el registro.</li>
+          <li>Mantener la confidencialidad de tu cuenta y contraseña.</li>
+          <li>Notificarnos inmediatamente de cualquier uso no autorizado de tu cuenta.</li>
+          <li>No utilizar el sitio para actividades ilegales o no autorizadas.</li>
+          <li>No intentar acceder, dañar o interrumpir nuestros servidores o redes.</li>
+          <li>Cumplir con todas las leyes y regulaciones aplicables mientras utilizas nuestro sitio.</li>
+        </ul>
+        
+        <h2 className="text-2xl font-semibold mt-8 mb-4">3. CONTENIDO DEL USUARIO</h2>
         <p className="mb-4">
-          5.2. No se permite reproducir, distribuir, modificar o crear obras derivadas basadas en nuestros materiales sin 
-          autorización expresa por escrito.
+          Al enviar contenido a CuálProfe, incluyendo calificaciones, comentarios, opiniones o cualquier otro material:
+        </p>
+        <ul className="list-disc pl-6 mb-4">
+          <li>Garantizas que tienes el derecho de publicar dicho contenido.</li>
+          <li>Otorgas a CuálProfe una licencia mundial, no exclusiva, libre de regalías para utilizar, reproducir, 
+          modificar, adaptar, publicar, traducir, distribuir y mostrar dicho contenido.</li>
+          <li>Aceptas que este contenido no violará los derechos de terceros, incluidos los derechos de autor, 
+          marca registrada, privacidad o publicidad.</li>
+          <li>Entiendes que CuálProfe no garantiza la exactitud, integridad o calidad del contenido enviado por los usuarios.</li>
+        </ul>
+        <p className="mb-4">
+          CuálProfe se reserva el derecho, pero no la obligación, de monitorear, editar o eliminar cualquier 
+          contenido que consideremos inapropiado o que viole nuestras políticas y estos Términos y Condiciones.
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">6. LIMITACIÓN DE RESPONSABILIDAD</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4">4. POLÍTICA DE PRIVACIDAD</h2>
         <p className="mb-4">
-          6.1. Las calificaciones y opiniones expresadas en CuálProfe pertenecen únicamente a los usuarios que las publican 
-          y no representan las opiniones o juicios de CuálProfe.
-        </p>
-        <p className="mb-4">
-          6.2. CuálProfe no verifica la exactitud de las calificaciones o comentarios publicados por los usuarios y no asume 
-          responsabilidad por su contenido.
-        </p>
-        <p className="mb-4">
-          6.3. CuálProfe no será responsable por decisiones tomadas basándose en la información proporcionada por los usuarios 
-          en la plataforma.
-        </p>
-        <p className="mb-4">
-          6.4. CuálProfe se ofrece &quot;tal cual&quot; y &quot;según disponibilidad&quot;, sin garantías de ningún tipo, expresas o implícitas.
+          Tu uso de CuálProfe también está sujeto a nuestra Política de Privacidad, que describe cómo 
+          recopilamos, utilizamos y compartimos tu información personal. Nuestra Política de Privacidad 
+          se incorpora por referencia a estos Términos y Condiciones.
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">7. PRIVACIDAD Y DATOS PERSONALES</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4">5. PROPIEDAD INTELECTUAL</h2>
         <p className="mb-4">
-          7.1. CuálProfe recopila y procesa datos personales de acuerdo con nuestra Política de Privacidad, que forma parte 
-          integral de estos Términos y Condiciones.
+          CuálProfe y su contenido, características y funcionalidad originales son y seguirán siendo 
+          propiedad exclusiva de CuálProfe y sus licenciantes. El sitio está protegido por derechos de 
+          autor, marcas registradas y otras leyes de Venezuela y de otros países.
         </p>
         <p className="mb-4">
-          7.2. Al utilizar nuestros servicios, usted consiente la recopilación y el procesamiento de sus datos personales 
-          según lo descrito en nuestra Política de Privacidad.
-        </p>
-        
-        <h2 className="text-xl font-semibold mt-8 mb-4">8. MODIFICACIONES</h2>
-        <p className="mb-4">
-          8.1. CuálProfe se reserva el derecho de modificar estos Términos y Condiciones en cualquier momento.
-        </p>
-        <p className="mb-4">
-          8.2. Las modificaciones entrarán en vigor inmediatamente después de su publicación en la plataforma.
-        </p>
-        <p className="mb-4">
-          8.3. Su uso continuado de CuálProfe después de tales modificaciones constituye su aceptación de los nuevos términos.
+          Nuestras marcas y elementos visuales no pueden ser utilizados sin nuestro permiso previo por escrito.
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">9. LEY APLICABLE</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4">6. LIMITACIÓN DE RESPONSABILIDAD</h2>
         <p className="mb-4">
-          9.1. Estos Términos y Condiciones se regirán e interpretarán de acuerdo con las leyes de la República Bolivariana de Venezuela.
+          En ningún caso CuálProfe, sus directores, empleados, socios, agentes, proveedores o afiliados 
+          serán responsables por cualquier daño indirecto, incidental, especial, consecuente o punitivo, 
+          incluyendo sin limitación, pérdida de beneficios, datos, uso, buena voluntad, u otras pérdidas 
+          intangibles, resultantes de:
         </p>
+        <ul className="list-disc pl-6 mb-4">
+          <li>Tu acceso o uso o inhabilidad para acceder o usar el sitio.</li>
+          <li>Cualquier conducta o contenido de terceros en el sitio.</li>
+          <li>Cualquier contenido obtenido del sitio.</li>
+          <li>Acceso no autorizado, uso o alteración de tus transmisiones o contenido.</li>
+        </ul>
+        
+        <h2 className="text-2xl font-semibold mt-8 mb-4">7. INDEMNIZACIÓN</h2>
         <p className="mb-4">
-          9.2. Cualquier disputa que surja en relación con estos términos estará sujeta a la jurisdicción exclusiva de los 
-          tribunales competentes en Venezuela.
+          Aceptas defender, indemnizar y mantener indemne a CuálProfe y a sus licenciantes, proveedores de 
+          servicios, empleados, agentes, funcionarios y directores de y contra cualquier reclamo, daño, 
+          obligación, pérdida, responsabilidad, costo o deuda, y gastos (incluidos, entre otros, honorarios 
+          de abogados) que surjan de: (i) tu uso y acceso a CuálProfe, (ii) tu violación de cualquier término 
+          de estos Términos y Condiciones, (iii) tu violación de cualquier derecho de terceros, incluidos, 
+          entre otros, derechos de autor, propiedad o privacidad, o (iv) cualquier afirmación de que tu 
+          contenido causó daño a un tercero.
         </p>
         
-        <h2 className="text-xl font-semibold mt-8 mb-4">10. CONTACTO</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4">8. TERMINACIÓN</h2>
         <p className="mb-4">
-          Si tiene alguna pregunta sobre estos Términos y Condiciones, puede contactarnos en: 
-          <a href="mailto:contacto@cualprofe.com" className="text-[#0F17FF] hover:underline">contacto@cualprofe.com</a>
+          Podemos terminar o suspender tu acceso inmediatamente, sin previo aviso ni responsabilidad, por 
+          cualquier motivo, incluyendo sin limitación si incumples estos Términos y Condiciones.
+        </p>
+        <p className="mb-4">
+          Tras la terminación, tu derecho a utilizar CuálProfe cesará inmediatamente. Si deseas terminar tu 
+          cuenta, puedes simplemente dejar de usar nuestro sitio.
         </p>
         
-        <p className="mt-8 text-sm text-gray-600">
-          Última actualización: Marzo 2025
+        <h2 className="text-2xl font-semibold mt-8 mb-4">9. CAMBIOS</h2>
+        <p className="mb-4">
+          Nos reservamos el derecho, a nuestra sola discreción, de modificar o reemplazar estos Términos en 
+          cualquier momento. Si una revisión es material, intentaremos proporcionar un aviso con al menos 30 
+          días de anticipación antes de que los nuevos términos entren en vigor.
+        </p>
+        <p className="mb-4">
+          Es tu responsabilidad revisar estos Términos periódicamente para conocer los cambios. Tu uso 
+          continuado de CuálProfe después de publicar cualquier modificación a estos Términos constituye la 
+          aceptación de esos cambios.
+        </p>
+        
+        <h2 className="text-2xl font-semibold mt-8 mb-4">10. LEY APLICABLE</h2>
+        <p className="mb-4">
+          Estos Términos se regirán e interpretarán de acuerdo con las leyes de la República Bolivariana de 
+          Venezuela, sin tener en cuenta sus disposiciones sobre conflictos de leyes.
+        </p>
+        
+        <h2 className="text-2xl font-semibold mt-8 mb-4">11. CONTACTO</h2>
+        <p className="mb-4">
+          Si tienes alguna pregunta sobre estos Términos y Condiciones, por favor contáctanos en [correo electrónico].
         </p>
       </div>
     </div>

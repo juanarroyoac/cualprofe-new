@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
-import TagsList from '../../../components/TagsList';
+import TagsList from '../../components/TagsList';
 import Link from 'next/link';
 
 export default function RateTeacherPage() {

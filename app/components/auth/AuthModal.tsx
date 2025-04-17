@@ -54,7 +54,7 @@ export default function AuthModal({
       }
 
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error al iniciar sesión con Google:', error);
       setError('No se pudo iniciar sesión con Google. Intenta de nuevo.');
     }

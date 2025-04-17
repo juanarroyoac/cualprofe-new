@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Restablecer Contraseña | CuálProfe',
-  description: 'Restablece tu contraseña de CuálProfe',
+  title: 'Agregar un Nuevo Profesor | CuálProfe',
+  description: 'Formulario para agregar un profesor a la base de datos de CuálProfe',
 };
 
 export const viewport: Viewport = {
@@ -10,7 +10,7 @@ export const viewport: Viewport = {
   initialScale: 1
 };
 
-export default function ResetPasswordLayout({
+export default function AddProfessorLayout({
   children,
 }: {
   children: React.ReactNode;
