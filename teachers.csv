@@ -1,4 +1,4 @@
-name,school,university
+name,department,university
 Samia Akl,Economía,Universidad Católica Andrés Bello
 Anabella Abadi,Economía,Universidad Católica Andrés Bello
 Ronald Balza,Economía,Universidad Católica Andrés Bello
@@ -42,14 +42,14 @@ Ana Paula Martínez,Economía,Universidad Católica Andrés Bello
 Paola Medina,Economía,Universidad Católica Andrés Bello
 Jose Medina,Economía,Universidad Católica Andrés Bello
 Adolfo Leonard,Ciencias,Universidad Metropolitana
-Adriana María López Guevara,Humanidades,Universidad Metropolitana
+Adriana López,Humanidades,Universidad Metropolitana
 Aidaelena Smith,Ingeniería,Universidad Metropolitana
 Alberto E. Paz Gomez,Ciencias,Universidad Metropolitana
 Alejandro Martucci,Ciencias Económicas y Sociales,Universidad Metropolitana
 Alfredo Rodríguez I.,Humanidades,Universidad Metropolitana
 Ali Pellicer,Ciencias,Universidad Metropolitana
 Alicia Harrar Israel,Ingeniería,Universidad Metropolitana
-Ana Beatriz Monteverde Baralt,Ciencias,Universidad Metropolitana
+Ana Monteverde,Ciencias,Universidad Metropolitana
 Ana María Ñáñez,Ciencias Económicas y Sociales,Universidad Metropolitana
 Ana Matilde Catalá,Ciencias,Universidad Metropolitana
 Anabel Anzola Luján,Ciencias,Universidad Metropolitana
@@ -248,3 +248,121 @@ Yosmar Campos,Humanidades,Universidad Metropolitana
 Yuherqui Guaimaro,Humanidades,Universidad Metropolitana
 Zoilette Gutierrez,Decanato de Estudiantes,Universidad Metropolitana
 Zoramar Oviedo Gallo,Ciencias,Universidad Metropolitana
+Mildred Pérez,Ingeniería,Universidad Católica Andrés Bello
+Yasnahia Figueroa,Ingeniería,Universidad Católica Andrés Bello
+José Quintero,Ingeniería,Universidad Católica Andrés Bello
+Augusto Cardenas,Ingeniería,Universidad Católica Andrés Bello
+Irving Valencia,Ingeniería,Universidad Católica Andrés Bello
+María García,Ingeniería,Universidad Católica Andrés Bello
+Fanny Ramirez,Ingeniería,Universidad Católica Andrés Bello
+Marielena Mestas,Ingeniería,Universidad Católica Andrés Bello
+Ana Pérez,Ingeniería,Universidad Católica Andrés Bello
+Thays Adrián,Ingeniería,Universidad Católica Andrés Bello
+Trina Barrios,Ingeniería,Universidad Católica Andrés Bello
+Ana Ceballos,Ingeniería,Universidad Católica Andrés Bello
+Janira Irausquin,Ingeniería,Universidad Católica Andrés Bello
+Alis Carrasquero,Ingeniería,Universidad Católica Andrés Bello
+Andrés Romero,Ingeniería,Universidad Católica Andrés Bello
+Claudia Salazar,Ingeniería,Universidad Católica Andrés Bello
+Leticia Marius,Ingeniería,Universidad Católica Andrés Bello
+Eduardo Cantera,Ingeniería,Universidad Católica Andrés Bello
+Yuleima Camacho,Ingeniería,Universidad Católica Andrés Bello
+María Fernández,Ingeniería,Universidad Católica Andrés Bello
+Ofelia Romero,Ingeniería,Universidad Católica Andrés Bello
+Verónica Neto,Ingeniería,Universidad Católica Andrés Bello
+Johana Delgado,Ingeniería,Universidad Católica Andrés Bello
+Fabiola Rodrigues,Ingeniería,Universidad Católica Andrés Bello
+Joana Leal,Ingeniería,Universidad Católica Andrés Bello
+Thais Arreaza,Ingeniería,Universidad Católica Andrés Bello
+Miguel Taipe,Ingeniería,Universidad Católica Andrés Bello
+Rafael Bocaranda,Ingeniería,Universidad Católica Andrés Bello
+Eduardo Valero,Ingeniería,Universidad Católica Andrés Bello
+Valentina Martinez,Ingeniería,Universidad Católica Andrés Bello
+Alexander Cardenas,Ingeniería,Universidad Católica Andrés Bello
+Grisell González,Ingeniería,Universidad Católica Andrés Bello
+Elvira Sabal,Ingeniería,Universidad Católica Andrés Bello
+Angela Tocco,Ingeniería,Universidad Católica Andrés Bello
+Adriana Surga,Ingeniería,Universidad Católica Andrés Bello
+Pedro Viggiani,Ingeniería,Universidad Católica Andrés Bello
+José Marino,Ingeniería,Universidad Católica Andrés Bello
+José Castillo,Ingeniería,Universidad Católica Andrés Bello
+Rodolfo Holguin,Ingeniería,Universidad Católica Andrés Bello
+Daniel Graterol,Ingeniería,Universidad Católica Andrés Bello
+Rodolfo Holguín,Ingeniería,Universidad Católica Andrés Bello
+Katiuska Zambrano,Ingeniería,Universidad Católica Andrés Bello
+Miguel González,Ingeniería,Universidad Católica Andrés Bello
+José Juárez,Ingeniería,Universidad Católica Andrés Bello
+Ana García,Ingeniería,Universidad Católica Andrés Bello
+Yenny Uribe,Ingeniería,Universidad Católica Andrés Bello
+Richard Torres,Ingeniería,Universidad Católica Andrés Bello
+Carlos Izzo,Ingeniería,Universidad Católica Andrés Bello
+Guillermo Calzadilla,Ingeniería,Universidad Católica Andrés Bello
+Eilyn Colmenares,Ingeniería,Universidad Católica Andrés Bello
+Johan Alarcón,Ingeniería,Universidad Católica Andrés Bello
+Celsa Afonso,Ingeniería,Universidad Católica Andrés Bello
+Clarisa Brito,Ingeniería,Universidad Católica Andrés Bello
+Julen Azpiritxaga,Ingeniería,Universidad Católica Andrés Bello
+Martin Dorante,Ingeniería,Universidad Católica Andrés Bello
+Antonietta Melone,Ingeniería,Universidad Católica Andrés Bello
+María López,Ingeniería,Universidad Católica Andrés Bello
+Beatriz Soledad,Ingeniería,Universidad Católica Andrés Bello
+David Osorio,Ingeniería,Universidad Católica Andrés Bello
+Norma Guzman,Ingeniería,Universidad Católica Andrés Bello
+Liliana Lupo,Ingeniería,Universidad Católica Andrés Bello
+Robert Espitia,Ingeniería,Universidad Católica Andrés Bello
+Jorge Benedicto,Ingeniería,Universidad Católica Andrés Bello
+María Varela,Ingeniería,Universidad Católica Andrés Bello
+Celys Key,Ingeniería,Universidad Católica Andrés Bello
+Martín Dorante,Ingeniería,Universidad Católica Andrés Bello
+Edgar Ferreira,Ingeniería,Universidad Católica Andrés Bello
+Francisco Peraza,Ingeniería,Universidad Católica Andrés Bello
+María Eizaguirre,Ingeniería,Universidad Católica Andrés Bello
+Carmen Cristian,Ingeniería,Universidad Católica Andrés Bello
+Douglas Sánchez,Ingeniería,Universidad Católica Andrés Bello
+Debbie Méndez,Ingeniería,Universidad Católica Andrés Bello
+Christian Murati,Ingeniería,Universidad Católica Andrés Bello
+Manuel Garcia,Ingeniería,Universidad Católica Andrés Bello
+Hirwing González,Ingeniería,Universidad Católica Andrés Bello
+Yoel González,Ingeniería,Universidad Católica Andrés Bello
+Werner Sulbarán,Ingeniería,Universidad Católica Andrés Bello
+Jesús Barrios,Ingeniería,Universidad Católica Andrés Bello
+Scampola Aponte,Ingeniería,Universidad Católica Andrés Bello
+Wladimir García,Ingeniería,Universidad Católica Andrés Bello
+Francisco Rodríguez,Ingeniería,Universidad Católica Andrés Bello
+Adriana Lanz,Ingeniería,Universidad Católica Andrés Bello
+José Guevara,Ingeniería,Universidad Católica Andrés Bello
+Eduardo Álvarez,Ingeniería,Universidad Católica Andrés Bello
+Oscar Rodríguez,Ingeniería,Universidad Católica Andrés Bello
+Ebert Brea,Ingeniería,Universidad Católica Andrés Bello
+Pedro Cadenas,Ingeniería,Universidad Católica Andrés Bello
+Rafael Becemberg,Ingeniería,Universidad Católica Andrés Bello
+Johana Teixeira,Ingeniería,Universidad Católica Andrés Bello
+Luz Murillo,Ingeniería,Universidad Católica Andrés Bello
+Biagio Cante,Ingeniería,Universidad Católica Andrés Bello
+Antonio Lobo,Ingeniería,Universidad Católica Andrés Bello
+Rafael Ávila,Ingeniería,Universidad Católica Andrés Bello
+Bricelis Rodríguez,Ingeniería,Universidad Católica Andrés Bello
+Reinaldo Márquez,Ingeniería,Universidad Católica Andrés Bello
+Nahomi García,Ingeniería,Universidad Católica Andrés Bello
+Luis Gutiérrez,Ingeniería,Universidad Católica Andrés Bello
+Javier Freitez,Ingeniería,Universidad Católica Andrés Bello
+Esmeralda Hurtado,Ingeniería,Universidad Católica Andrés Bello
+Oscar Quintero,Ingeniería,Universidad Católica Andrés Bello
+María Madrid,Ingeniería,Universidad Católica Andrés Bello
+Carlos Alfonso,Ingeniería,Universidad Católica Andrés Bello
+María Vásquez,Ingeniería,Universidad Católica Andrés Bello
+Joao De Gouveia,Ingeniería,Universidad Católica Andrés Bello
+Oswald Carvajal,Ingeniería,Universidad Católica Andrés Bello
+Joubran Díaz,Ingeniería,Universidad Católica Andrés Bello
+Mariely Sarmiento,Ingeniería,Universidad Católica Andrés Bello
+Ana Fernandes,Ingeniería,Universidad Católica Andrés Bello
+Luis Almeida,Ingeniería,Universidad Católica Andrés Bello
+Valeska Villarroel,Ingeniería,Universidad Católica Andrés Bello
+Mikyoung Jung,Ingeniería,Universidad Católica Andrés Bello
+Ricardo Tavares,Ingeniería,Universidad Católica Andrés Bello
+Olga Bravo,Ingeniería,Universidad Católica Andrés Bello
+Maxwel Martínez,Ingeniería,Universidad Católica Andrés Bello
+Antonio Constantino,Ingeniería,Universidad Católica Andrés Bello
+José Da Ressureicao,Ingeniería,Universidad Católica Andrés Bello
+Gerardo Venegas,Ingeniería,Universidad Católica Andrés Bello
+Maritza Farrera,Ingeniería,Universidad Católica Andrés Bello
