@@ -24,8 +24,9 @@ export default function Home() {
     <div className="w-full min-h-screen bg-white text-gray-800 font-nunito">
 
       {/* --- Hero Section (Split Layout) --- */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16 md:py-24 px-4">
-        <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12 items-center">
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 flex flex-col min-h-[calc(100vh-64px)]">
+        {/* Main content - will be at the top */}
+        <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12 items-start pt-10 md:pt-16">
           {/* Left Column: Content */}
           <div className="text-left"> {/* Ensure text alignment isn't centered here */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-poppins text-[#00103f] leading-tight mb-4">
@@ -35,30 +36,17 @@ export default function Home() {
               Descubre qué opinan otros estudiantes sobre los profesores de tu universidad. Elige tus clases con confianza y comparte tu propia experiencia.
             </p>
 
-            {/* Search Bar Container - Calling SearchBar without the incorrect 'placeholder' prop */}
+            {/* Search Bar Container - With empty headlineText to remove the "Buscando..." text */}
             <div className="w-full max-w-md mb-6">
               <SearchBar
-                  // Add any props *required* by your SearchBar definition here.
-                  // For example, if it still needs props from the original version:
-                  // textColor="#374151" // Example: text-gray-700 for light background
-                  // largerHeading={false}
-                  // headlineText=""
+                  headlineText=""
+                  hideUniversityDropdown={true} // We'll add this prop to the SearchBar component
               />
             </div>
-
-             {/* Add Professor Link */}
-             <div>
-                <Link
-                  href="/add-professor"
-                  className="text-sm text-indigo-600 hover:text-indigo-800 hover:underline font-medium transition-colors duration-200"
-                >
-                  ¿No encuentras a un profesor? Agrégalo aquí
-                </Link>
-              </div>
           </div>
 
-          {/* Right Column: Visual */}
-          <div className="hidden md:flex justify-center items-center">
+          {/* Right Column: Visual - Moved higher with items-start and additional negative margin */}
+          <div className="hidden md:flex justify-center -mt-8">
              {/* --- PLACEHOLDER VISUAL --- */}
              {/* Replace this div with your actual Image or Illustration component */}
              {/* Example: <Image src="/images/hero-illustration.svg" width={400} height={400} alt="Students collaborating"/> */}
@@ -66,6 +54,19 @@ export default function Home() {
                 <span className="text-indigo-500 text-lg font-semibold">Visual Element</span>
              </div>
           </div>
+        </div>
+        
+        {/* Push the link to the bottom of the viewport */}
+        <div className="flex-grow"></div>
+        
+        {/* Add Professor Link - Now at the bottom of the section */}
+        <div className="text-center py-6 w-full">
+          <Link
+            href="/add-professor"
+            className="text-sm text-indigo-600 hover:text-indigo-800 hover:underline font-medium transition-colors duration-200"
+          >
+            ¿No encuentras a un profesor? Agrégalo aquí
+          </Link>
         </div>
       </section>
 

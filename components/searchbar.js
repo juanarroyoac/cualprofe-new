@@ -16,8 +16,9 @@ export default function SearchBar({
   largerHeading = false, 
   headlineText = "Buscando con quién meter las materias este semestre?",
   containerClass = "",
-  headingWeight = "font-semibold", // Add this prop with a default
-  headingSize = "" // Add this prop for custom size override
+  headingWeight = "font-semibold", 
+  headingSize = "",
+  hideUniversityDropdown = false // New prop to control university dropdown visibility
 }) {
   // Initialize with empty string instead of undefined
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,7 +28,6 @@ export default function SearchBar({
   const [initialized, setInitialized] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [isMounted, setIsMounted] = useState(false); // Unused state
   const dropdownRef = useRef(null);
   const router = useRouter();
   const MAX_SUGGESTIONS = 4;
@@ -182,9 +182,12 @@ export default function SearchBar({
 
   return (
     <div className={`flex flex-col items-center max-w-2xl mx-auto ${containerClass}`}>
-      <h1 className={`${headingSizeClass} ${headingWeight} ${textColorClass} text-center mb-8`}>
-        {headlineText}
-      </h1>
+      {/* Only show headline text if it's not empty */}
+      {headlineText && (
+        <h1 className={`${headingSizeClass} ${headingWeight} ${textColorClass} text-center mb-8`}>
+          {headlineText}
+        </h1>
+      )}
       
       <div className="w-full flex flex-col">
         {/* Search input with results */}
@@ -246,47 +249,49 @@ export default function SearchBar({
           )}
         </div>
         
-        {/* University selector */}
-        <div className="relative flex justify-center" ref={dropdownRef}>
-          <button
-            onClick={toggleDropdown}
-            className={`flex items-center gap-2 ${dropdownTextClass} transition-colors text-lg font-bold`}
-          >
-            <span>
-              {selectedUniversity 
-                ? selectedUniversity.name 
-                : "Elige tu universidad"}
-            </span>
-            {/* Inline SVG for dropdown arrow */}
-            <svg 
-              className={`h-5 w-5 ${textColor === "white" ? "text-white" : ""}`}
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 20 20" 
-              fill="currentColor"
+        {/* University selector - only shown if hideUniversityDropdown is false */}
+        {!hideUniversityDropdown && (
+          <div className="relative flex justify-center" ref={dropdownRef}>
+            <button
+              onClick={toggleDropdown}
+              className={`flex items-center gap-2 ${dropdownTextClass} transition-colors text-lg font-bold`}
             >
-              <path 
-                fillRule="evenodd" 
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                clipRule="evenodd" 
-              />
-            </svg>
-          </button>
-          
-          {/* Dropdown menu */}
-          {isDropdownOpen && (
-            <div className="absolute left-1/2 transform -translate-x-1/2 mt-10 w-72 bg-white rounded-md shadow-lg z-40 overflow-hidden border border-gray-200">
-              {universities.map((uni) => (
-                <button
-                  key={uni.id}
-                  className="block w-full text-left px-4 py-3 text-base text-gray-700 hover:bg-gray-100 hover:text-[#00103f]"
-                  onClick={() => selectUniversity(uni)}
-                >
-                  {uni.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+              <span>
+                {selectedUniversity 
+                  ? selectedUniversity.name 
+                  : "Elige tu universidad"}
+              </span>
+              {/* Inline SVG for dropdown arrow */}
+              <svg 
+                className={`h-5 w-5 ${textColor === "white" ? "text-white" : ""}`}
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
+                <path 
+                  fillRule="evenodd" 
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                  clipRule="evenodd" 
+                />
+              </svg>
+            </button>
+            
+            {/* Dropdown menu */}
+            {isDropdownOpen && (
+              <div className="absolute left-1/2 transform -translate-x-1/2 mt-10 w-72 bg-white rounded-md shadow-lg z-40 overflow-hidden border border-gray-200">
+                {universities.map((uni) => (
+                  <button
+                    key={uni.id}
+                    className="block w-full text-left px-4 py-3 text-base text-gray-700 hover:bg-gray-100 hover:text-[#00103f]"
+                    onClick={() => selectUniversity(uni)}
+                  >
+                    {uni.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
