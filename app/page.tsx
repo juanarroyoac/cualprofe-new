@@ -1,7 +1,6 @@
 'use client';
 import SearchBar from '../components/searchbar'; // Assuming this path is correct
 import Link from 'next/link';
-import Image from 'next/image'; // Keep for potential future image use
 
 // Example Icon Components (Replace with your actual icon library or SVGs)
 // Using simple functional components for clarity. Ensure these match your project setup.
