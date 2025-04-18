@@ -8,6 +8,7 @@ import HeaderWrapper from './components/HeaderWrapper';
 import Footer from './components/Footer';
 import { AuthProvider } from './contexts/AuthContext';
 import { ViewTrackingProvider } from './contexts/ViewTrackingContext';
+import { Analytics } from "@vercel/analytics/react";
 
 // Configure fonts
 const nunito_sans = Nunito_Sans({
