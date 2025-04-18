@@ -8,7 +8,7 @@ import HeaderWrapper from './components/HeaderWrapper';
 import Footer from './components/Footer';
 import { AuthProvider } from './contexts/AuthContext';
 import { ViewTrackingProvider } from './contexts/ViewTrackingContext';
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercel/analytics/react"; // Analytics component is imported
 
 // Configure fonts
 const nunito_sans = Nunito_Sans({
@@ -86,6 +86,8 @@ export default function RootLayout({
             </ViewTrackingProvider>
           </AuthProvider>
         </Suspense>
+        {/* Vercel Analytics Component added here */}
+        <Analytics />
       </body>
     </html>
   );
