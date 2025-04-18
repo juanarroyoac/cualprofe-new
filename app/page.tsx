@@ -1,6 +1,11 @@
+// app/page.tsx
 'use client';
-import SearchBar from './components/searchbar';
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+// Removed unused useAuth import
+import { useViewTracking } from './contexts/ViewTrackingContext';
+import SearchContainer from './components/SearchContainer';
 
 // Example Icon Components (Replace with your actual icon library or SVGs)
 // Using simple functional components for clarity. Ensure these match your project setup.
@@ -34,10 +39,37 @@ const HelpCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// Define an interface extending Window for the debug function
+interface WindowWithDebug extends Window {
+  __resetViewCount?: () => void;
+}
+
+
 export default function Home() {
+  const router = useRouter();
+  const { resetProfessorViews } = useViewTracking();
+
+  // Reset professor view count for testing purposes when on the homepage
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      // Uncomment this line to reset the count each time the homepage loads
+      // resetProfessorViews();
+
+      // For debugging, add a global function to reset views
+      // Use the specific WindowWithDebug type assertion instead of any
+      (window as WindowWithDebug).__resetViewCount = resetProfessorViews;
+      console.log('To reset view count, run window.__resetViewCount() in your browser console.');
+    }
+  }, [resetProfessorViews]);
+
+  const handleProfessorSelect = (professorId: string) => {
+    router.push(`/teacher/${professorId}`);
+  };
+
   return (
     // Ensure the main layout above this component handles the header height appropriately
-    <div className="w-full min-h-screen bg-white text-gray-800 font-nunito">
+    // Changed font-nunito to font-nunito-sans to match the variable name in layout.tsx & tailwind config
+    <div className="w-full min-h-screen bg-white text-gray-800 font-nunito-sans">
 
       {/* --- Hero Section (Split Layout) --- */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 px-4 flex flex-col min-h-[calc(100vh-64px)]">
@@ -45,6 +77,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-12 items-start pt-10 md:pt-16">
           {/* Left Column: Content */}
           <div className="text-left"> {/* Ensure text alignment isn't centered here */}
+            {/* Apply Poppins font using Tailwind class */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-poppins text-[#00103f] leading-tight mb-4">
               Encuentra al profesor ideal.
             </h1>
@@ -52,11 +85,12 @@ export default function Home() {
               Descubre qué opinan otros estudiantes sobre los profesores de tu universidad. Elige tus clases con confianza y comparte tu propia experiencia.
             </p>
 
-            {/* Search Bar Container - With empty headlineText to remove the "Buscando..." text */}
+            {/* Search Container with proper props */}
             <div className="w-full max-w-md mb-6">
-              <SearchBar
+              <SearchContainer
                 headlineText=""
-                hideUniversityDropdown={true} // We'll add this prop to the SearchBar component
+                hideUniversityDropdown={true}
+                onProfessorSelect={handleProfessorSelect}
               />
             </div>
             {/* Add Professor Link - Moved here for better mobile flow */}
@@ -85,6 +119,7 @@ export default function Home() {
       {/* --- Why CualProfe Section --- */}
       <section className="py-16 md:py-24 px-4 bg-white">
         <div className="container mx-auto max-w-6xl text-center">
+           {/* Apply Poppins font using Tailwind class */}
           <h2 className="text-3xl sm:text-4xl font-bold font-poppins text-[#00103f] mb-4">
             ¿Por qué usar CuálProfe?
           </h2>
@@ -99,6 +134,7 @@ export default function Home() {
               <div className="w-12 h-12 text-indigo-600 mb-4">
                 <SearchIcon className="w-full h-full" /> {/* Ensure icons render correctly */}
               </div>
+               {/* Apply Poppins font using Tailwind class */}
               <h3 className="text-xl font-semibold font-poppins mb-2 text-gray-800">Decisiones Informadas</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Lee reseñas reales de otros estudiantes para saber qué esperar antes de inscribir una materia.
@@ -110,6 +146,7 @@ export default function Home() {
               <div className="w-12 h-12 text-indigo-600 mb-4">
                 <EditIcon className="w-full h-full" />
               </div>
+               {/* Apply Poppins font using Tailwind class */}
               <h3 className="text-xl font-semibold font-poppins mb-2 text-gray-800">Comparte Tu Experiencia</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Ayuda a tus compañeros dejando tu propia reseña anónima sobre los profesores que has tenido.
@@ -121,6 +158,7 @@ export default function Home() {
               <div className="w-12 h-12 text-indigo-600 mb-4">
                 <MonitorIcon className="w-full h-full" />
               </div>
+               {/* Apply Poppins font using Tailwind class */}
               <h3 className="text-xl font-semibold font-poppins mb-2 text-gray-800">Todo En Un Solo Lugar</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Encuentra información centralizada sobre profesores de diversas universidades venezolanas.
@@ -133,6 +171,7 @@ export default function Home() {
       {/* --- How It Works Section --- */}
       <section className="py-16 md:py-24 px-4 bg-indigo-50"> {/* Light blue background */}
         <div className="container mx-auto max-w-4xl text-center">
+           {/* Apply Poppins font using Tailwind class */}
           <h2 className="text-3xl sm:text-4xl font-bold font-poppins text-[#00103f] mb-12">
             ¿Cómo funciona?
           </h2>
@@ -141,6 +180,7 @@ export default function Home() {
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-xl">1</div>
               <div>
+                 {/* Apply Poppins font using Tailwind class */}
                 <h3 className="text-lg font-semibold font-poppins mb-1 text-[#00103f]">Busca</h3>
                 <p className="text-gray-700 text-sm">Usa la barra de búsqueda para encontrar un profesor por nombre o una materia.</p>
               </div>
@@ -149,6 +189,7 @@ export default function Home() {
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-xl">2</div>
               <div>
+                 {/* Apply Poppins font using Tailwind class */}
                 <h3 className="text-lg font-semibold font-poppins mb-1 text-[#00103f]">Lee Reseñas</h3>
                 <p className="text-gray-700 text-sm">Explora las calificaciones y comentarios dejados por otros estudiantes.</p>
               </div>
@@ -157,6 +198,7 @@ export default function Home() {
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-xl">3</div>
               <div>
+                 {/* Apply Poppins font using Tailwind class */}
                 <h3 className="text-lg font-semibold font-poppins mb-1 text-[#00103f]">Contribuye</h3>
                 <p className="text-gray-700 text-sm">Comparte tu propia experiencia para ayudar a la comunidad estudiantil.</p>
               </div>
@@ -168,6 +210,7 @@ export default function Home() {
 
       {/* --- FAQ Call to Action --- */}
       <section className="py-16 px-4 bg-white text-center">
+         {/* Apply Poppins font using Tailwind class */}
         <h3 className="text-2xl font-bold font-poppins text-[#00103f] mb-4">¿Tienes preguntas?</h3>
         <p className="text-gray-600 mb-6 max-w-xl mx-auto">
           Visita nuestra sección de Preguntas Frecuentes para encontrar respuestas o contáctanos si necesitas más ayuda.

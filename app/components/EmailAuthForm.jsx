@@ -1,247 +1,245 @@
-// components/auth/EmailAuthForm.jsx
-import { useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-         sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+'use client';
 
-export default function EmailAuthForm({ mode, setMode, closeModal }) {
+import { useState } from 'react';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
+
+export default function EmailAuthForm({ 
+  mode = 'login', 
+  setMode, 
+  closeModal,
+  redirectPath
+}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [resetSent, setResetSent] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const router = useRouter();
 
-  const handleEmailLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
-    
+    setSuccessMessage('');
+    setLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      closeModal();
+      if (mode === 'login') {
+        // Login logic
+        await signInWithEmailAndPassword(auth, email, password);
+        // Reset professor view count for authenticated users
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('professorViewCount');
+        }
+        closeModal();
+        // Redirect if necessary
+        if (redirectPath) {
+          router.push(redirectPath);
+        }
+      } else if (mode === 'signup') {
+        // Signup validation
+        if (password !== confirmPassword) {
+          setError('Las contraseñas no coinciden');
+          setLoading(false);
+          return;
+        }
+
+        if (password.length < 6) {
+          setError('La contraseña debe tener al menos 6 caracteres');
+          setLoading(false);
+          return;
+        }
+
+        // Create user
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Create user document in Firestore
+        await setDoc(doc(db, 'users', user.uid), {
+          email: user.email,
+          displayName: user.email.split('@')[0], // Set default displayName as part of email
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          emailVerified: user.emailVerified
+        });
+
+        // Reset professor view count for authenticated users
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('professorViewCount');
+        }
+
+        closeModal();
+        // Redirect if necessary
+        if (redirectPath) {
+          router.push(redirectPath);
+        }
+      } else if (mode === 'resetPassword') {
+        // Reset password logic
+        await sendPasswordResetEmail(auth, email);
+        setSuccessMessage('Se ha enviado un correo para restablecer tu contraseña');
+        setTimeout(() => {
+          setMode('login');
+        }, 3000);
+      }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      setError(getErrorMessage(error.code));
+      console.error('Error:', error);
+      
+      // Handle different Firebase auth errors
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        setError('Credenciales incorrectas. Verifica tu email y contraseña');
+      } else if (error.code === 'auth/email-already-in-use') {
+        setError('Este correo ya está registrado. Intenta iniciar sesión');
+        setTimeout(() => setMode('login'), 2000);
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Correo electrónico inválido');
+      } else if (error.code === 'auth/weak-password') {
+        setError('La contraseña es demasiado débil');
+      } else {
+        setError('Ocurrió un error. Intenta de nuevo.');
+      }
     } finally {
       setLoading(false);
     }
   };
-
-  const handleEmailSignUp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      setLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      // Create user document in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp(),
-        displayName: email.split('@')[0], // Default display name
-        photoURL: null,
-        emailVerified: false
-      });
-      
-      // Send verification email
-      await sendEmailVerification(user);
-      
-      closeModal();
-    } catch (error) {
-      console.error('Error al registrarse:', error);
-      setError(getErrorMessage(error.code));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePasswordReset = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    if (!email) {
-      setError('Por favor, ingresa tu correo electrónico');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setResetSent(true);
-    } catch (error) {
-      console.error('Error al enviar correo de recuperación:', error);
-      setError(getErrorMessage(error.code));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getErrorMessage = (errorCode) => {
-    switch (errorCode) {
-      case 'auth/user-not-found':
-        return 'No existe cuenta con este correo electrónico';
-      case 'auth/wrong-password':
-        return 'Contraseña incorrecta';
-      case 'auth/invalid-email':
-        return 'Correo electrónico no válido';
-      case 'auth/email-already-in-use':
-        return 'Este correo ya está registrado';
-      case 'auth/weak-password':
-        return 'La contraseña es demasiado débil';
-      case 'auth/network-request-failed':
-        return 'Error de conexión. Verifica tu internet';
-      case 'auth/too-many-requests':
-        return 'Demasiados intentos fallidos. Intenta más tarde';
-      default:
-        return 'Ocurrió un error. Intenta de nuevo';
-    }
-  };
-
-  if (mode === 'resetPassword') {
-    return (
-      <form onSubmit={handlePasswordReset} className="space-y-4">
-        {resetSent ? (
-          <div className="text-green-600 text-center p-4">
-            Se ha enviado un correo para restablecer tu contraseña
-          </div>
-        ) : (
-          <>
-            <h2 className="text-xl font-bold text-center font-poppins">Recuperar contraseña</h2>
-            <div>
-              <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700">
-                Correo electrónico
-              </label>
-              <input
-                id="reset-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={() => setMode('login')}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Volver al inicio de sesión
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {loading ? 'Enviando...' : 'Enviar correo'}
-              </button>
-            </div>
-          </>
-        )}
-      </form>
-    );
-  }
 
   return (
-    <form onSubmit={mode === 'login' ? handleEmailLogin : handleEmailSignUp} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Correo electrónico
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          required
-        />
-      </div>
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Contraseña
-        </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          required
-        />
-      </div>
-
-      {mode === 'signup' && (
-        <div>
-          <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-            Confirmar contraseña
-          </label>
-          <input
-            id="confirm-password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          />
+    <div>
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {successMessage}
         </div>
       )}
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Correo electrónico
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            placeholder="tu@email.com"
+          />
+        </div>
 
-      <div className="flex flex-col space-y-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-        >
-          {loading
-            ? mode === 'login' ? 'Iniciando...' : 'Registrando...'
-            : mode === 'login' ? 'Iniciar sesión' : 'Registrarse'}
-        </button>
+        {mode !== 'resetPassword' && (
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+          </div>
+        )}
 
-        {mode === 'login' && (
+        {mode === 'signup' && (
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirmar contraseña
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+          </div>
+        )}
+
+        {error && (
+          <div className="text-red-500 text-sm">
+            {error}
+          </div>
+        )}
+
+        <div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+              loading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Procesando...
+              </>
+            ) : mode === 'login' ? (
+              'Iniciar sesión'
+            ) : mode === 'signup' ? (
+              'Registrarse'
+            ) : (
+              'Enviar email de recuperación'
+            )}
+          </button>
+        </div>
+      </form>
+
+      <div className="mt-4 text-center text-sm">
+        {mode === 'login' ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setMode('resetPassword')}
+              className="text-indigo-600 hover:text-indigo-500"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+            <div className="mt-2">
+              ¿No tienes cuenta?{' '}
+              <button
+                type="button"
+                onClick={() => setMode('signup')}
+                className="text-indigo-600 hover:text-indigo-500 font-medium"
+              >
+                Regístrate aquí
+              </button>
+            </div>
+          </>
+        ) : mode === 'signup' ? (
+          <div>
+            ¿Ya tienes cuenta?{' '}
+            <button
+              type="button"
+              onClick={() => setMode('login')}
+              className="text-indigo-600 hover:text-indigo-500 font-medium"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+        ) : (
           <button
             type="button"
-            onClick={() => setMode('resetPassword')}
-            className="text-sm text-blue-600 hover:underline self-end"
+            onClick={() => setMode('login')}
+            className="text-indigo-600 hover:text-indigo-500"
           >
-            ¿Olvidaste tu contraseña?
+            Volver a iniciar sesión
           </button>
         )}
       </div>
-
-      <div className="text-center mt-4">
-        <button
-          type="button"
-          onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          {mode === 'login'
-            ? '¿No tienes cuenta? Regístrate'
-            : '¿Ya tienes cuenta? Inicia sesión'}
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }

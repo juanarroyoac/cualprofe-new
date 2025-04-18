@@ -7,10 +7,12 @@ import { doc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/fires
 import { db } from '../../../lib/firebase';
 import TagsList from '../../components/TagsList';
 import Link from 'next/link';
+import { useAuth } from '../../contexts/AuthContext'; // Add this import
 
 export default function RateTeacherPage() {
   const { teacherId } = useParams();
   const router = useRouter();
+  const { currentUser, loading: authLoading, openAuthModal } = useAuth(); // Add auth context
   const [teacher, setTeacher] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,9 +30,26 @@ export default function RateTeacherPage() {
   const [success, setSuccess] = useState(false);
   // --- End Form State ---
 
+  // Check authentication status
+  useEffect(() => {
+    // Wait for auth to initialize
+    if (!authLoading) {
+      // If not authenticated, redirect to login
+      if (!currentUser) {
+        // Store the intended destination to return after login
+        openAuthModal('login');
+        // Navigate back to teacher profile
+        router.push(`/teacher/${teacherId}`);
+      }
+    }
+  }, [currentUser, authLoading, teacherId, router, openAuthModal]);
+
   // Fetch teacher data (No changes)
   useEffect(() => {
     const fetchTeacher = async () => {
+      // Only fetch if user is authenticated
+      if (!currentUser) return;
+      
       setLoading(true);
       try {
         const teacherDoc = await getDoc(doc(db, 'teachers', teacherId));
@@ -39,8 +58,15 @@ export default function RateTeacherPage() {
       } catch (err) { console.error('Error fetching teacher:', err); setError('Error al cargar los datos del profesor'); setTeacher(null); }
       finally { setLoading(false); }
     };
-    if (teacherId) { fetchTeacher(); } else { setLoading(false); setError('ID de profesor inválido.'); }
-  }, [teacherId]);
+    
+    if (teacherId && currentUser) { 
+      fetchTeacher(); 
+    } else { 
+      setLoading(false); 
+      if (teacherId) setError('Debes iniciar sesión para calificar a un profesor.'); 
+      else setError('ID de profesor inválido.');
+    }
+  }, [teacherId, currentUser]);
 
   const handleTagsChange = (tags) => { setSelectedTags(tags); };
 
@@ -55,6 +81,7 @@ export default function RateTeacherPage() {
         teacherId, quality: Number(quality), difficulty: Number(difficulty), modalidad: modalidad,
         subjectName: trimmedSubjectName, wouldTakeAgain, grade: grade.trim() || null, comment: trimmedComment,
         tags: selectedTags, createdAt: serverTimestamp(),
+        userId: currentUser?.uid, // Add user ID to rating
       };
       await addDoc(collection(db, 'ratings'), ratingData);
       setSuccess(true);
@@ -62,6 +89,42 @@ export default function RateTeacherPage() {
     } catch (err) { console.error('Error submitting rating:', err); setError('Error al enviar la calificación. Por favor, inténtalo de nuevo.'); setSuccess(false); }
     finally { setIsSubmitting(false); }
   };
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando sesión...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, show message
+  if (!currentUser) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-md">
+        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+          <h1 className="text-xl font-bold mb-4">Necesitas iniciar sesión</h1>
+          <p className="text-gray-600 mb-6">Para calificar a un profesor, debes iniciar sesión o registrarte.</p>
+          <button
+            onClick={() => openAuthModal('login')}
+            className="bg-[#00103f] hover:bg-[#00248c] text-white rounded-lg px-5 py-2.5 text-sm font-medium transition-colors shadow hover:shadow-md"
+          >
+            Iniciar sesión
+          </button>
+          <Link 
+            href={`/teacher/${teacherId}`}
+            className="block mt-4 text-gray-500 hover:text-gray-700 text-sm"
+          >
+            Volver al perfil del profesor
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) { /* Loading spinner... */ return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div></div>; }
   if (!teacher && !error) { setError('No se pudieron cargar los datos del profesor.'); }

@@ -6,25 +6,89 @@ import { X } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import EmailAuthForm from '../EmailAuthForm';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'signup' | 'resetPassword';
+  redirectPath?: string; // Add redirect path prop
 }
 
 export default function AuthModal({ 
   isOpen, 
   onClose, 
-  initialMode = 'login' 
+  initialMode = 'login',
+  redirectPath
 }: AuthModalProps) {
   const [mode, setMode] = useState<'login' | 'signup' | 'resetPassword'>(initialMode);
   const [error, setError] = useState<string>('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Check if this is a forced login (non-dismissable)
+  const forceLogin = searchParams?.get('forceLogin') === 'true';
+  
+  // Store the redirectTo from URL params if provided
+  const urlRedirectPath = searchParams?.get('redirectTo') || '';
+  
+  // Determine the final redirect path (priority: prop > URL param)
+  const finalRedirectPath = redirectPath || (urlRedirectPath ? urlRedirectPath : '');
 
   useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
+
+  // Clean URL parameters to prevent loop
+  const cleanUrlParameters = () => {
+    if (typeof window !== 'undefined' && window.history.pushState) {
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('forceLogin');
+      newUrl.searchParams.delete('showLogin');
+      newUrl.searchParams.delete('redirectTo');
+      
+      // Update URL without causing page reload
+      window.history.pushState({ path: newUrl.toString() }, '', newUrl.toString());
+    }
+  };
+
+  // Handle modal close with URL cleanup
+  const handleClose = () => {
+    // Only allow closing if not a forced login
+    if (!forceLogin) {
+      cleanUrlParameters();
+      onClose();
+    }
+  };
+
+  // Handle successful authentication
+  const handleAuthSuccess = () => {
+    // Clean up URL parameters first
+    cleanUrlParameters();
+    
+    // Determine where to redirect after successful login
+    if (finalRedirectPath) {
+      router.push(finalRedirectPath);
+    } else if (pathname.startsWith('/teacher/')) {
+      // If on a teacher page, stay there after login
+      // Close the modal, they can continue viewing
+      onClose();
+    } else if (pathname === '/') {
+      // If on home page, just close the modal
+      onClose();
+    } else {
+      // Default fallback
+      onClose();
+    }
+
+    // Reset the professor view count in session storage
+    // This allows the authenticated user to view unlimited professors
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('professorViewCount');
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -53,7 +117,8 @@ export default function AuthModal({
         }, { merge: true });
       }
 
-      onClose();
+      // Handle successful login with redirection
+      handleAuthSuccess();
     } catch (error: unknown) {
       console.error('Error al iniciar sesión con Google:', error);
       setError('No se pudo iniciar sesión con Google. Intenta de nuevo.');
@@ -63,7 +128,7 @@ export default function AuthModal({
   return (
     <Dialog 
       open={isOpen} 
-      onClose={onClose}
+      onClose={handleClose} // Use our custom close handler
       className="relative z-50"
     >
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
@@ -76,15 +141,28 @@ export default function AuthModal({
                mode === 'signup' ? 'Crear cuenta' : 
                'Recuperar contraseña'}
             </Dialog.Title>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-500"
-            >
-              <span className="sr-only">Cerrar</span>
-              <X className="h-6 w-6" aria-hidden="true" />
-            </button>
+            
+            {/* Only show close button if modal is dismissable */}
+            {!forceLogin && (
+              <button
+                type="button"
+                onClick={handleClose}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <span className="sr-only">Cerrar</span>
+                <X className="h-6 w-6" aria-hidden="true" />
+              </button>
+            )}
           </div>
+
+          {/* Message for limit reached or redirect */}
+          {(pathname.startsWith('/teacher/') || forceLogin) && (
+            <div className="bg-blue-50 text-blue-800 p-3 rounded-md mb-4">
+              <p className="text-sm">
+                Para seguir explorando perfiles de profesores, es necesario iniciar sesión o crear una cuenta.
+              </p>
+            </div>
+          )}
 
           <div className="space-y-6">
             {/* OAuth provider buttons */}
@@ -121,7 +199,8 @@ export default function AuthModal({
             <EmailAuthForm 
               mode={mode} 
               setMode={setMode} 
-              closeModal={onClose} 
+              closeModal={() => handleAuthSuccess()} 
+              redirectPath={finalRedirectPath || redirectPath}
             />
 
             {/* Error message */}

@@ -1,0 +1,12 @@
+'use client';
+
+import HeaderWrapper from './HeaderWrapper';
+import { AuthProvider } from '../contexts/AuthContext';
+
+export default function HeaderWrapperWithProvider() {
+  return (
+    <AuthProvider>
+      <HeaderWrapper />
+    </AuthProvider>
+  );
+}

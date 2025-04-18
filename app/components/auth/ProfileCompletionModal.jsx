@@ -3,22 +3,23 @@ import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase'; // Asegúrate de que esta ruta sea correcta
 
-// Replace heroicons with inline SVG
+// Ícono SVG para XMarkIcon (mantenido como referencia, pero no usado para cerrar)
 const XMarkIcon = (props) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    strokeWidth={1.5} 
-    stroke="currentColor" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
     {...props}
   >
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
+// Lista de universidades
 const universities = [
   { id: 'ucab', name: 'Universidad Católica Andrés Bello (UCAB)' },
   { id: 'unimet', name: 'Universidad Metropolitana (UNIMET)' },
@@ -34,11 +35,9 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user && user.displayName) {
-      setDisplayName(user.displayName);
-    } else if (user && user.email) {
-      // Set display name to the part of email before @ as a suggestion
-      setDisplayName(user.email.split('@')[0]);
+    if (user) {
+      // Priorizar el displayName existente, de lo contrario dejar en blanco para entrada del usuario
+      setDisplayName(user.displayName || '');
     }
   }, [user]);
 
@@ -47,19 +46,27 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
     setLoading(true);
     setError('');
 
-    if (!displayName.trim()) {
-      setError('Por favor, ingresa un nombre de usuario');
+    // Validación mejorada: verificar si contiene al menos un nombre y un apellido
+    const nameParts = displayName.trim().split(' ').filter(part => part.length > 0);
+    if (nameParts.length < 2) {
+      setError('Por favor, ingresa tu nombre completo (nombre y apellido).');
+      setLoading(false);
+      return;
+    }
+
+    if (!auth.currentUser) {
+      setError('Error: Usuario no autenticado.');
       setLoading(false);
       return;
     }
 
     try {
-      // Update Firebase Auth profile
+      // Actualizar perfil de Firebase Auth
       await updateProfile(auth.currentUser, {
         displayName: displayName.trim(),
       });
 
-      // Update Firestore user document
+      // Actualizar documento de usuario en Firestore
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, {
         displayName: displayName.trim(),
@@ -67,7 +74,7 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
         profileCompleted: true
       });
 
-      onClose();
+      onClose(); // Cerrar modal al tener éxito
     } catch (error) {
       console.error('Error al actualizar perfil:', error);
       setError('Ocurrió un error al actualizar tu perfil. Intenta de nuevo.');
@@ -76,31 +83,29 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
     }
   };
 
+  // Renderizar el diálogo solo si isOpen es true
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <Dialog 
-      open={isOpen} 
-      onClose={() => {/* Prevent closing by clicking outside */}}
+    <Dialog
+      open={isOpen}
+      // Prevenir cierre al hacer clic fuera del panel de diálogo
+      onClose={() => {/* Intencionalmente vacío para prevenir cierre */}}
       className="relative z-50"
     >
+      {/* Overlay */}
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-      
+
+      {/* Contenedor del Panel de Diálogo */}
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-md rounded-lg bg-white p-6">
           <div className="flex justify-between items-center mb-4">
             <Dialog.Title className="text-xl font-bold font-poppins">
               Completa tu perfil
             </Dialog.Title>
-            {/* Only show close button if this is optional */}
-            {false && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <span className="sr-only">Cerrar</span>
-                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-              </button>
-            )}
+            {/* No se renderiza botón de cierre ('X') aquí, asegurando que no sea descartable */}
           </div>
 
           <div>
@@ -111,14 +116,15 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                  Nombre de usuario
+                  Nombre Completo (e.g., Juan Arroyo)
                 </label>
                 <input
                   id="displayName"
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Nombre Apellido"
                   required
                 />
               </div>
@@ -131,7 +137,7 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
                   id="university"
                   value={university}
                   onChange={(e) => setUniversity(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="">Selecciona una universidad</option>
                   {universities.map((uni) => (

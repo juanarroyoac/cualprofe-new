@@ -1,7 +1,7 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 // Map of common abbreviations to full university names
@@ -18,53 +18,18 @@ export default function SearchBar({
   containerClass = "",
   headingWeight = "font-semibold", 
   headingSize = "",
-  hideUniversityDropdown = false // New prop to control university dropdown visibility
+  hideUniversityDropdown = false
 }) {
-  // Initialize with empty string instead of undefined
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [allTeachers, setAllTeachers] = useState([]);
-  const [initialized, setInitialized] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
   const MAX_SUGGESTIONS = 4;
 
-  // Build university list from abbreviations
-  const universities = Object.entries(UNIVERSITY_ABBREVIATIONS).map(([id, name]) => ({
-    id,
-    name
-  }));
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Convert any abbreviation to full university name
-  const getFullUniversityName = (uniName) => {
-    if (!uniName) return null;
-    
-    // If it's an abbreviation, convert to full name
-    const lowercaseName = uniName.toLowerCase();
-    if (UNIVERSITY_ABBREVIATIONS[lowercaseName]) {
-      return UNIVERSITY_ABBREVIATIONS[lowercaseName];
-    }
-    
-    // Otherwise return the original name
-    return uniName;
-  };
-
-  // Normalize text for comparison (remove accents, lowercase)
+  // Normalize text for flexible searching (remove accents, lowercase)
   const normalizeText = (text) => {
     return text
       .toLowerCase()
@@ -72,88 +37,78 @@ export default function SearchBar({
       .replace(/[\u0300-\u036f]/g, ""); // Remove diacritics (accents)
   };
 
-  // Load all teachers once when component mounts
-  useEffect(() => {
-    const loadAllTeachers = async () => {
-      if (initialized) return;
-      
-      try {
-        const teachersCollection = collection(db, 'teachers');
-        const snapshot = await getDocs(teachersCollection);
-        const teachersList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          normalizedName: normalizeText(doc.data().name || '')
-        }));
-        
-        setAllTeachers(teachersList);
-        setInitialized(true);
-      } catch (error) {
-        console.error('Error loading teachers:', error);
-      }
-    };
-    
-    loadAllTeachers();
-  }, [initialized]);
+  // Build university list from abbreviations
+  const universities = Object.entries(UNIVERSITY_ABBREVIATIONS).map(([id, name]) => ({
+    id,
+    name
+  }));
 
-  // Filter teachers based on search query
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
+  // Convert any abbreviation to full university name
+  const getFullUniversityName = (uniName) => {
+    if (!uniName) return null;
+    
+    const lowercaseName = uniName.toLowerCase();
+    if (UNIVERSITY_ABBREVIATIONS[lowercaseName]) {
+      return UNIVERSITY_ABBREVIATIONS[lowercaseName];
+    }
+    
+    return uniName;
+  };
+
+  // Handle search input change
+  const handleSearchInputChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // Allow searching from first character
+    if (value.trim() === '') {
       setResults([]);
       return;
     }
-
-    const filterTeachers = () => {
-      setIsLoading(true);
-      try {
-        // Get the proper university name (handling abbreviations)
-        const fullUniversityName = selectedUniversity ? getFullUniversityName(selectedUniversity.id) : null;
-        const normalizedQuery = normalizeText(searchQuery);
-        
-        // Filter teachers client-side
-        let filteredTeachers = allTeachers.filter(teacher => {
-          // Check if name contains search query (case insensitive, accent insensitive)
-          const nameMatch = teacher.normalizedName.includes(normalizedQuery);
-          
-          // Apply university filter if selected
-          const universityMatch = !fullUniversityName || 
-            normalizeText(teacher.university || '') === normalizeText(fullUniversityName);
-            
-          return nameMatch && universityMatch;
-        });
-        
-        // Sort by relevance (exact matches first)
-        filteredTeachers.sort((a, b) => {
-          // Exact match at start of name gets highest priority
-          const aStartsWithQuery = a.normalizedName.startsWith(normalizedQuery);
-          const bStartsWithQuery = b.normalizedName.startsWith(normalizedQuery);
-          
-          if (aStartsWithQuery && !bStartsWithQuery) return -1;
-          if (!aStartsWithQuery && bStartsWithQuery) return 1;
-          
-          // Then sort by name length (shorter names first)
-          return a.name.length - b.name.length;
-        });
-        
-        // Limit to max suggestions
-        setResults(filteredTeachers.slice(0, MAX_SUGGESTIONS));
-      } catch (error) {
-        console.error('Error filtering teachers', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Only filter if we've loaded the teachers
-    if (initialized) {
-      // Add a small delay to prevent excessive filtering while typing
-      const timeoutId = setTimeout(() => {
-        filterTeachers();
-      }, 300);
+    
+    setIsLoading(true);
+    
+    try {
+      const teachersRef = collection(db, 'teachers');
       
-      return () => clearTimeout(timeoutId);
+      // Create query to match partial names flexibly
+      const normalizedQuery = normalizeText(value);
+      
+      let teacherQuery;
+      if (selectedUniversity) {
+        const fullUniversityName = getFullUniversityName(selectedUniversity.id);
+        teacherQuery = query(
+          teachersRef,
+          where('university', '==', fullUniversityName),
+          limit(MAX_SUGGESTIONS)
+        );
+      } else {
+        teacherQuery = query(
+          teachersRef,
+          limit(MAX_SUGGESTIONS)
+        );
+      }
+      
+      const querySnapshot = await getDocs(teacherQuery);
+      
+      // Filter results client-side for more flexible matching
+      const teachers = querySnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(teacher => 
+          normalizeText(teacher.name).includes(normalizedQuery)
+        );
+      
+      setResults(teachers);
+    } catch (error) {
+      console.error('Error searching teachers:', error);
+      setResults([]);
+    } finally {
+      setIsLoading(false);
     }
-  }, [searchQuery, selectedUniversity, allTeachers, initialized]);
+  };
 
   const handleTeacherSelect = (teacherId) => {
     router.push(`/teacher/${teacherId}`);
@@ -166,11 +121,11 @@ export default function SearchBar({
   const selectUniversity = (university) => {
     setSelectedUniversity(university);
     setIsDropdownOpen(false);
-  };
-
-  // Handle input change separately
-  const handleInputChange = (e) => {
-    setSearchQuery(e.target.value);
+    
+    // Re-run search with existing query
+    if (searchQuery.trim() !== '') {
+      handleSearchInputChange({ target: { value: searchQuery } });
+    }
   };
 
   // Determine text color classes
@@ -197,7 +152,7 @@ export default function SearchBar({
             placeholder="Buscar por profesor o materia..."
             className="w-full py-4 px-6 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-transparent text-base"
             value={searchQuery} 
-            onChange={handleInputChange}
+            onChange={handleSearchInputChange}
           />
           
           {/* Search icon or loading spinner */}
@@ -234,8 +189,8 @@ export default function SearchBar({
                 >
                   <div className="font-medium">{teacher.name}</div>
                   <div className="text-sm text-gray-500">
-                    {teacher.school && <span>{teacher.school}</span>}
-                    {teacher.school && teacher.university && <span> • </span>}
+                    {teacher.department && <span>{teacher.department}</span>}
+                    {teacher.department && teacher.university && <span> • </span>}
                     {teacher.university && <span>{teacher.university}</span>}
                   </div>
                 </div>

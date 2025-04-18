@@ -42,3 +42,4 @@ next-env.d.ts
 
 # firebase uploads
 cualprofe-fd43b-firebase-adminsdk-fbsvc-948183a799.json
+.env.local

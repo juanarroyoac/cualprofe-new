@@ -5,19 +5,21 @@ import {
   User,
   onAuthStateChanged, 
   signOut as firebaseSignOut,
-  sendEmailVerification as firebaseSendEmailVerification
+  sendEmailVerification as firebaseSendEmailVerification,
+  getIdToken
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, serverTimestamp, DocumentData, Timestamp } from 'firebase/firestore';
-// Update this import path to match your project structure
 import ProfileCompletionModal from '@/app/components/auth/ProfileCompletionModal';
+import AuthModal from '@/app/components/auth/AuthModal';
+import { useSearchParams } from 'next/navigation';
 
 interface UserProfile extends DocumentData {
   email: string;
   displayName?: string;
   photoURL?: string | null;
-  createdAt: Timestamp | null; // Changed from any to Timestamp
-  lastLogin: Timestamp | null; // Changed from any to Timestamp
+  createdAt: Timestamp | null;
+  lastLogin: Timestamp | null;
   emailVerified: boolean;
   profileCompleted?: boolean;
 }
@@ -28,7 +30,8 @@ interface AuthContextType {
   loading: boolean;
   authModalOpen: boolean;
   authModalMode: 'login' | 'signup' | 'resetPassword';
-  openAuthModal: (mode?: 'login' | 'signup' | 'resetPassword') => void;
+  authModalRedirectPath: string | null;
+  openAuthModal: (mode?: 'login' | 'signup' | 'resetPassword', redirectPath?: string) => void;
   closeAuthModal: () => void;
   signOut: () => Promise<void>;
   sendEmailVerification: () => Promise<{ success: boolean; error?: string }>;
@@ -44,6 +47,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   authModalOpen: false,
   authModalMode: 'login',
+  authModalRedirectPath: null,
   openAuthModal: () => {},
   closeAuthModal: () => {},
   signOut: async () => {},
@@ -67,7 +71,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'resetPassword'>('login');
+  const [authModalRedirectPath, setAuthModalRedirectPath] = useState<string | null>(null);
   const [showProfileCompletion, setShowProfileCompletion] = useState<boolean>(false);
+  
+  const searchParams = useSearchParams();
+
+  // Sync session with server
+  const syncSessionWithServer = async (user: User) => {
+    try {
+      // Get ID token
+      const idToken = await getIdToken(user);
+      
+      // Send ID token to server to create session cookie
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to create session cookie');
+      }
+    } catch (error) {
+      console.error('Error syncing session with server:', error);
+    }
+  };
+
+  // Check for auth required param in URL
+  useEffect(() => {
+    const authRequired = searchParams.get('authRequired');
+    const redirectTo = searchParams.get('redirectTo');
+    
+    if (authRequired === 'true' && !currentUser && !loading) {
+      openAuthModal('login', redirectTo || undefined);
+    }
+  }, [searchParams, currentUser, loading]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -75,6 +115,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (user) {
         try {
+          // Create session cookie on the server
+          await syncSessionWithServer(user);
+          
           // Get user profile from Firestore
           const userDocRef = doc(db, 'users', user.uid);
           const userDoc = await getDoc(userDocRef);
@@ -94,6 +137,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 user.providerData[0]?.providerId === 'password') {
               setShowProfileCompletion(true);
             }
+            
+            // Reset the professor view count in session storage for authenticated users
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('professorViewCount');
+            }
           } else {
             // This shouldn't happen normally, but just in case
             console.warn('User document not found in Firestore');
@@ -103,6 +151,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       } else {
         setUserProfile(null);
+        
+        // Initialize the view count for unauthenticated users
+        if (typeof window !== 'undefined') {
+          if (!sessionStorage.getItem('professorViewCount')) {
+            sessionStorage.setItem('professorViewCount', '0');
+          }
+        }
       }
       
       setLoading(false);
@@ -111,18 +166,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return unsubscribe;
   }, []);
 
-  const openAuthModal = (mode: 'login' | 'signup' | 'resetPassword' = 'login') => {
+  const openAuthModal = (
+    mode: 'login' | 'signup' | 'resetPassword' = 'login',
+    redirectPath?: string
+  ) => {
     setAuthModalMode(mode);
     setAuthModalOpen(true);
+    if (redirectPath) {
+      setAuthModalRedirectPath(redirectPath);
+    }
   };
 
   const closeAuthModal = () => {
     setAuthModalOpen(false);
+    // Clear redirect path when modal is closed
+    setTimeout(() => {
+      setAuthModalRedirectPath(null);
+    }, 300); // Small delay to prevent UI flashing
   };
 
   const signOut = async () => {
     try {
+      // First, call the server API to clear the session cookie
+      await fetch('/api/auth', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uid: currentUser?.uid }),
+      });
+      
+      // Then sign out from Firebase client
       await firebaseSignOut(auth);
+      
+      // Reset the view count after signing out
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('professorViewCount', '0');
+      }
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -159,6 +239,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loading,
     authModalOpen,
     authModalMode,
+    authModalRedirectPath,
     openAuthModal,
     closeAuthModal,
     signOut,
@@ -176,6 +257,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
           isOpen={showProfileCompletion}
           onClose={closeProfileCompletionModal}
           user={currentUser}
+        />
+      )}
+      {authModalOpen && (
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={closeAuthModal}
+          initialMode={authModalMode}
+          redirectPath={authModalRedirectPath || undefined}
         />
       )}
     </AuthContext.Provider>
