@@ -4,6 +4,8 @@
 
 :root {
   --primary-blue: #00103f;
+  --primary-blue-light: #001f7f;
+  --primary-blue-dark: #000a29;
   --background-color: #f8f9fa;
   --text-color: #212529;
 }
@@ -88,6 +90,44 @@ body {
 
 .animate-slideDown {
   animation: slideDown 0.2s ease-out forwards;
+}
+
+/* Custom hero gradient */
+.hero-gradient {
+  background: linear-gradient(135deg, #00103f 0%, #001a6b 100%);
+  position: relative;
+}
+
+/* Feature card hover effects */
+.feature-card {
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Improved search container styling */
+.search-container input {
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.search-container input:focus {
+  border-color: rgba(0, 16, 63, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 16, 63, 0.1);
+}
+
+/* Custom button styling */
+.btn-primary {
+  @apply bg-primary hover:bg-primary-light text-white font-medium rounded-lg px-4 py-2 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-gray-100 text-primary border border-gray-200 font-medium rounded-lg px-4 py-2 transition-colors duration-200;
 }
 
 /* Mobile-specific fixes */

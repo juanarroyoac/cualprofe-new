@@ -209,8 +209,6 @@ export default function SearchContainer({
     }
   };
 
-  // Removed unused toggleDropdown function
-
   const selectUniversity = (university: University) => {
     setSelectedUniversity(university);
     setIsDropdownOpen(false);
@@ -300,7 +298,7 @@ export default function SearchContainer({
         <div className="relative">
           <button
             className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors text-lg font-bold mb-8"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle directly here
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             <span>
               {selectedUniversity
@@ -329,10 +327,7 @@ export default function SearchContainer({
                   <li
                     key={uni.id}
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
-                    onClick={() => {
-                      selectUniversity(uni);
-                      // No need to call setIsDropdownOpen(false) here as selectUniversity already does
-                    }}
+                    onClick={() => selectUniversity(uni)}
                   >
                     {uni.name}
                   </li>
@@ -342,14 +337,8 @@ export default function SearchContainer({
           )}
         </div>
       )}
-
-      {/* Add Professor Link */}
-      <Link
-        href="/add-professor"
-        className="text-base text-white hover:underline font-medium"
-      >
-        ¿No encuentras a un profesor? Agrégalo aquí
-      </Link>
+      
+      {/* Removed the redundant "¿No encuentras a un profesor? Agrégalo aquí" link */}
     </div>
   );
 }
