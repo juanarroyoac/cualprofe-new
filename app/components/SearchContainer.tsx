@@ -1,6 +1,6 @@
 // app/components/SearchContainer.tsx
 'use client';
-import Link from 'next/link';
+// Remove Link import since it's not used
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';

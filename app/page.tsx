@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useAuth } from './contexts/AuthContext';
+// Remove unused import
+// import { useAuth } from './contexts/AuthContext';
 import { useViewTracking } from './contexts/ViewTrackingContext';
 import SearchContainer from './components/SearchContainer';
 
