@@ -1,7 +1,10 @@
-// app/layout.tsx
+// app/layout.tsx - Add React import
+import React, { Suspense, useEffect } from 'react'; // Make sure React is imported
 import './globals.css';
+import 'aos/dist/aos.css'; // <-- Import AOS styles
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import AOS from 'aos'; // <-- Import AOS library
+
 // Import fonts using next/font
 import { Nunito_Sans, Poppins, Roboto } from 'next/font/google';
 import HeaderWrapper from './components/HeaderWrapper';
@@ -10,10 +13,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ViewTrackingProvider } from './contexts/ViewTrackingContext';
 import { Analytics } from "@vercel/analytics/react"; // Analytics component is imported
 
-// Configure fonts
+// Rest of the file remains the same...
+
 const nunito_sans = Nunito_Sans({
   subsets: ['latin'],
-  weight: ['400', '700', '900'],
+  weight: ['400', '600', '700'],
   variable: '--font-nunito-sans', // CSS Variable name
   display: 'swap',
 });
@@ -51,7 +55,7 @@ export default function RootLayout({
 }) {
   return (
     // Apply font variables to the html tag for global availability
-    <html lang="es" className={`${nunito_sans.variable} ${poppins.variable} ${roboto.variable}`}>
+    <html lang="es" className={`${nunito_sans.className} ${poppins.className} ${roboto.className}`}>
       <head>
         {/*
           Removed manual <link> tags for fonts.

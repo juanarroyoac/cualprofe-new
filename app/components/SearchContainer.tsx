@@ -1,7 +1,7 @@
 // app/components/SearchContainer.tsx
 'use client';
-// Remove Link import since it's not used
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Add React import
+// import Link from 'next/link'; // Removed unused import
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, getDocs } from 'firebase/firestore';

@@ -1,7 +1,6 @@
-// app/components/LoginLimiter.tsx
 'use client';
+import React, { useState, useEffect } from 'react'; // Add React import
 
-import { useState, useEffect } from 'react';
 import { useViewTracking } from '../contexts/ViewTrackingContext'; // Ensure path is correct
 import { usePathname } from 'next/navigation';
 import { Dialog } from '@headlessui/react';

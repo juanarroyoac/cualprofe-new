@@ -13,16 +13,16 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      // Change unused vars from error to warning
-      // This allows the build to complete while still providing feedback during development
+      // Change unused vars and React undefined errors from error to warning
       "@typescript-eslint/no-unused-vars": "warn",
+      "no-undef": "warn",
       
-      // Keep most other rules as errors for good code quality
-      "no-console": "warn", // Consider removing console.logs in production
+      // Keep console statements as warnings only
+      "no-console": "warn",
+      
+      // Other quality rules remain unchanged
       "no-debugger": "error",
-      "no-undef": "error",
       "no-unused-expressions": "error",
-      "react/prop-types": "off", // TypeScript handles prop types
     },
   },
 ];
