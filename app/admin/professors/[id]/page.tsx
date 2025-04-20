@@ -7,7 +7,6 @@ import {
   doc, 
   getDoc, 
   updateDoc, 
-  deleteDoc, 
   collection, 
   getDocs, 
   query, 
@@ -145,14 +144,25 @@ export default function ProfessorDetail({ params }: { params: { id: string } }) 
       setSaving(true);
       setError('');
       
-      // Delete professor document
-      await deleteDocument('teachers', id);
+      // Use API route for deletion instead of direct Firestore access
+      const response = await fetch(`/api/admin/professors/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ professorId: id }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar el profesor');
+      }
       
       // Redirect to professors list
       router.push('/admin/professors');
     } catch (error) {
       console.error('Error deleting professor:', error);
-      setError('Error al eliminar el profesor');
+      setError(`Error al eliminar el profesor: ${error instanceof Error ? error.message : 'Error desconocido'}`);
       setSaving(false);
     }
   };
@@ -164,7 +174,19 @@ export default function ProfessorDetail({ params }: { params: { id: string } }) 
     }
     
     try {
-      await deleteDocument('ratings', ratingId);
+      // Use API route for deletion
+      const response = await fetch(`/api/admin/ratings/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ratingId }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar la calificación');
+      }
       
       // Update local state
       setRatings(ratings.filter(rating => rating.id !== ratingId));
@@ -172,7 +194,7 @@ export default function ProfessorDetail({ params }: { params: { id: string } }) 
       setSuccess('Calificación eliminada con éxito');
     } catch (error) {
       console.error('Error deleting rating:', error);
-      setError('Error al eliminar la calificación');
+      setError(`Error al eliminar la calificación: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 

@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { collection, query, where, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { Timestamp } from 'firebase/firestore';
 
 // Componente de tarjeta estadística
 function StatCard({ title, value, href }: { title: string; value: string | number; href: string }) {
@@ -33,88 +32,17 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Contar total de profesores
-        const professorsSnapshot = await getDocs(collection(db, 'teachers'));
-        const totalProfessors = professorsSnapshot.size;
+        // Fetch stats and activity from API routes
+        const [statsResponse, activityResponse] = await Promise.all([
+          fetch('/api/admin/stats'),
+          fetch('/api/admin/recent-activity')
+        ]);
         
-        // Contar total de usuarios
-        const usersSnapshot = await getDocs(collection(db, 'users'));
-        const totalUsers = usersSnapshot.size;
+        const statsData = await statsResponse.json();
+        const activityData = await activityResponse.json();
         
-        // Contar total de calificaciones
-        const ratingsSnapshot = await getDocs(collection(db, 'ratings'));
-        const totalRatings = ratingsSnapshot.size;
-        
-        // Contar solicitudes pendientes
-        const pendingSubmissionsQuery = query(
-          collection(db, 'professorSubmissions'),
-          where('status', '==', 'pending')
-        );
-        const pendingSubmissionsSnapshot = await getDocs(pendingSubmissionsQuery);
-        const pendingSubmissions = pendingSubmissionsSnapshot.size;
-        
-        setStats({
-          totalProfessors,
-          totalUsers,
-          totalRatings,
-          pendingSubmissions,
-        });
-        
-        // Definir interfaces para seguridad de tipos
-        interface ActivityItem {
-          id: string;
-          type: string;
-          createdAt: Timestamp;
-          name?: string;
-          professorId?: string;
-          [key: string]: any;
-        }
-
-        // Obtener calificaciones recientes
-        const recentRatingsQuery = query(
-          collection(db, 'ratings'),
-          orderBy('createdAt', 'desc'),
-          limit(5)
-        );
-        const recentRatingsSnapshot = await getDocs(recentRatingsQuery);
-        const recentRatings: ActivityItem[] = recentRatingsSnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            type: 'rating',
-            createdAt: data.createdAt as Timestamp,
-            professorId: data.professorId,
-            ...data
-          };
-        });
-        
-        // Obtener solicitudes recientes
-        const recentSubmissionsQuery = query(
-          collection(db, 'professorSubmissions'),
-          orderBy('createdAt', 'desc'),
-          limit(5)
-        );
-        const recentSubmissionsSnapshot = await getDocs(recentSubmissionsQuery);
-        const recentSubmissions: ActivityItem[] = recentSubmissionsSnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            type: 'submission',
-            createdAt: data.createdAt as Timestamp,
-            name: data.name,
-            ...data
-          };
-        });
-        
-        // Combinar y ordenar por fecha
-        const combinedActivity: ActivityItem[] = [...recentRatings, ...recentSubmissions]
-          .filter(item => item.createdAt instanceof Timestamp)
-          .sort((a, b) => {
-            return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
-          })
-          .slice(0, 5);
-        
-        setRecentActivity(combinedActivity);
+        setStats(statsData);
+        setRecentActivity(activityData);
       } catch (error) {
         console.error('Error al obtener datos del panel:', error);
       } finally {
@@ -184,8 +112,8 @@ export default function AdminDashboard() {
                         : `Nueva solicitud de profesor: ${activity.name}`}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {activity.createdAt instanceof Timestamp 
-                        ? activity.createdAt.toDate().toLocaleString('es-ES') 
+                      {activity.createdAt && typeof activity.createdAt === 'object'
+                        ? new Date(activity.createdAt._seconds * 1000).toLocaleString('es-ES')
                         : 'Fecha desconocida'}
                     </p>
                   </div>

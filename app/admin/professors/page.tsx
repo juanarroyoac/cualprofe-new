@@ -7,10 +7,7 @@ import {
   query, 
   getDocs, 
   doc, 
-  deleteDoc,
   orderBy, 
-  startAfter,
-  limit,
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -29,75 +26,41 @@ interface Professor {
 export default function ProfessorsPage() {
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lastVisible, setLastVisible] = useState<any>(null);
-  const [hasMore, setHasMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [universityFilter, setUniversityFilter] = useState('');
   const [universities, setUniversities] = useState<string[]>([]);
 
-  const pageSize = 20;
-
-  const fetchProfessors = async (startAfterDoc = null) => {
+  const fetchProfessors = async () => {
     setLoading(true);
     try {
-      // Build query
-      let q = query(
+      // Build query to get ALL professors
+      const q = query(
         collection(db, 'teachers'),
-        orderBy('name'),
-        limit(pageSize + 1) // Get one extra to check if there are more
+        orderBy('name')
       );
-      
-      // Apply start after if provided
-      if (startAfterDoc) {
-        q = query(q, startAfter(startAfterDoc));
-      }
       
       const querySnapshot = await getDocs(q);
       
-      // Check if there are more results
-      const hasMoreResults = querySnapshot.docs.length > pageSize;
-      setHasMore(hasMoreResults);
+      // Get all professors
+      const professorsList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        // Convert Timestamp to date string for display
+        createdAt: doc.data().createdAt
+      } as Professor));
       
-      // Set the last visible document for pagination
-      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - (hasMoreResults ? 2 : 1)];
-      setLastVisible(lastDoc);
-      
-      // Get the professors (excluding the extra one if there are more)
-      const professorsList = querySnapshot.docs
-        .slice(0, pageSize)
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          // Convert Timestamp to date string for display
-          createdAt: doc.data().createdAt
-        } as Professor));
-      
-      // If it's a fresh fetch (not loading more), replace the list
-      // Otherwise append to the existing list
-      if (startAfterDoc) {
-        setProfessors(prev => [...prev, ...professorsList]);
-      } else {
-        setProfessors(professorsList);
-      }
+      setProfessors(professorsList);
       
       // Extract unique universities for filtering
-      if (!startAfterDoc) {
-        const uniqueUniversities = Array.from(
-          new Set(professorsList.map(prof => prof.university))
-        ).filter(Boolean).sort();
-        
-        setUniversities(uniqueUniversities);
-      }
+      const uniqueUniversities = Array.from(
+        new Set(professorsList.map(prof => prof.university))
+      ).filter(Boolean).sort();
+      
+      setUniversities(uniqueUniversities);
     } catch (error) {
       console.error('Error fetching professors:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadMore = () => {
-    if (hasMore && lastVisible) {
-      fetchProfessors(lastVisible);
     }
   };
 
@@ -107,12 +70,25 @@ export default function ProfessorsPage() {
     }
     
     try {
-      await deleteDoc(doc(db, 'teachers', professor.id));
+      // Use the API route instead of direct Firestore deletion
+      const response = await fetch(`/api/admin/professors/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ professorId: professor.id }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar el profesor');
+      }
+      
       setProfessors(prev => prev.filter(p => p.id !== professor.id));
       alert('Profesor eliminado con éxito');
     } catch (error) {
       console.error('Error deleting professor:', error);
-      alert('Error al eliminar el profesor');
+      alert(`Error al eliminar el profesor: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 
@@ -238,6 +214,13 @@ export default function ProfessorsPage() {
         </div>
       </div>
       
+      {/* Loading indicator */}
+      {loading && (
+        <div className="flex justify-center my-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      )}
+      
       {/* Professors Table */}
       <DataTable
         data={filteredProfessors}
@@ -258,19 +241,6 @@ export default function ProfessorsPage() {
           window.open(`/teacher/${professor.id}`, '_blank');
         }}
       />
-      
-      {/* Load More Button */}
-      {hasMore && (
-        <div className="text-center">
-          <button
-            onClick={loadMore}
-            disabled={loading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
-          >
-            {loading ? 'Cargando...' : 'Cargar más'}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

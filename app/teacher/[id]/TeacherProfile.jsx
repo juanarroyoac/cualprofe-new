@@ -32,10 +32,11 @@ export default function TeacherProfile() {
           return;
         }
 
-        // Fetch ratings
+        // Fetch ratings - MODIFIED to only show approved ratings
         const ratingsQuery = query(
           collection(db, 'ratings'),
-          where('teacherId', '==', id)
+          where('teacherId', '==', id),
+          where('status', '==', 'approved') // Only show approved ratings
         );
         const ratingsSnapshot = await getDocs(ratingsQuery);
         const ratingsData = ratingsSnapshot.docs.map(doc => ({

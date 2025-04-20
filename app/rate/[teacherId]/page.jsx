@@ -7,11 +7,13 @@ import { db } from '../../../lib/firebase';
 import TagsList from '../../components/TagsList';
 import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSystemSettings } from '../../../lib/hooks/useSystemSettings';
 
 export default function RateTeacherPage() {
   const { teacherId } = useParams();
   const router = useRouter();
   const { currentUser, loading: authLoading, openAuthModal } = useAuth();
+  const { settings, loading: settingsLoading } = useSystemSettings();
   const [teacher, setTeacher] = useState(null);
   const [loading, setLoading] = useState(true);
   const [existingRating, setExistingRating] = useState(null);
@@ -30,9 +32,12 @@ export default function RateTeacherPage() {
   const [success, setSuccess] = useState(false);
   // --- End Form State ---
 
-  // Max comment length is now 300 characters, min is 50
+  // Max comment length is now 300 characters
   const MAX_COMMENT_LENGTH = 300;
-  const MIN_COMMENT_LENGTH = 50;
+  // Min comment length now comes from settings
+  const MIN_COMMENT_LENGTH = settings?.minCommentLength || 50;
+  // Max tags now comes from settings
+  const MAX_TAGS = settings?.maxTagsPerRating || 3;
 
   // Handle comment change with max length limit
   const handleCommentChange = (e) => {
@@ -113,7 +118,7 @@ export default function RateTeacherPage() {
 
   const handleTagsChange = (tags) => { setSelectedTags(tags); };
 
-  // handleSubmit with updated validation
+  // handleSubmit with updated validation and approval check
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     setIsSubmitting(true); 
@@ -130,7 +135,7 @@ export default function RateTeacherPage() {
     }
     
     if (trimmedComment.length < MIN_COMMENT_LENGTH) { 
-      setError('Tu comentario es demasiado corto. Por favor, sé más específico.'); 
+      setError(`Tu comentario es demasiado corto. Por favor, escribe al menos ${MIN_COMMENT_LENGTH} caracteres.`); 
       setIsSubmitting(false); 
       return; 
     }
@@ -148,6 +153,8 @@ export default function RateTeacherPage() {
         tags: selectedTags, 
         createdAt: serverTimestamp(),
         userId: currentUser?.uid,
+        // Add status field based on approval setting
+        status: settings?.ratingApprovalRequired ? 'pending' : 'approved',
       };
 
       if (existingRating) {
@@ -159,6 +166,12 @@ export default function RateTeacherPage() {
         // Create new rating
         await addDoc(collection(db, 'ratings'), ratingData);
         setSuccess(true);
+        
+        // If approval required, show different message
+        if (settings?.ratingApprovalRequired) {
+          setSuccess('Tu calificación ha sido enviada y será revisada por un administrador antes de ser publicada.');
+        }
+        
         setTimeout(() => { router.push(`/teacher/${teacherId}`); }, 2000);
       }
     } catch (err) { 
@@ -172,7 +185,7 @@ export default function RateTeacherPage() {
   };
 
   // Loading state
-  if (authLoading || loading) {
+  if (authLoading || loading || settingsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
@@ -229,6 +242,12 @@ export default function RateTeacherPage() {
           </div>
         )}
 
+        {settings?.ratingApprovalRequired && !existingRating && (
+          <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4 shadow-md">
+            Tu calificación será revisada por un administrador antes de ser publicada.
+          </div>
+        )}
+
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-4 shadow-md">
             {error}
@@ -238,7 +257,9 @@ export default function RateTeacherPage() {
         {success ? (
           <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-md text-center">
             <p className="font-semibold">¡Calificación {existingRating ? 'Actualizada' : 'Enviada'}!</p>
-            <p className="text-sm mt-1">Gracias por compartir tu experiencia. Redireccionando...</p>
+            <p className="text-sm mt-1">{settings?.ratingApprovalRequired && !existingRating 
+              ? 'Tu calificación será revisada por un administrador antes de ser publicada.' 
+              : 'Gracias por compartir tu experiencia. Redireccionando...'}</p>
           </div>
         ) : (
           <>
@@ -405,9 +426,9 @@ export default function RateTeacherPage() {
             <div className="bg-white rounded-lg shadow-md p-4 mb-4">
               <h3 className="text-sm font-bold text-[#00103f] mb-3 uppercase">Características del Profesor</h3>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Selecciona hasta 3 etiquetas que describan al profesor
+                Selecciona hasta {MAX_TAGS} etiquetas que describan al profesor
               </label>
-              <TagsList onChange={handleTagsChange} maxTags={3} selectable={true} />
+              <TagsList onChange={handleTagsChange} maxTags={MAX_TAGS} selectable={true} />
             </div>
 
             {/* Comment - Separate box */}
@@ -418,6 +439,7 @@ export default function RateTeacherPage() {
               </label>
               <p className="text-xs text-gray-500 mb-3">
                 Sé específico. Explica cómo enseña, cómo evalúa, y da consejos útiles para futuros estudiantes.
+                Mínimo {MIN_COMMENT_LENGTH} caracteres.
               </p>
               <textarea 
                 id="comment" 
