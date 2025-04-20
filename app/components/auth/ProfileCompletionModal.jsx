@@ -3,21 +3,7 @@ import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase'; // Asegúrate de que esta ruta sea correcta
-
-// Ícono SVG para XMarkIcon (mantenido como referencia, pero no usado para cerrar)
-const XMarkIcon = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    {...props}
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
+import { auth, db } from '@/lib/firebase';
 
 // Lista de universidades
 const universities = [
@@ -28,16 +14,33 @@ const universities = [
   { id: 'uc', name: 'Universidad de Carabobo (UC)' }
 ];
 
+// Lista de años de graduación
+const graduationYears = [];
+const currentYear = new Date().getFullYear();
+for (let i = currentYear; i <= currentYear + 6; i++) {
+  graduationYears.push(i);
+}
+
 export default function ProfileCompletionModal({ isOpen, onClose, user }) {
-  const [displayName, setDisplayName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [university, setUniversity] = useState('');
+  const [graduationYear, setGraduationYear] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (user) {
-      // Priorizar el displayName existente, de lo contrario dejar en blanco para entrada del usuario
-      setDisplayName(user.displayName || '');
+      // Intentar extraer nombre y apellido del displayName si existe
+      if (user.displayName) {
+        const parts = user.displayName.split(' ');
+        if (parts.length >= 2) {
+          setFirstName(parts[0]);
+          setLastName(parts.slice(1).join(' '));
+        } else {
+          setFirstName(user.displayName);
+        }
+      }
     }
   }, [user]);
 
@@ -46,10 +49,27 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
     setLoading(true);
     setError('');
 
-    // Validación mejorada: verificar si contiene al menos un nombre y un apellido
-    const nameParts = displayName.trim().split(' ').filter(part => part.length > 0);
-    if (nameParts.length < 2) {
-      setError('Por favor, ingresa tu nombre completo (nombre y apellido).');
+    // Validación básica
+    if (!firstName.trim()) {
+      setError('Por favor, ingresa tu nombre.');
+      setLoading(false);
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError('Por favor, ingresa tu apellido.');
+      setLoading(false);
+      return;
+    }
+
+    if (!university) {
+      setError('Por favor, selecciona tu universidad.');
+      setLoading(false);
+      return;
+    }
+
+    if (!graduationYear) {
+      setError('Por favor, selecciona tu año de graduación previsto.');
       setLoading(false);
       return;
     }
@@ -60,17 +80,23 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
       return;
     }
 
+    // Construir el nombre completo para displayName
+    const displayName = `${firstName.trim()} ${lastName.trim()}`;
+
     try {
       // Actualizar perfil de Firebase Auth
       await updateProfile(auth.currentUser, {
-        displayName: displayName.trim(),
+        displayName: displayName,
       });
 
       // Actualizar documento de usuario en Firestore
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, {
-        displayName: displayName.trim(),
-        university: university || null,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        displayName: displayName,
+        university: university,
+        graduationYear: graduationYear,
         profileCompleted: true
       });
 
@@ -96,48 +122,66 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
       className="relative z-50"
     >
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
 
       {/* Contenedor del Panel de Diálogo */}
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-md rounded-lg bg-white p-6">
-          <div className="flex justify-between items-center mb-4">
-            <Dialog.Title className="text-xl font-bold font-poppins">
+        <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+          <div className="flex justify-between items-center mb-5">
+            <Dialog.Title className="text-2xl font-bold font-poppins text-[#00103f]">
               Completa tu perfil
             </Dialog.Title>
             {/* No se renderiza botón de cierre ('X') aquí, asegurando que no sea descartable */}
           </div>
 
           <div>
-            <p className="text-sm text-gray-600 mb-4">
-              Para continuar, completa la siguiente información:
-            </p>
+            <div className="bg-blue-50 p-4 rounded-lg mb-5">
+              <p className="text-sm text-[#00103f] font-roboto">
+                Para continuar utilizando CuálProfe, completa la siguiente información:
+              </p>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                  Nombre Completo (e.g., Juan Arroyo)
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 font-roboto">
+                  Nombre
                 </label>
                 <input
-                  id="displayName"
+                  id="firstName"
                   type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Nombre Apellido"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-[#00103f] focus:ring-[#00103f] transition-colors py-2 px-3"
+                  placeholder="Nombre"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="university" className="block text-sm font-medium text-gray-700">
-                  Universidad (opcional)
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 font-roboto">
+                  Apellido
+                </label>
+                <input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-[#00103f] focus:ring-[#00103f] transition-colors py-2 px-3"
+                  placeholder="Apellido"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="university" className="block text-sm font-medium text-gray-700 font-roboto">
+                  Universidad
                 </label>
                 <select
                   id="university"
                   value={university}
                   onChange={(e) => setUniversity(e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-[#00103f] focus:ring-[#00103f] transition-colors py-2 px-3"
+                  required
                 >
                   <option value="">Selecciona una universidad</option>
                   {universities.map((uni) => (
@@ -148,16 +192,46 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
                 </select>
               </div>
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              <div>
+                <label htmlFor="graduationYear" className="block text-sm font-medium text-gray-700 font-roboto">
+                  Año de graduación previsto
+                </label>
+                <select
+                  id="graduationYear"
+                  value={graduationYear}
+                  onChange={(e) => setGraduationYear(e.target.value)}
+                  className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-[#00103f] focus:ring-[#00103f] transition-colors py-2 px-3"
+                  required
+                >
+                  <option value="">Selecciona un año</option>
+                  {graduationYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {error && 
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <p className="text-red-500 text-sm font-roboto">{error}</p>
+                </div>
+              }
 
               <div className="pt-2">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="w-full inline-flex justify-center rounded-full border border-transparent bg-[#00103f] py-3 px-6 text-base font-medium text-white shadow-sm hover:bg-[#001b6d] focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:ring-offset-2 disabled:opacity-50 transition-colors"
                 >
                   {loading ? 'Guardando...' : 'Guardar y continuar'}
                 </button>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-xs text-gray-500 font-roboto mt-3">
+                  Al guardar, aceptas los <a href="/terminosycondiciones" className="text-[#00103f] hover:underline">Términos y Condiciones</a> de CuálProfe
+                </p>
               </div>
             </form>
           </div>

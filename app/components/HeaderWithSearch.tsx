@@ -6,11 +6,14 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
-// Map of common abbreviations to full university names
+// Updated map of common abbreviations to include all universities from forms
 const UNIVERSITY_ABBREVIATIONS: Record<string, string> = {
   'ucab': 'Universidad Católica Andrés Bello',
   'unimet': 'Universidad Metropolitana',
-  // Add more as needed
+  'ucv': 'Universidad Central de Venezuela',
+  'udo': 'Universidad de Oriente',
+  'uc': 'Universidad de Carabobo',
+  // More can be added as needed
 };
 
 interface University {
@@ -46,6 +49,9 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
   const [showResults, setShowResults] = useState<boolean>(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  
+  // Extract first name from userName
+  const firstName = userName ? userName.split(' ')[0] : '';
   
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -231,7 +237,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8] text-white shadow-md z-50">
+    <header className="w-full bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8] text-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3">
         {/* Mobile Layout (centered logo + search icon) */}
         <div className="sm:hidden">
@@ -239,7 +245,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             {/* Search Icon Button */}
             <button 
               onClick={() => setShowMobileSearch(!showMobileSearch)}
-              className="flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-700 text-white p-2 rounded-full hover:from-blue-900 hover:to-blue-800 transition-colors w-10 h-10"
+              className="flex items-center justify-center bg-white text-black p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors w-10 h-10"
               aria-label="Search"
             >
               <svg 
@@ -275,7 +281,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
               <div className="relative" ref={userMenuRef}>
                 <button 
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-700 text-white p-2 rounded-full hover:from-blue-900 hover:to-blue-800 transition-colors w-10 h-10"
+                  className="flex items-center justify-center bg-white text-black font-bold p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors w-10 h-10"
                   aria-expanded={showUserMenu}
                   aria-haspopup="true"
                 >
@@ -295,20 +301,20 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
                 </button>
                 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
-                    <div className="py-2 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 text-gray-800">
+                    <div className="py-3 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
                       {userName}
                     </div>
                     <Link 
                       href="/profile" 
-                      className="block px-4 py-3 text-sm hover:bg-gray-100"
+                      className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
                       onClick={() => setShowUserMenu(false)}
                     >
                       Mi perfil
                     </Link>
                     <Link 
                       href="/my-ratings" 
-                      className="block px-4 py-3 text-sm hover:bg-gray-100"
+                      className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
                       onClick={() => setShowUserMenu(false)}
                     >
                       Mis calificaciones
@@ -318,7 +324,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
                         onLogout();
                         setShowUserMenu(false);
                       }}
-                      className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
+                      className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600 font-roboto"
                     >
                       Cerrar sesión
                     </button>
@@ -328,7 +334,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             ) : (
               <button 
                 onClick={onAuthClick}
-                className="bg-gradient-to-r from-white to-gray-100 text-black px-2 py-1 rounded text-xs font-medium hover:from-gray-100 hover:to-gray-200 transition-colors"
+                className="bg-white text-black px-3 py-1 rounded shadow-md text-xs font-bold hover:bg-gray-100 transition-colors uppercase"
               >
                 Ingresar
               </button>
@@ -338,7 +344,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
           {/* Mobile Search Panel */}
           {showMobileSearch && (
             <div 
-              className="fixed inset-x-0 top-[61px] bg-white shadow-lg z-50 animate-slideDown" 
+              className="absolute inset-x-0 top-[61px] bg-white shadow-lg z-50 animate-slideDown" 
               ref={mobileSearchRef}
             >
               <div className="p-4">
@@ -347,7 +353,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
                   <input
                     type="search"
                     placeholder="Buscar profesor..."
-                    className="w-full py-2 px-4 pr-10 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full py-2 px-4 pr-10 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#00103f]"
                     value={searchQuery}
                     onChange={handleInputChange}
                     autoFocus
@@ -446,14 +452,14 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             <div className="relative mr-4 w-56" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
-                className="w-full bg-gradient-to-r from-[#001f78] to-[#00236b] text-white px-3 py-2 flex items-center justify-between rounded-md"
+                className="w-full bg-white text-black px-3 py-2 flex items-center justify-between rounded-lg shadow-md"
                 type="button"
               >
-                <span className="text-white text-sm font-semibold truncate">
+                <span className="text-black text-sm font-semibold truncate">
                   {selectedUniversity ? selectedUniversity.name : "Seleccionar universidad"}
                 </span>
                 <svg 
-                  className="h-4 w-4 ml-0.5 text-white flex-shrink-0" 
+                  className="h-4 w-4 ml-0.5 text-gray-700 flex-shrink-0" 
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 20 20" 
                   fill="currentColor"
@@ -468,16 +474,24 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
               
               {/* University dropdown with WHITE background */}
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-0 w-56 bg-white rounded-md shadow-lg z-40 overflow-hidden">
-                  {universities.map((uni) => (
+                <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg z-40 overflow-hidden">
+                  <div className="max-h-60 overflow-y-auto">
                     <button
-                      key={uni.id}
-                      className="block w-full text-left px-4 py-2 text-sm text-black font-medium hover:bg-gray-100 truncate"
-                      onClick={() => selectUniversity(uni)}
+                      className="block w-full text-left px-4 py-2 text-sm text-black font-medium hover:bg-gray-100 truncate border-b border-gray-100"
+                      onClick={() => setSelectedUniversity(null)}
                     >
-                      {uni.name}
+                      Todas las universidades
                     </button>
-                  ))}
+                    {universities.map((uni) => (
+                      <button
+                        key={uni.id}
+                        className="block w-full text-left px-4 py-2 text-sm text-black font-medium hover:bg-gray-100 truncate"
+                        onClick={() => selectUniversity(uni)}
+                      >
+                        {uni.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -487,7 +501,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
               <input
                 type="search"
                 placeholder="Buscar por profesor o materia..."
-                className="w-full py-2 px-4 pr-8 rounded-lg border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                className="w-full py-2 px-4 pr-8 rounded-lg border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#00103f] text-sm"
                 value={searchQuery}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
@@ -551,9 +565,11 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-700 text-white px-4 py-2 rounded hover:from-blue-900 hover:to-blue-800 transition-colors"
+                className="flex items-center gap-2 bg-white text-black font-bold px-5 py-2 rounded-lg shadow-md hover:bg-gray-100 transition-colors min-h-[44px]"
+                aria-expanded={showUserMenu}
+                aria-haspopup="true"
               >
-                <span>{userName}</span>
+                <span className="uppercase font-poppins">HOLA, {firstName}</span>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   className="h-5 w-5" 
@@ -569,17 +585,20 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
               </button>
               
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 text-gray-800">
+                  <div className="py-3 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
+                    {userName}
+                  </div>
                   <Link 
                     href="/profile" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mi perfil
                   </Link>
                   <Link 
                     href="/my-ratings" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mis calificaciones
@@ -589,7 +608,7 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
                       onLogout();
                       setShowUserMenu(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
+                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600 font-roboto"
                   >
                     Cerrar sesión
                   </button>
@@ -599,9 +618,9 @@ export default function HeaderWithSearch({ onAuthClick, isLoggedIn, onLogout, us
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-gradient-to-r from-white to-gray-100 text-black px-4 py-2 rounded font-medium hover:from-gray-100 hover:to-gray-200 transition-colors"
+              className="bg-white text-black px-5 py-2 rounded-lg shadow-md font-bold hover:bg-gray-100 transition-colors min-h-[44px] uppercase"
             >
-              Iniciar sesión / Registrarse
+              Iniciar sesión
             </button>
           )}
         </div>

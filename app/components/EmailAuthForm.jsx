@@ -61,13 +61,14 @@ export default function EmailAuthForm({
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Create user document in Firestore
+        // Create user document in Firestore with profileCompleted set to false
         await setDoc(doc(db, 'users', user.uid), {
           email: user.email,
-          displayName: user.email.split('@')[0], // Set default displayName as part of email
+          // Don't set a default displayName anymore
           createdAt: serverTimestamp(),
           lastLogin: serverTimestamp(),
-          emailVerified: user.emailVerified
+          emailVerified: user.emailVerified,
+          profileCompleted: false // Force profile completion for all new email users
         });
 
         // Reset professor view count for authenticated users

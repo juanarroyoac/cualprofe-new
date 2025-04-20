@@ -13,7 +13,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'signup' | 'resetPassword';
-  redirectPath?: string; // Add redirect path prop
+  redirectPath?: string;
 }
 
 export default function AuthModal({ 
@@ -73,7 +73,6 @@ export default function AuthModal({
       router.push(finalRedirectPath);
     } else if (pathname.startsWith('/teacher/')) {
       // If on a teacher page, stay there after login
-      // Close the modal, they can continue viewing
       onClose();
     } else if (pathname === '/') {
       // If on home page, just close the modal
@@ -84,7 +83,6 @@ export default function AuthModal({
     }
 
     // Reset the professor view count in session storage
-    // This allows the authenticated user to view unlimited professors
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('professorViewCount');
     }
@@ -102,13 +100,15 @@ export default function AuthModal({
       
       if (!userDoc.exists()) {
         // Create a new user document in Firestore
+        // Always set profileCompleted to false for new Google users
         await setDoc(doc(db, 'users', user.uid), {
           email: user.email,
-          displayName: user.displayName,
+          displayName: user.displayName || '',
           photoURL: user.photoURL,
           createdAt: serverTimestamp(),
           lastLogin: serverTimestamp(),
-          emailVerified: user.emailVerified
+          emailVerified: user.emailVerified,
+          profileCompleted: false // Force profile completion for all new Google users
         });
       } else {
         // Update the last login time
@@ -128,15 +128,15 @@ export default function AuthModal({
   return (
     <Dialog 
       open={isOpen} 
-      onClose={handleClose} // Use our custom close handler
+      onClose={handleClose}
       className="relative z-50"
     >
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
       
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-md rounded-lg bg-white p-6">
-          <div className="flex justify-between items-center mb-4">
-            <Dialog.Title className="text-xl font-bold font-poppins">
+        <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+          <div className="flex justify-between items-center mb-5">
+            <Dialog.Title className="text-2xl font-bold font-poppins text-[#00103f]">
               {mode === 'login' ? 'Iniciar sesión' : 
                mode === 'signup' ? 'Crear cuenta' : 
                'Recuperar contraseña'}
@@ -147,7 +147,7 @@ export default function AuthModal({
               <button
                 type="button"
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500"
+                className="text-gray-400 hover:text-[#00103f] transition-colors"
               >
                 <span className="sr-only">Cerrar</span>
                 <X className="h-6 w-6" aria-hidden="true" />
@@ -157,7 +157,7 @@ export default function AuthModal({
 
           {/* Message for limit reached or redirect */}
           {(pathname.startsWith('/teacher/') || forceLogin) && (
-            <div className="bg-blue-50 text-blue-800 p-3 rounded-md mb-4">
+            <div className="bg-blue-50 text-[#00103f] p-4 rounded-lg mb-5 font-roboto">
               <p className="text-sm">
                 Para seguir explorando perfiles de profesores, es necesario iniciar sesión o crear una cuenta.
               </p>
@@ -171,7 +171,7 @@ export default function AuthModal({
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="flex w-full justify-center items-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="flex w-full justify-center items-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:ring-offset-2 transition-colors font-roboto"
                 >
                   <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                     <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -189,7 +189,7 @@ export default function AuthModal({
                     <div className="w-full border-t border-gray-300"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-2 text-gray-500">O</span>
+                    <span className="bg-white px-3 text-gray-500 font-roboto">O</span>
                   </div>
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function AuthModal({
 
             {/* Error message */}
             {error && (
-              <div className="text-red-500 text-center text-sm">
+              <div className="text-red-500 text-center text-sm font-roboto mt-3 p-2 bg-red-50 rounded-lg">
                 {error}
               </div>
             )}

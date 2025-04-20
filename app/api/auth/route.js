@@ -20,7 +20,8 @@ export async function POST(request) {
     const sessionCookie = await createSessionCookie(idToken, expiresIn);
     
     // Set cookie
-    cookies().set({
+    const cookieStore = cookies();
+    await cookieStore.set({
       name: 'session',
       value: sessionCookie,
       httpOnly: true,
@@ -50,7 +51,8 @@ export async function DELETE(request) {
     }
     
     // Clear the session cookie
-    cookies().set({
+    const cookieStore = cookies();
+    await cookieStore.set({
       name: 'session',
       value: '',
       maxAge: 0,

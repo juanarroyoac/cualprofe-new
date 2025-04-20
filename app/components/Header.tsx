@@ -9,11 +9,16 @@ interface HeaderProps {
   isLoggedIn: boolean;
   onLogout: () => void;
   userName: string;
+  transparent?: boolean;
 }
 
-export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: HeaderProps) {
+export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, transparent = false }: HeaderProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  
+  // Extract first name from userName
+  const firstName = userName ? userName.split(' ')[0] : '';
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -27,8 +32,38 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Add scroll event listener for transparent header
+  useEffect(() => {
+    if (transparent) {
+      const handleScroll = () => {
+        const scrollPosition = window.scrollY;
+        if (scrollPosition > 50) {
+          setScrolled(true);
+        } else {
+          setScrolled(false);
+        }
+      };
+
+      // Set initial state
+      handleScroll();
+      
+      // Add event listener
+      window.addEventListener('scroll', handleScroll);
+      
+      // Cleanup
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [transparent]);
+
+  // Determine header background class
+  const headerBgClass = transparent 
+    ? scrolled 
+      ? "header-scroll-transition header-scrolled" // scrolled state
+      : "header-scroll-transition bg-transparent" // initial transparent state
+    : "bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8]"; // non-transparent header
+
   return (
-    <header className="fixed top-0 left-0 w-full bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8] text-white shadow-md z-50">
+    <header className={`w-full ${headerBgClass} text-white z-50 ${scrolled ? 'shadow-md' : ''} ${transparent ? 'absolute top-0 left-0 right-0' : ''}`}>
       <div className="container mx-auto px-4 py-3">
         {/* Mobile Layout (left-aligned logo) */}
         <div className="sm:hidden flex items-center justify-between">
@@ -51,7 +86,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-700 text-white p-2 rounded hover:from-blue-900 hover:to-blue-800 transition-colors w-10 h-10"
+                className="flex items-center justify-center bg-white text-black font-bold p-2 rounded shadow-md hover:bg-gray-100 transition-colors w-10 h-10"
                 aria-expanded={showUserMenu}
                 aria-haspopup="true"
               >
@@ -104,9 +139,9 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-gradient-to-r from-white to-gray-100 text-black px-2 py-1 rounded text-xs font-medium hover:from-gray-100 hover:to-gray-200 transition-colors"
+              className="bg-white text-black px-3 py-1 rounded shadow-md text-xs font-bold hover:bg-gray-100 transition-colors"
             >
-              Ingresar
+              INGRESAR
             </button>
           )}
         </div>
@@ -130,11 +165,11 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-700 text-white px-4 py-2 rounded hover:from-blue-900 hover:to-blue-800 transition-colors min-h-[44px]"
+                className="flex items-center gap-2 bg-white text-black font-bold px-5 py-2 rounded-lg shadow-md hover:bg-gray-100 transition-colors min-h-[44px]"
                 aria-expanded={showUserMenu}
                 aria-haspopup="true"
               >
-                <span>{userName}</span>
+                <span className="uppercase font-poppins">HOLA, {firstName}</span>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   className="h-5 w-5" 
@@ -151,17 +186,20 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
               </button>
               
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 text-gray-800">
+                  <div className="py-3 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
+                    {userName}
+                  </div>
                   <Link 
                     href="/profile" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mi perfil
                   </Link>
                   <Link 
                     href="/my-ratings" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mis calificaciones
@@ -171,7 +209,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
                       onLogout();
                       setShowUserMenu(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
+                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600 font-roboto"
                   >
                     Cerrar sesión
                   </button>
@@ -181,9 +219,9 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName }: 
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-gradient-to-r from-white to-gray-100 text-black px-4 py-2 rounded font-medium hover:from-gray-100 hover:to-gray-200 transition-colors min-h-[44px]"
+              className="bg-white text-black px-5 py-2 rounded-lg shadow-md font-bold hover:bg-gray-100 transition-colors min-h-[44px] uppercase"
             >
-              Iniciar sesión / Registrarse
+              Iniciar sesión
             </button>
           )}
         </div>

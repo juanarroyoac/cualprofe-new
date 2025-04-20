@@ -1,13 +1,10 @@
 // app/page.tsx
 'use client';
-import { useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// Remove unused import
-// import { useAuth } from './contexts/AuthContext';
 import { useViewTracking } from './contexts/ViewTrackingContext';
 import SearchContainer from './components/SearchContainer';
+import Image from 'next/image';
 
 // Importamos nuestros iconos (igual que antes)
 const SearchIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -67,17 +64,17 @@ export default function Home() {
       <section className="hero-gradient min-h-[600px] flex items-center relative overflow-hidden">
         <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            {/* Left Column: Content */}
+            {/* Left Column: Content - UPDATED WITH POPPINS TITLE */}
             <div className="text-left">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white font-nunito-sans leading-tight mb-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white font-poppins leading-tight mb-4">
                 Encuentra al<br />profesor ideal.
               </h1>
               <p className="text-lg text-blue-100 mb-8">
                 Descubre qué opinan otros estudiantes sobre los profesores de tu universidad. Elige tus clases con confianza y comparte tu propia experiencia.
               </p>
 
-              {/* Search Container with modern styling */}
-              <div className="w-full max-w-xl mb-6">
+              {/* Search Container only */}
+              <div className="w-full max-w-xl">
                 <div className="search-container p-2 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl">
                   <SearchContainer
                     headlineText=""
@@ -87,13 +84,15 @@ export default function Home() {
                 </div>
               </div>
               
-              {/* Add Professor Link - With improved styling */}
-              <Link
-                href="/add-professor"
-                className="text-sm text-blue-200 hover:text-white hover:underline font-medium transition-colors duration-200 inline-flex items-center"
-              >
-                ¿No encuentras a un profesor? Agrégalo aquí
-              </Link>
+              {/* Separate Add Professor link - with underline instead of background */}
+              <div className="w-full max-w-xl flex justify-center mt-3">
+                <a
+                  href="/add-professor"
+                  className="inline-block text-center text-white text-sm py-1 underline hover:text-blue-200 transition-colors duration-200"
+                >
+                  ¿No encuentras a un profesor? Agrégalo aquí
+                </a>
+              </div>
             </div>
 
             {/* Right Column: Visual Element */}
@@ -217,13 +216,13 @@ export default function Home() {
             <p className="text-gray-600 mb-8 max-w-xl mx-auto">
               Visita nuestra sección de Preguntas Frecuentes para encontrar respuestas o contáctanos si necesitas más ayuda.
             </p>
-            <Link 
+            <a 
               href="/ayuda" 
               className="inline-flex items-center font-semibold bg-primary hover:bg-primary-light text-white rounded-lg px-6 py-3.5 transition-colors duration-200 shadow hover:shadow-md"
             >
               <HelpCircleIcon className="h-5 w-5 mr-2" />
               Ir a Preguntas Frecuentes
-            </Link>
+            </a>
           </div>
         </div>
       </section>

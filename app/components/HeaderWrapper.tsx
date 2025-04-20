@@ -15,6 +15,19 @@ export default function HeaderWrapper() {
   // Check if we're on the home/landing page
   const isHomePage = pathname === '/';
   
+  // Add class to body for transparent header pages
+  useEffect(() => {
+    if (isHomePage) {
+      document.body.classList.add('has-transparent-header');
+    } else {
+      document.body.classList.remove('has-transparent-header');
+    }
+    
+    return () => {
+      document.body.classList.remove('has-transparent-header');
+    };
+  }, [isHomePage]);
+  
   const handleOpenModal = () => {
     console.log("Opening auth modal");
     setShowAuthModal(true);
@@ -75,6 +88,7 @@ export default function HeaderWrapper() {
           isLoggedIn={!!currentUser} 
           onLogout={handleLogout}
           userName={currentUser?.displayName || currentUser?.email?.split('@')[0] || ''}
+          transparent={true} // Pass transparent prop for home page
         />
       ) : (
         <HeaderWithSearch 

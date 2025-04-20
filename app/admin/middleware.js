@@ -1,19 +1,23 @@
 // middleware.js
 import { NextResponse } from 'next/server';
 
-// Only protect rate and profile pages, let teacher pages be handled client-side
 export async function middleware(request) {
-  const { pathname } = request.nextUrl;
   const response = NextResponse.next();
   
-  // Add pathname to headers for layout detection
-  response.headers.set('x-pathname', pathname);
+  // Add pathname to headers
+  response.headers.set('x-pathname', request.nextUrl.pathname);
   
-  // Only require login for rate and profile pages
-  const isRatingPath = pathname.startsWith('/rate');
-  const isUserProfilePath = pathname.startsWith('/profile');
+  // Only require login for rate and profile pages (non-admin)
+  const isRatingPath = request.nextUrl.pathname.startsWith('/rate');
+  const isUserProfilePath = request.nextUrl.pathname.startsWith('/profile');
+  const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
   
-  // Skip auth middleware for other paths but still pass the response with headers
+  // Skip authentication middleware for admin paths
+  if (isAdminPath) {
+    return response;
+  }
+  
+  // Skip middleware for all other non-protected paths
   if (!isRatingPath && !isUserProfilePath) {
     return response;
   }
@@ -30,11 +34,11 @@ export async function middleware(request) {
   console.log('[MIDDLEWARE] Protected route requires login');
   const redirectUrl = new URL('/', request.url);
   redirectUrl.searchParams.set('showLogin', 'true');
-  redirectUrl.searchParams.set('redirectTo', pathname);
+  redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
   return NextResponse.redirect(redirectUrl);
 }
 
-// Run middleware on ALL routes to add pathname header
+// Match all routes
 export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico).*)',

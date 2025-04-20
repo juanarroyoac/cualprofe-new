@@ -1,7 +1,6 @@
 // app/components/SearchContainer.tsx
 'use client';
-import React, { useState, useEffect, useRef } from 'react'; // Add React import
-// import Link from 'next/link'; // Removed unused import
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, getDocs } from 'firebase/firestore';
@@ -25,7 +24,7 @@ interface Teacher {
   school?: string;
   university?: string;
   normalizedName: string;
-  department?: string; // Added to match usage in render
+  department?: string;
   [key: string]: string | number | boolean | undefined | null;
 }
 
@@ -235,7 +234,7 @@ export default function SearchContainer({
       )}
 
       {/* Search input */}
-      <div className="relative w-full max-w-2xl mb-6">
+      <div className="relative w-full max-w-2xl mb-2">
         <input
           ref={inputRef}
           type="text"
@@ -295,9 +294,9 @@ export default function SearchContainer({
 
       {/* University selector - only show if not hidden */}
       {!hideUniversityDropdown && (
-        <div className="relative">
+        <div className="relative mt-4">
           <button
-            className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors text-lg font-bold mb-8"
+            className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors text-lg font-bold"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             <span>
@@ -337,8 +336,6 @@ export default function SearchContainer({
           )}
         </div>
       )}
-      
-      {/* Removed the redundant "¿No encuentras a un profesor? Agrégalo aquí" link */}
     </div>
   );
 }

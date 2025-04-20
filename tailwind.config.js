@@ -9,12 +9,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        // Set Roboto as the default sans-serif font for body text and UI
-        sans: ['var(--font-roboto)', ...fontFamily.sans],
+        // Set Inter as the default sans-serif font for body text and UI
+        sans: ['var(--font-inter)', ...fontFamily.sans],
         // Keep Poppins available, e.g., for main headings
         poppins: ['var(--font-poppins)', ...fontFamily.sans],
-        // Roboto is now the default, but explicitly defined if needed via `font-roboto`
-        roboto: ['var(--font-roboto)', ...fontFamily.sans],
+        // Inter is now the default, but explicitly defined if needed via `font-inter`
+        inter: ['var(--font-inter)', ...fontFamily.sans],
          // Keep Nunito Sans available if needed
         'nunito-sans': ['var(--font-nunito-sans)', ...fontFamily.sans],
       },

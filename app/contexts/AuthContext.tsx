@@ -16,8 +16,12 @@ import { useSearchParams } from 'next/navigation';
 
 interface UserProfile extends DocumentData {
   email: string;
+  firstName?: string;
+  lastName?: string;
   displayName?: string;
   photoURL?: string | null;
+  university?: string;
+  graduationYear?: string;
   createdAt: Timestamp | null;
   lastLogin: Timestamp | null;
   emailVerified: boolean;
@@ -132,9 +136,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             });
             
             // Check if profile needs completion
-            // This applies to email users who haven't completed their profile
-            if (!userData.profileCompleted && 
-                user.providerData[0]?.providerId === 'password') {
+            // This applies to ALL users who haven't completed their profile
+            // Regardless of auth provider (Google or email)
+            if (!userData.profileCompleted) {
               setShowProfileCompletion(true);
             }
             

@@ -11,15 +11,19 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: smooth !important;
 }
 
 body {
   background-color: var(--background-color);
   color: var(--text-color);
-  font-family: "Roboto", sans-serif;
+  font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
+  letter-spacing: -0.025em; /* Moderate tightening for Inter font */
   -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+  scroll-behavior: smooth !important;
+  margin: 0;
+  padding: 0;
 }
 
 @layer base {
@@ -36,35 +40,40 @@ body {
   }
   
   p {
-    @apply leading-relaxed font-roboto;
+    @apply leading-relaxed font-inter;
   }
 }
 
-/* Creates space for fixed header automatically on all pages */
+/* Proper header positioning and transparency */
 .page-content-wrapper {
-  padding-top: 64px; /* Adjust this value to match your header height */
+  position: relative;
+  width: 100%;
 }
 
-/* Mobile-specific header padding adjustment */
-@media (max-width: 640px) {
-  .page-content-wrapper {
-    padding-top: 61px; /* Match exact mobile header height */
-  }
-  
-  /* Add extra padding when mobile search is open */
-  body.mobile-search-open .page-content-wrapper {
-    padding-top: 160px; /* Adjust based on mobile search panel height */
-  }
+/* Reset all top margins and paddings for landing page */
+.landing-page {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  position: relative;
 }
 
-/* Special case for the landing page - override the padding */
-.landing-page .page-content-wrapper {
-  padding-top: 0;
+/* For pages with transparent header, add padding to compensate for absolute header */
+.transparent-header-page {
+  padding-top: 0 !important;
+}
+
+/* Hero specific fixes */
+.hero-gradient {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  position: relative;
+  z-index: 0;
 }
 
 /* Font utility classes */
-.font-roboto {
-  font-family: 'Roboto', sans-serif !important;
+.font-inter {
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: -0.025em !important; /* Moderate tightening for Inter font */
 }
 
 .font-poppins {
@@ -96,6 +105,7 @@ body {
 .hero-gradient {
   background: linear-gradient(135deg, #00103f 0%, #001a6b 100%);
   position: relative;
+  z-index: 1;
 }
 
 /* Feature card hover effects */
@@ -128,6 +138,30 @@ body {
 
 .btn-secondary {
   @apply bg-white hover:bg-gray-100 text-primary border border-gray-200 font-medium rounded-lg px-4 py-2 transition-colors duration-200;
+}
+
+/* Header scroll effect styles */
+.header-scroll-transition {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-scrolled {
+  background: linear-gradient(to right, #001d70, #00248c, #0033a8) !important;
+}
+
+/* Optional slight background for transparent header to improve text readability */
+.header-transparent-overlay {
+  background-color: rgba(0, 29, 112, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+/* Smooth scroll for anchor links */
+html, body {
+  scroll-behavior: smooth;
+}
+
+a[href^="#"] {
+  scroll-behavior: smooth;
 }
 
 /* Mobile-specific fixes */
@@ -193,14 +227,13 @@ body {
   line-height: 1rem;
 }
 
-/* Fix for overlapping header content */
-@media (max-width: 640px) {
-  .mobile-header-height {
-    height: 61px;
-  }
-  
-  /* When mobile search is open */
-  body.mobile-search-open .mobile-header-spacer {
-    height: 160px;
-  }
+/* Change for transparent header pages */
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+/* Ensure hero section starts at the top when header is transparent */
+body:has(.landing-page) {
+  padding-top: 0;
+  margin-top: 0;
 }

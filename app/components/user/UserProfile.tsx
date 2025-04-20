@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { updateProfile, updateEmail, updatePassword, 
@@ -18,7 +18,10 @@ export default function UserProfile() {
   const { currentUser, userProfile, isEmailUser, isEmailVerified, sendEmailVerification } = useAuth();
   const router = useRouter();
   
-  const [displayName, setDisplayName] = useState(userProfile?.displayName || '');
+  const [firstName, setFirstName] = useState(userProfile?.firstName || '');
+  const [lastName, setLastName] = useState(userProfile?.lastName || '');
+  const [university, setUniversity] = useState(userProfile?.university || '');
+  const [graduationYear, setGraduationYear] = useState(userProfile?.graduationYear || '');
   const [newEmail, setNewEmail] = useState(currentUser?.email || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -39,6 +42,31 @@ export default function UserProfile() {
     verification: false
   });
 
+  // Lista de universidades
+  const universities = [
+    { id: 'ucab', name: 'Universidad Católica Andrés Bello (UCAB)' },
+    { id: 'unimet', name: 'Universidad Metropolitana (UNIMET)' },
+    { id: 'ucv', name: 'Universidad Central de Venezuela (UCV)' },
+    { id: 'udo', name: 'Universidad de Oriente (UDO)' },
+    { id: 'uc', name: 'Universidad de Carabobo (UC)' }
+  ];
+
+  // Lista de años de graduación
+  const graduationYears = [];
+  const currentYear = new Date().getFullYear();
+  for (let i = currentYear; i <= currentYear + 6; i++) {
+    graduationYears.push(i);
+  }
+  
+  useEffect(() => {
+    if (userProfile) {
+      setFirstName(userProfile.firstName || '');
+      setLastName(userProfile.lastName || '');
+      setUniversity(userProfile.university || '');
+      setGraduationYear(userProfile.graduationYear || '');
+    }
+  }, [userProfile]);
+
   // Function declarations need to be before the return statement
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,21 +79,45 @@ export default function UserProfile() {
         throw new Error('No user logged in');
       }
 
+      if (!firstName.trim()) {
+        throw new Error('El nombre es obligatorio');
+      }
+
+      if (!lastName.trim()) {
+        throw new Error('El apellido es obligatorio');
+      }
+
+      if (!university) {
+        throw new Error('La universidad es obligatoria');
+      }
+
+      if (!graduationYear) {
+        throw new Error('El año de graduación es obligatorio');
+      }
+
+      // Construct the displayName from first name and last name
+      const displayName = `${firstName.trim()} ${lastName.trim()}`;
+
       // Update Firebase Auth profile
       await updateProfile(currentUser, {
-        displayName: displayName.trim()
+        displayName: displayName
       });
 
       // Update Firestore user document
       const userDocRef = doc(db, 'users', currentUser.uid);
       await updateDoc(userDocRef, {
-        displayName: displayName.trim()
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        displayName: displayName,
+        university: university,
+        graduationYear: graduationYear
       });
 
       setProfileSuccess('Perfil actualizado correctamente');
     } catch (error: unknown) {
       console.error('Error updating profile:', error);
-      setProfileError('Error al actualizar el perfil. Intenta de nuevo.');
+      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el perfil. Intenta de nuevo.';
+      setProfileError(errorMessage);
     } finally {
       setLoading(prev => ({ ...prev, profile: false }));
     }
@@ -246,17 +298,71 @@ export default function UserProfile() {
           
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                Nombre de usuario
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                Nombre
               </label>
               <input
-                id="displayName"
+                id="firstName"
                 type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
               />
+            </div>
+            
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                Apellido
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="university" className="block text-sm font-medium text-gray-700">
+                Universidad
+              </label>
+              <select
+                id="university"
+                value={university}
+                onChange={(e) => setUniversity(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              >
+                <option value="">Selecciona una universidad</option>
+                {universities.map((uni) => (
+                  <option key={uni.id} value={uni.id}>
+                    {uni.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="graduationYear" className="block text-sm font-medium text-gray-700">
+                Año de graduación previsto
+              </label>
+              <select
+                id="graduationYear"
+                value={graduationYear}
+                onChange={(e) => setGraduationYear(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              >
+                <option value="">Selecciona un año</option>
+                {graduationYears.map((year) => (
+                  <option key={year} value={year.toString()}>
+                    {year}
+                  </option>
+                ))}
+              </select>
             </div>
             
             <div>
