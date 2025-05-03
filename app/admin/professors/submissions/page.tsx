@@ -10,7 +10,8 @@ import {
   updateDoc, 
   Timestamp,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  getDoc
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 
@@ -48,20 +49,43 @@ export default function ProfessorSubmissions() {
   const approveSubmission = async (submissionId: string) => {
     try {
       const submissionRef = doc(db, 'professorSubmissions', submissionId);
-      const submission = submissions.find(s => s.id === submissionId);
+      const submissionSnap = await getDoc(submissionRef);
       
-      if (!submission) return;
+      if (!submissionSnap.exists()) {
+        alert('No se encontró la solicitud');
+        return;
+      }
+      
+      const submission = submissionSnap.data();
+      
+      // Ensure university name is properly formatted
+      const universityName = submission.university.trim();
       
       // First, create the new professor in the teachers collection
       const teacherRef = doc(collection(db, 'teachers'));
       await setDoc(teacherRef, {
-        name: submission.name,
-        university: submission.university,
-        department: submission.department,
+        name: submission.name.trim(),
+        university: universityName,
+        department: submission.department.trim(),
         createdAt: serverTimestamp(),
         approvedBy: auth.currentUser?.uid,
         submissionId: submissionId
       });
+      
+      // Check if this is a new university and create default settings if needed
+      const universitySettingsRef = doc(db, 'universitySettings', universityName);
+      const universitySettingsSnap = await getDoc(universitySettingsRef);
+      
+      if (!universitySettingsSnap.exists()) {
+        // Create default university settings
+        await setDoc(universitySettingsRef, {
+          name: universityName,
+          abbreviation: '', // Default empty abbreviation
+          isActive: true,   // Default to active
+          createdAt: serverTimestamp(),
+          createdBy: auth.currentUser?.uid
+        });
+      }
       
       // Then, update the submission status
       await updateDoc(submissionRef, {

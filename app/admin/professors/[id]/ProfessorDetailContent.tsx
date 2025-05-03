@@ -2,20 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { use } from 'react';
 import Link from 'next/link';
 import { 
   doc, 
   getDoc, 
+  updateDoc, 
   collection, 
   getDocs, 
   query, 
   where, 
   orderBy, 
-  Timestamp
+  Timestamp,
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { updateDocument } from '../../../lib/firestore-helpers';
+import { updateDocument, deleteDocument } from '../../lib/firestore-helpers';
+
 interface Professor {
   id: string;
   name: string;
@@ -38,22 +40,9 @@ interface Rating {
   grade?: number;
 }
 
-interface Params {
-  id: string;
-}
-
-export default function SubmissionDetail({ params }: { params: Promise<Params> }) {
+// Modifying to accept ID directly instead of params
+export default function ProfessorDetail({ id }: { id: string }) {
   const router = useRouter();
-  
-  // Using React.use() to properly unwrap the params Promise
-  const { id } = use(params);
-  
-  // Early check for invalid ID
-  useEffect(() => {
-    if (!id || id === 'undefined') {
-      router.push('/admin/professors');
-    }
-  }, [id, router]);
   
   // State
   const [professor, setProfessor] = useState<Professor | null>(null);

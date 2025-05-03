@@ -1,13 +1,12 @@
+// app/admin/users/[id]/UserDetailContent.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
   doc, 
   getDoc, 
-  updateDoc, 
-  deleteDoc, 
   collection, 
   query, 
   where, 
@@ -46,10 +45,8 @@ interface Activity {
   professorName?: string;
 }
 
-export default function UserDetail() {
+export default function UserDetailContent({ id }: { id: string }) {
   const router = useRouter();
-  const params = useParams<{ id: string }>();
-  const id = params.id;
   
   // State
   const [user, setUser] = useState<User | null>(null);

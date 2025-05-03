@@ -19,9 +19,18 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firestore
 export const db = getFirestore(app);
 
-// Initialize Authentication and set persistence
+// Initialize Authentication
 export const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence); 
+
+// Set persistence with proper error handling
+(async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    console.log('Firebase Auth persistence set to browserLocalPersistence');
+  } catch (error) {
+    console.error('Error setting Firebase auth persistence:', error);
+  }
+})();
 
 // Google provider for authentication
 export const googleProvider = new GoogleAuthProvider();

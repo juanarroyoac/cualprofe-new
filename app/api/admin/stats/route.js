@@ -1,30 +1,35 @@
 // app/api/admin/stats/route.js
-import { db } from '@/lib/server/firebase-admin';
+import { adminFirestore as db } from '@/lib/server/firebase-admin';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Use admin SDK to get collection counts
-    const [
-      professorsSnapshot,
-      usersSnapshot, 
-      ratingsSnapshot,
-      pendingSubmissionsSnapshot
-    ] = await Promise.all([
-      db.collection('teachers').get(),
-      db.collection('users').get(),
-      db.collection('ratings').get(),
-      db.collection('professorSubmissions').where('status', '==', 'pending').get()
-    ]);
+    // Count total professors
+    const professorsSnapshot = await db.collection('teachers').get();
+    const totalProfessors = professorsSnapshot.size;
+    
+    // Count total users
+    const usersSnapshot = await db.collection('users').get();
+    const totalUsers = usersSnapshot.size;
+    
+    // Count total ratings
+    const ratingsSnapshot = await db.collection('ratings').get();
+    const totalRatings = ratingsSnapshot.size;
+    
+    // Count pending submissions
+    const pendingSubmissionsQuery = db.collection('professorSubmissions')
+      .where('status', '==', 'pending');
+    const pendingSubmissionsSnapshot = await pendingSubmissionsQuery.get();
+    const pendingSubmissions = pendingSubmissionsSnapshot.size;
     
     return NextResponse.json({
-      totalProfessors: professorsSnapshot.size,
-      totalUsers: usersSnapshot.size,
-      totalRatings: ratingsSnapshot.size,
-      pendingSubmissions: pendingSubmissionsSnapshot.size
+      totalProfessors,
+      totalUsers,
+      totalRatings,
+      pendingSubmissions
     });
   } catch (error) {
-    console.error('Error fetching admin stats:', error);
+    console.error('Error fetching dashboard stats:', error);
     return NextResponse.json({ error: 'Error fetching stats' }, { status: 500 });
   }
 }

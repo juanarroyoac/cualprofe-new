@@ -1,0 +1,1474 @@
+{
+  "timestamp": "2025-04-21T01:47:39.246Z",
+  "teachers": [
+    {
+      "id": "02fBWodIncieeMN01HHo",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "03g8OrRsar1vJ1rAqwh6",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "05LEL7wJTZTGrRWuGeqD",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "0CDOLNIUqBQWQ2ET6Xfj",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "0Fslbsu2SEAqepDXFd9V",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "0LHnIhVACCU3bm79ubxb",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "0g2JGE8PG8TEgKR4EgB0",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "0qP8999Mn4Elf5uQWRqC",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "0uf4ujOaItTlOAoBDBSW",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "14SwHWPgCrOHOZTOm9Ss",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "1DTAqhvLNf0wmEDkRzn5",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "1QZPsrsA5XXW2EhF6cOV",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "1TJOFJa6XZgNX3uNPZeo",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "1aA3kVC1C1Pebt88lJRR",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "1dRA7j6au5NR8feOj8gK",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "2451bjpDd5CTivOKyqYb",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "2hHS6weCakLCgnTOhUjQ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "3SxFrvQacb7VZofvjleR",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "471ChZy9OAqfcXlXH4xa",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "47XDKl0NY30pFci4pctV",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "47uffAt01JW08Fc22vsy",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "48xN2GKQXMrag1E5cD1L",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "49a7ezqCFZM3u5IL5PnQ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "4A06hyUB2wnwAASHwF16",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "4PuApBDErVpVEAr5nFe3",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "4cYfHSGKSy6gziYQaxm2",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "4g2mlgd5ocfc4U46duS4",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "4pSfLaZ4r8xUq7aJs8h4",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "4rOBaGgFTaNHkqqijUe4",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "504pzmzyPkkIeGXA8Bbs",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "58ORHvhZ4Xp0iIvoLlTD",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "5CDOvcOM0Vw0VIs187pg",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "5DrIrt37gLRSyHLd54zu",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "5PIQj1fOkZJ4DO1mvPWf",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "5eLMS9Db5XjxUhkNG0ke",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "5pAT34Zgdj4T8hoxxAHp",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "62ta3FZrXXimT1iiMHBC",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "67Ny8xSQ5vgaYZSveQ85",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "6POw8HMCsAZUeYfi7aJ9",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "6gF9PeSwdHIChIUVjYHW",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "6m9eGK2HROpBTeCM4Qqt",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "75Rcfyo7pKEIBb8JkbyD",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "7YdFAwnlc04XslsQC1bD",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "7jJnYcOWHvTClduqLG3t",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "7kGxw1M3VjXNlu4oZMNf",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "7mpRvEBulq5ntjYCtBav",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "7yxE6fDoiG9ArWjEos4a",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "8DvFpU5dc62vNFyVfUhS",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "8OQEDAyeErDrKUfe4h3Q",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "8t3OieXE1ZHJQO0UXg55",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "9FJorlx3HD4hmo0G4Nul",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "9WM1MFtpco3T7W1HhkSD",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "9ctpSmKMcWrw324Xq3cM",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "9v5fToZWhVwKfN0xxm4U",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "AMMrRwHBaFUNBcAnHRCd",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ANBpegySqmPXmyEcOEPI",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "AhnSPGH4tinDYBIE9ORu",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "AoSdWMGZttRucXyaxdKa",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "B9y8JyQB5zJzVfo8xdqZ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "BCL6MfLOFxxR0k4fceqK",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "BNrvjFqTRQKHDZCQsxho",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "BVtf2JmrY8jWIkppSrkF",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Bk99WIFEhvsxAYl1MtdA",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "BnqQchXGC7Zg2aINcuPF",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "CB14qg6UxUPk4lUU5wU8",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "CZ5FLIKNhvTXqkPeXE1g",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Dl6YW7au7mSoyhmc8V1C",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "DsHKkXRXfm37UGUOkmkQ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "E96WEOyMNWFvZQiyrcs0",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "E9FEQS4Yop3tHYrjlW3K",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "EATiG9t5whkj4lDzw9DB",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "EBFd75r4Ft6xCVkA3zgr",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "EJDs7ok9VpzkVbb4xNYK",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "EOFZrX26Dh2OWz13ZZoa",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "EYgxYReDFhDKUQ21CgS7",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "EvO2ykJZFWygakb5spGR",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Ey9iUidMedG9anFZa11S",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "F2qGAeSIUsWI2MEJmkRI",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "FY3vgyfEZ4zlU3axQgHc",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "FsC7u7nn2wWqLRrFtIsg",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Fw3JH9AiwrcLZAbKTbW9",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "GZbFKXx6FmtgPEUH60gE",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Gc27joSBISVtttYSfEao",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "GhixOroOmyDv3qC5Df7y",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Glu0HtqLpRuPIWWpF6l8",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "H9lycdcQWrsXvDlTMU9D",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "HMLKaEqumYn57X8ZD3za",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "HrpntOHX00LkSe7T1V4P",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Hs2JATle7i1C0yQYMHXj",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Hytt3N5gyktiGo1qpaqf",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "I8TSejUjY8mVHgYvOuY0",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Ib6Npm3efDQN48ty5yNy",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "ImM0pVCax1ad5PkRpTBx",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Ip6vtWG1c4mpiDDhDATo",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ItJyVhJBVRnN6NGdsHSj",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "JFQcDAkYaAe2p7ZtDBUJ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "JNhZf8gBMkqtdfO8UnLL",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "JYmfPddN5GYZIjuD5r68",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "JmWfIrweuuiFanJ0jz0k",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "JsxdtajDGuahRrZRqyNY",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "KAb2cJifs130qXJ1tuVn",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "KH90aC9we797chmLSd97",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "L2nbP8obD4gc70Jmucof",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "L7ab08azkB2wZi9bf5CU",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "LB0psrrql34hsvRf25ms",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "LcvJmMKYG2VE0MPnjALI",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "LnE99eopH9HTMWIdtFLG",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "M1uZkV1QDU4X4Zb5Jwcd",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "MTEl4w4aOKunFL37NHjT",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "MterQ6AqITSaMvhtbsPP",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Mz7GllqbLX5KQZOTjg5k",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "N0PRfN9hZrA0I7eTxnmL",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "N7RopkR6LhE6ZBmDd4Id",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "N9ukIebAnJ8cyKYWKEqi",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "NMHvfVhG9R6SiVuW7GgS",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "NjaauTlsLRqF5dzJvYrV",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "NuOcWJCCUGAVzwLnPZIM",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "O6OiD9BrvN1hfgKxbUwb",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "OQHt2MbG9WVSfUoSlviA",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "ORKNz23cZkZsF95PhDos",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "OWMkaFrDn2gYBMCBxerz",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Oa3R6m7LUkNgPfrHTVGK",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ObzmBFuvSElKwNKuBDTh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Oeykp48SgTKb7ApcrFXZ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "OjSlESsPJ8XSyHyfCv8x",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "OtTjkhAbSAgXhv0MVGH6",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "OuYRKtpEM8IuKTVlsg3w",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "P5wKgp1cLbYxFK8hdzcz",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "P6aspAa7gZxacb1W8kMk",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "PB7linZxUs4fcsyG2eNX",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "PBw996fG6GvVQVseavNi",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "PCskU5myMPjBLP6ouQRs",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "PERr2xbT50V0oVWxPlgY",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "PIqIfluljdvCxyW26D2w",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "PXxhpgOO1ecEXEz52fey",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "PcpOPDXKP9sNL5XKtPz2",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "PnPmCZucO88hXCUSZACf",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Pu5su4tUY29BEpf5qZDN",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Q7hMDcOXpLhyEXvJcVAL",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "QPRvmrkxc5k40Xiq4aoe",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "QeN02244PQg4hQPToeg5",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "QyDe81BVY0T4QQJPKb9Y",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "R0ccNz8UP1vlRA3yxOu1",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "RAomGWEPmYe9P0848Vyr",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "RL7r7Ux8RBAUVkyPRLw5",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "RVOcatqdSaKJSVDgA07E",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Rr7FzHlYpOomahkdolEY",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "RsEd8nok1VUJA8VqzMSd",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "S1G6VlJ3rJNxC16m02fN",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "SFEmxPsQuErdFRzBjcX8",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "SjU3vzM2oqhJfQysMlza",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "SumYCNvmQL9bp8Q1te6b",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "TARxEDYyfXWDknXH1hec",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "TOO1awJUfmYN2uraW1SS",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "TaY8ozhUMhrEpzRhxx4E",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Tpe0YbPMByejAH5n0Cy3",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "TuIPeXgAfK04SboslqVL",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "U7rXZ7siioPoVjgp7Ebi",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "UZgQvjFFOL6U6G5gFdMU",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "UaZlLXC9ohnqJmXuQtTM",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "UxWWxc1k1tTnx9gYqNHZ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "V24oaMTyiYiZZkwJ6HAl",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "V3vupw232Hstcc2eoOz0",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "V6WJKsFGLmediQawQJGu",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "V7VND6SSNV2D9r9excVL",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "VEJvJ53MCYodPQQQsLsd",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "VN42egLN820dtY2yzfab",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "VNZTgoItcpExiBAAen01",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "VXlAfVGxaBwrwPMCkE62",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "VZof1pJZjP2WCJs2GyJU",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Vc627Y0jfs98tydrSUsS",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "VmivnHWflTLm9F0xFI1G",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "VwagZvr5giXwRLDnPsuU",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "W6arHbFT8iPHgZ0oVTKH",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "WByvz5VvTBS88QzuooQq",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "WZhOalmmhyD4kKLIgpwW",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "WanM5RMUXrvtOYDIq8Z3",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Wm93bYrkIC8ZW8Z2UHdf",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "WvTFO2h78XK2RKatDpCE",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "WwGhbiyclfFfWMfhZJZB",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "WxghMim2sXb3hBgjB4En",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "X02pWbhv0e102Ba9Qn30",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "X5zoQyyAnwkSXKwo05hG",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "XKtKIlugGTnMXcnYzKpn",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "XfmSJRqvPyxyhZ7f910c",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "XgFKbJELgQHB8HfZI4mj",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "XjEvAyQ3p6NuG75EZGSj",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "XjmikoAEqfhwmrbUlMUX",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "XkAfRmqvR1T7MSlCKEQ0",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "XnCe6P2Qdm85zizrQv7m",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "XsxYV80ekqIOGYbI9HQ3",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "YESe4682FOjv0DizEpa8",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "YO39eN8BGRa63zk7QAh5",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "YUfXp8JhOfDphBCzcHj7",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "YWo2PCOLecu4QugKpYyv",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Yit1LIQ0INIrMGOfz5Cz",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "Yk1VMSxU2AdXUVlJFX6h",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "YnDQnwdu8t3l6oSdzD0o",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Ys48htKkAAdMSC4wAqOA",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "YwxIAKR4t3MWku56uBAu",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "YxfvImQHk9EKgLaUdElJ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ZEEkwiFHTPTc7Q4QwLcS",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "ZEkHxTo56zAKUX5jIhKq",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "Zg9hmNNAhPTUDPluLsKj",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ZgMS9dbmncpFIPzXLQTY",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "ZiFu7R1ZMIngCvgXsbRJ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "a8y8GjbKpaDflhyyIszs",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "aBDC7mRrYRXCfI0GaC1N",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "aF19ngsImaqGM32z1HLP",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "aM4YE7v8BvccRbMvyP3u",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "aONipSxMtpDRtP6xCDjS",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "aTLbGiyQnlq2ihLW5mih",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ak9dZq25m5cs8iRzVSjD",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "akxApTwqePMkhtkciM7T",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "bFcFjuYcTgGLSwA9okgh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "bQuYg1pQhrsuqqt21Fj1",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "bQxJhbBDQmNby06RW57E",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "bhxelYv4z0h83rmMikCm",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "c6g33VDOUYUCQJGXI528",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "cLcdzxA0U5mmqZvRdjJu",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "ccEHU4tTuoG5k76lJYXl",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ckjsARLa3oSlp0xJYSDa",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "cxjqpebrifFWNUzuWezL",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "dCltWCjJYX808VQa77eg",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "dLrcISLIQs2iLQAAjO7R",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "dO6ikjH4QIZEDkqhJKh1",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "dPKQ0cpA8dVY53lA4LFh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "dddUqGPhr8aggIXi4JNd",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "detwKH2CeXOx2LbSewjo",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "dyS9SaWDsRthBJgvC0x7",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "e0dsJsVHreOKr3IHBtN1",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "e4Ubc9HL72sH9wEPAmwn",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "eJZK1Y1KF4bbcwybiG8m",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "eaKsW1F7qn7LeYTIqJBo",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ejo5SPCoLvIwWXhy3FTY",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "f7wNOLPWlgYnktYdNMiS",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "fMTRCkIg2gzP1clMIPjO",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "fVxOYePNGl7pSa1DhMwx",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "fWoLy02NWQ3Z40LaKydJ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "fXl517yqfe9CAlV9FzgW",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "fj7KbIPeYd0AD2P2XAo1",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "fsWxGR3mb0JxzAAjj9FG",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ftzjvYqgZiesNz88poZX",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "fvHG69u18UB74Uo97Gan",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "fw2nVxux547tiEMHhjSu",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "gU09qonuZYHPOXAzJf1z",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "gY3apdV43L1763SNVbIC",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "gjLC7XccuW4sHGtlIGz6",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "gqbwl3vUoR1oAGkXfFpX",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "h02KEnYKGc9yaYbvPvn7",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "hOsR344kePGUeZMhHIeI",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "hYgdX489vi26ivSGH7tz",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "hZEUqNp7WvICHl1W7K5L",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "i6SFLXTD2TL0azVphVSr",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "i7b6bltPLKLBh35dGd1x",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "iHi4GKlxXSBbnvdFo0VR",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ipGF8Sj9WTLgjI29abju",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "itkCMg4Y8NN3dfLfEdrJ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "jPLO7Z8US03KsLe0DWk9",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "jTatChCmvJKFB6VOHQJx",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "jYVxfjxpjHC3Ka3OnV86",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "jvJCs3P5y4F2IULov61Y",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "kE3KHCmNGSTGBbNCa9iJ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "kgN28cKIYgoU5P3LN7wP",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "kgNytxYgovPJuKOu1Mqm",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "kkoHBK0SscjE6TT99Og2",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "kl5TH18WwayHJ8Lun5Hb",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "koPlH6S8ooQEoS1aVudp",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ktFt2Ktkd5KkvMPDLTHs",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "l3918BcbdRjpIBtQbmRM",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "l4gFl2rRbq3f2dXJkQRk",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "l6bAlDvPieWPXLMTjCXA",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "l7oQ60W1BvTG7HRXiUau",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "lBPcjtjV1xQaA8GASreI",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "lSt7TLHJZo1oZhd7iomw",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "lXFETjgyDU6HHR2YP961",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "lg0CHOfy5mTY1W3FSyeT",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "mAcrBLGfctuzpHesQ6SG",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "mJ7BuTq6E3XFGNVvJhTh",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "mjWgAPKtVoO1ZZ1smspy",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "mkhrSjZSryKHAKkl5t7Z",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "mzJSdFIluG0gn4OqdrLf",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "nGv7cpZhkowAqEnwqWCo",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "nLpO8CSrSb2KvmqdT7KO",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "nTJu0gvVq5CW7SlPUOHS",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "nZeq9IhlpnW3m9qiihFy",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "nb13DGORU226qWkGx2Cv",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "noxOrxWyrzerf5ZZfnGz",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "nqBDgvuK35Bb4FPCgfQg",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "nqKawVWO8NO2YmcOKeYs",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "nr9ftnVsU0Mk3XzV26zp",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "oVwIh8T6lokg5eGQTx9P",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "oY6MIyLjioRZEDlMLbqm",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "oZgIf9QKx6LkqdTjw2up",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "oik9yMTjdzdQs7yCPxYT",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "oomAmGgNLkYpdz7zRJFh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "p9EFr0TiFQlwopZ2NpOh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "pCWHZIWIXHUs4VAW6wMZ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "pOly2hkxpCATebbIzMHf",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "pPwUMsdcZFrSySovDGBf",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "pwpRQCQwxmaMyi4ytRSE",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "qazaSIwjZtHDZEhWjsYj",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "qgi3hkLOzrDUWY6TSmXw",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "qh5c20ANf6odNYhjvZbF",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "qqZ97BrG0aDx6Dcxll7h",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "qvLMsKTllJHAhWzAHEhh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "qvn1ktTn7BXTo6fEEb8r",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "r9XeeQ88lxH1L1o2Fruo",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "rMc7ZsNUF7FooNVn4r9K",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "rTJmV7PZjTp6vJKlhmBZ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "rVcAtLzsYj84vgj1CNhJ",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "rd6fuYNFOJ7mh24Z3uW7",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "rjeKbGR1LLaGdUoUv1Ek",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "rxtqwsKLiHBFGXdymFzN",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "s8mqBMqIMGH2ldq4dKsJ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "sAuRc1GB9SV9MW7tu29w",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "sBGJ4BE4Ni1dSJyLrFRa",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "slAK0Xys2BPFCFPw2V4d",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "sr5s58iF6YnXyBR5MwGN",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ssmWO3G50S5aiCaHWCvZ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "tA2hQNr4GNRWGHsPeeAT",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "tWNlPy1ep0aM9MU3BNFO",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "tXeWsihuQuuvugxJoWAs",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "u26uwoof3fCqiNZGRThW",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "u8X2308hrkKpiqLqclWC",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "uCESpGrM108yqVag0vlO",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "uD9V3wWqcb1AYM8XOGDK",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "uMx3nkED2T9rLBKZhChb",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "uQDaqXLyBWornhXsuTHz",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ulULdQFKu07pFBsLVFTv",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "vJa6t5c3W88c83katWb0",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "vNk90u9IzMHVJlI0Kkd3",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "vRdJQoObx2w5bLtAsCW8",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "vS9pvY96bd2AD2nzsX1R",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "vc24TkHviy8MTfVoMSgv",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "vgmo0iS3leKibwSNZF7h",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "vkukq2xVFjsknW7KDRTT",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "vnB7Qa37bBUr6kLU3Nwm",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "vqkx9bIqnIWVymcT0Hmw",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "wF84au6uhVetOyFivVDe",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "wKlLWrwfqAiCF0kOq06z",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "wOSNjz5cwfWdJ87LnB5Q",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "wc8na5kAbNofJtYXRWh1",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "weCstOP9cRjAct2hQWgL",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "wnGHZBoDVvLLMIBlE2F3",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "woh7yYYBBqzNX5zBYimE",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "wp1v2OKohbO4zWGnHfeR",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "wz6OSe61M0tcnNHCWlWh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "xG7V4XPnbG3kMAuoLkes",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "xU9ks7sRA9AOxGLmIYYq",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "xYGJUrYUX5e33dW1C0Gh",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "xkX4TqNVwaEr8mxYWkly",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "xt1dEROnxQm5SMRAhuOX",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "y0FJTusLLO1sBxO7tk8h",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "y0PGpkJ4dv7bWPkDUVGZ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "yBiDLbAiABnhK2tnvrLN",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "yJ4UNJVCpCv9Ah1fUFRM",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "yfgg0tXW61ivTghuYSt3",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "ylIH9UFCwOeKiNQN9Hnq",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "ymKbMeu7cQxSq9J8wrq5",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "yrwZ8b2oZHXyCuKMqV4u",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "z6x5XDszurxKNWTZTW8M",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "zOGIpjzk0uamx9scsyCB",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "zh6POjoFxnzwEH8WmXFJ",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "zicZrwNGpABgy6pg8Wow",
+      "university": "Universidad Metropolitana"
+    },
+    {
+      "id": "zlcWgwjwdRppoue3QBWH",
+      "university": "Universidad Católica Andrés Bello"
+    },
+    {
+      "id": "zpFGMWT9PBDbcG911voX",
+      "university": "Universidad Católica Andrés Bello"
+    }
+  ],
+  "universities": []
+}

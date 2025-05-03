@@ -1,11 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/solid';
 
 interface Column {
   key: string;
   label: string;
   render?: (value: any, row: any) => React.ReactNode;
+  width?: string; // Agregar propiedad width opcional
+  priority?: number; // Prioridad para responsive (1 es más alta)
 }
 
 interface DataTableProps {
@@ -118,16 +123,23 @@ export default function DataTable({
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+    <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+      {/* Wrapper div con overflow-auto en lugar de overflow-hidden para permitir scroll */}
+      <div className="overflow-auto">
+        <table className="w-full divide-y divide-gray-200 table-fixed">
+          <thead className="bg-gray-50 sticky top-0">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
                   onClick={() => handleSort(column.key)}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  className={`px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer ${
+                    column.width ? column.width : ''
+                  } ${
+                    column.priority === 1 ? '' : 
+                    column.priority === 2 ? 'hidden md:table-cell' : 
+                    column.priority === 3 ? 'hidden lg:table-cell' : ''
+                  }`}
                 >
                   <div className="flex items-center">
                     {column.label}
@@ -140,7 +152,7 @@ export default function DataTable({
                 </th>
               ))}
               {actions && (
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                   Acciones
                 </th>
               )}
@@ -150,49 +162,102 @@ export default function DataTable({
             {currentData.map((row, rowIndex) => (
               <tr key={row.id || rowIndex}>
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                  <td 
+                    key={column.key} 
+                    className={`px-3 py-4 ${
+                      column.priority === 1 ? '' : 
+                      column.priority === 2 ? 'hidden md:table-cell' : 
+                      column.priority === 3 ? 'hidden lg:table-cell' : ''
+                    }`}
+                  >
                     {column.render ? (
                       column.render(row[column.key], row)
                     ) : (
-                      <div className="text-sm text-gray-900">{row[column.key]}</div>
+                      <div className="text-sm text-gray-900 break-words">{row[column.key]}</div>
                     )}
                   </td>
                 ))}
                 {actions && (
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {actions.view && onView && (
-                      <button
-                        onClick={() => onView(row)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
+                  <td className="px-2 py-4 text-right text-sm font-medium">
+                    {/* Dropdown para acciones en lugar de botones en línea */}
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <Menu.Button className="inline-flex justify-center w-full px-2 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                          Acciones
+                          <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                        </Menu.Button>
+                      </div>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
                       >
-                        Ver
-                      </button>
-                    )}
-                    {actions.edit && onEdit && (
-                      <button
-                        onClick={() => onEdit(row)}
-                        className="text-yellow-600 hover:text-yellow-900 mr-3"
-                      >
-                        Editar
-                      </button>
-                    )}
-                    {actions.delete && onDelete && (
-                      <button
-                        onClick={() => onDelete(row)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Eliminar
-                      </button>
-                    )}
-                    {actions.custom && actions.custom.map((action, index) => (
-                      <button
-                        key={index}
-                        onClick={() => action.onClick(row)}
-                        className={`text-${action.color}-600 hover:text-${action.color}-900 mr-3`}
-                      >
-                        {action.label}
-                      </button>
-                    ))}
+                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                          <div className="py-1">
+                            {actions.view && onView && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => onView(row)}
+                                    className={`${
+                                      active ? 'bg-gray-100 text-blue-900' : 'text-blue-600'
+                                    } block w-full text-left px-4 py-2 text-sm`}
+                                  >
+                                    Ver
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {actions.edit && onEdit && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => onEdit(row)}
+                                    className={`${
+                                      active ? 'bg-gray-100 text-yellow-900' : 'text-yellow-600'
+                                    } block w-full text-left px-4 py-2 text-sm`}
+                                  >
+                                    Editar
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {actions.delete && onDelete && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => onDelete(row)}
+                                    className={`${
+                                      active ? 'bg-gray-100 text-red-900' : 'text-red-600'
+                                    } block w-full text-left px-4 py-2 text-sm`}
+                                  >
+                                    Eliminar
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {actions.custom && actions.custom.map((action, index) => (
+                              <Menu.Item key={index}>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => action.onClick(row)}
+                                    className={`${
+                                      active ? `bg-gray-100 text-${action.color}-900` : `text-${action.color}-600`
+                                    } block w-full text-left px-4 py-2 text-sm`}
+                                  >
+                                    {action.label}
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            ))}
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
                   </td>
                 )}
               </tr>
@@ -202,8 +267,8 @@ export default function DataTable({
       </div>
       
       {pagination && totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <div>
+        <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between">
+          <div className="mb-4 sm:mb-0">
             <p className="text-sm text-gray-700">
               Mostrando{' '}
               <span className="font-medium">{start + 1}</span>{' '}

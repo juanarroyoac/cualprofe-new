@@ -29,7 +29,7 @@ export async function middleware(request) {
   // For rate and profile pages, always require login
   console.log('[MIDDLEWARE] Protected route requires login');
   const redirectUrl = new URL('/', request.url);
-  redirectUrl.searchParams.set('showLogin', 'true');
+  redirectUrl.searchParams.set('authRequired', 'true');
   redirectUrl.searchParams.set('redirectTo', pathname);
   return NextResponse.redirect(redirectUrl);
 }

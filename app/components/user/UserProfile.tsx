@@ -8,6 +8,7 @@ import { updateProfile, updateEmail, updatePassword,
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AlertCircle, CheckCircle, Lock, Mail, User as UserIcon } from 'lucide-react';
+import { useUniversities } from '@/lib/hooks/useUniversities';
 
 interface AlertProps {
   type: 'success' | 'error';
@@ -42,14 +43,12 @@ export default function UserProfile() {
     verification: false
   });
 
-  // Lista de universidades
-  const universities = [
-    { id: 'ucab', name: 'Universidad Católica Andrés Bello (UCAB)' },
-    { id: 'unimet', name: 'Universidad Metropolitana (UNIMET)' },
-    { id: 'ucv', name: 'Universidad Central de Venezuela (UCV)' },
-    { id: 'udo', name: 'Universidad de Oriente (UDO)' },
-    { id: 'uc', name: 'Universidad de Carabobo (UC)' }
-  ];
+  // Fetch universities using the custom hook
+  const { universities, loading: loadingUniversities, error: universitiesError } = useUniversities();
+  
+  useEffect(() => {
+    console.log('Current universities:', universities);
+  }, [universities]);
 
   // Lista de años de graduación
   const graduationYears = [];
@@ -335,6 +334,7 @@ export default function UserProfile() {
                 onChange={(e) => setUniversity(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
+                disabled={loadingUniversities}
               >
                 <option value="">Selecciona una universidad</option>
                 {universities.map((uni) => (
@@ -343,6 +343,15 @@ export default function UserProfile() {
                   </option>
                 ))}
               </select>
+              {loadingUniversities && (
+                <p className="mt-1 text-sm text-gray-500">Cargando universidades...</p>
+              )}
+              {universitiesError && (
+                <p className="mt-1 text-sm text-red-500">{universitiesError}</p>
+              )}
+              {!loadingUniversities && universities.length === 0 && !universitiesError && (
+                <p className="mt-1 text-sm text-amber-500">No hay universidades disponibles.</p>
+              )}
             </div>
             
             <div>
@@ -379,7 +388,7 @@ export default function UserProfile() {
             <div>
               <button
                 type="submit"
-                disabled={loading.profile}
+                disabled={loading.profile || loadingUniversities}
                 className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
               >
                 {loading.profile ? 'Guardando...' : 'Guardar cambios'}

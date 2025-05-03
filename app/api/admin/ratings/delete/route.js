@@ -1,12 +1,14 @@
 // app/api/admin/ratings/delete/route.js
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { adminAuth, adminFirestore } from '@/lib/server/firebase-admin';
+import { getServerSession } from 'next-auth';
+// Corrected import path for authOptions
+import { authOptions } from '@/app/api/auth/route.js';
+import { adminAuth, adminFirestore } from '@/lib/server/firebase-admin'; // Ensure this path is correct too
 
 export async function POST(request) {
   try {
     // Verify user is authenticated and has admin rights
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions); // Pass authOptions here
     if (!session) {
       return NextResponse.json(
         { message: 'No autenticado' },
@@ -15,9 +17,15 @@ export async function POST(request) {
     }
 
     // Get user and check if they're an admin
-    const userEmail = session.user.email;
+    const userEmail = session.user?.email; // Optional chaining for safety
+    if (!userEmail) {
+        return NextResponse.json(
+            { message: 'Correo electrónico del usuario no encontrado en la sesión' },
+            { status: 400 }
+        );
+    }
     const userRecord = await adminAuth.getUserByEmail(userEmail);
-    
+
     // Check custom claims for admin role
     const customClaims = userRecord.customClaims || {};
     if (!customClaims.admin) {
@@ -42,8 +50,13 @@ export async function POST(request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting rating:', error);
+    // Improved error logging
+    let errorMessage = 'Error al eliminar la calificación';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
     return NextResponse.json(
-      { message: 'Error al eliminar la calificación', error: error.message },
+      { message: 'Error al eliminar la calificación', error: errorMessage },
       { status: 500 }
     );
   }

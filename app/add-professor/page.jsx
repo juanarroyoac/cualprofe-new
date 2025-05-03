@@ -1,7 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { 
+  collection, 
+  addDoc, 
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+  orderBy,
+  serverTimestamp 
+} from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
 export default function AddProfessorPage() {
@@ -12,9 +22,64 @@ export default function AddProfessorPage() {
     department: '',
     courses: ''
   });
+  const [universities, setUniversities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Fetch active universities
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        setIsLoading(true);
+        
+        // First get all unique universities from teachers
+        const teachersQuery = query(collection(db, 'teachers'), orderBy('university'));
+        const teachersSnapshot = await getDocs(teachersQuery);
+        
+        // Create a map to track unique universities
+        const universitiesMap = new Map();
+        
+        // Process teachers to get unique universities
+        teachersSnapshot.forEach(doc => {
+          const teacherData = doc.data();
+          const universityName = teacherData.university;
+          
+          if (universityName && !universitiesMap.has(universityName)) {
+            universitiesMap.set(universityName, {
+              name: universityName,
+              isActive: true // Default to active
+            });
+          }
+        });
+        
+        // Check university settings to filter only active ones
+        for (const [name, university] of universitiesMap.entries()) {
+          const settingDoc = await getDoc(doc(db, 'universitySettings', name));
+          if (settingDoc.exists()) {
+            const settingData = settingDoc.data();
+            university.isActive = settingData.isActive !== false; // Default to true if not set
+          }
+        }
+        
+        // Convert map to array, filtering for active only
+        const universitiesList = Array.from(universitiesMap.values())
+          .filter(uni => uni.isActive)
+          .map(uni => uni.name)
+          .sort((a, b) => a.localeCompare(b, 'es'));
+        
+        setUniversities(universitiesList);
+      } catch (error) {
+        console.error('Error fetching universities:', error);
+        setError('Error al cargar las universidades');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUniversities();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,7 +103,7 @@ export default function AddProfessorPage() {
       // Create submission object
       const submission = {
         ...formData,
-        courses: formData.courses.split(',').map(course => course.trim()),
+        courses: formData.courses.split(',').map(course => course.trim()).filter(course => course),
         status: 'pending',
         createdAt: serverTimestamp()
       };
@@ -125,22 +190,47 @@ export default function AddProfessorPage() {
                 <label htmlFor="university" className="block text-sm font-medium text-gray-700 mb-2 font-roboto">
                   Universidad <span className="text-red-600">*</span>
                 </label>
-                <select
-                  id="university"
-                  name="university"
-                  value={formData.university}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-[#00103f] transition-colors font-roboto bg-white"
-                  required
-                >
-                  <option value="">Seleccionar universidad</option>
-                  <option value="Universidad Católica Andrés Bello">Universidad Católica Andrés Bello</option>
-                  <option value="Universidad Metropolitana">Universidad Metropolitana</option>
-                  <option value="Universidad Central de Venezuela">Universidad Central de Venezuela</option>
-                  <option value="Universidad de Oriente">Universidad de Oriente</option>
-                  <option value="Universidad de Carabobo">Universidad de Carabobo</option>
-                </select>
+                {isLoading ? (
+                  <div className="flex items-center space-x-2 h-12 px-4">
+                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-gray-500 font-roboto">Cargando universidades...</span>
+                  </div>
+                ) : (
+                  <select
+                    id="university"
+                    name="university"
+                    value={formData.university}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-[#00103f] transition-colors font-roboto bg-white"
+                    required
+                  >
+                    <option value="">Seleccionar universidad</option>
+                    {universities.map(university => (
+                      <option key={university} value={university}>
+                        {university}
+                      </option>
+                    ))}
+                    <option value="otra">Otra (no en la lista)</option>
+                  </select>
+                )}
               </div>
+              
+              {formData.university === 'otra' && (
+                <div>
+                  <label htmlFor="customUniversity" className="block text-sm font-medium text-gray-700 mb-2 font-roboto">
+                    Nombre de la universidad <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="customUniversity"
+                    name="customUniversity"
+                    onChange={(e) => setFormData(prev => ({...prev, university: e.target.value}))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-[#00103f] transition-colors font-roboto"
+                    placeholder="Ej. Universidad Simón Bolívar"
+                    required
+                  />
+                </div>
+              )}
               
               <div>
                 <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2 font-roboto">

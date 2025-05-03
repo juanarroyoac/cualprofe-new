@@ -4,15 +4,7 @@ import { Dialog } from '@headlessui/react';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-
-// Lista de universidades
-const universities = [
-  { id: 'ucab', name: 'Universidad Católica Andrés Bello (UCAB)' },
-  { id: 'unimet', name: 'Universidad Metropolitana (UNIMET)' },
-  { id: 'ucv', name: 'Universidad Central de Venezuela (UCV)' },
-  { id: 'udo', name: 'Universidad de Oriente (UDO)' },
-  { id: 'uc', name: 'Universidad de Carabobo (UC)' }
-];
+import { useUniversities } from '@/lib/hooks/useUniversities';
 
 // Lista de años de graduación
 const graduationYears = [];
@@ -28,6 +20,9 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
   const [graduationYear, setGraduationYear] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Fetch universities using the custom hook
+  const { universities, loading: loadingUniversities, error: universitiesError } = useUniversities();
 
   useEffect(() => {
     if (user) {
@@ -182,6 +177,7 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
                   onChange={(e) => setUniversity(e.target.value)}
                   className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-[#00103f] focus:ring-[#00103f] transition-colors py-2 px-3"
                   required
+                  disabled={loadingUniversities}
                 >
                   <option value="">Selecciona una universidad</option>
                   {universities.map((uni) => (
@@ -190,6 +186,21 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
                     </option>
                   ))}
                 </select>
+                {loadingUniversities && (
+                  <p className="mt-1 text-sm text-gray-500">Cargando universidades...</p>
+                )}
+                {universitiesError && (
+                  <p className="mt-1 text-sm text-red-500">{universitiesError}</p>
+                )}
+                {!loadingUniversities && universities.length === 0 && !universitiesError && (
+                  <p className="mt-1 text-sm text-amber-500">No hay universidades disponibles.</p>
+                )}
+                {loadingUniversities && (
+                  <p className="mt-1 text-sm text-gray-500">Cargando universidades...</p>
+                )}
+                {universitiesError && (
+                  <p className="mt-1 text-sm text-red-500">{universitiesError}</p>
+                )}
               </div>
 
               <div>
@@ -221,7 +232,7 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
               <div className="pt-2">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || loadingUniversities}
                   className="w-full inline-flex justify-center rounded-full border border-transparent bg-[#00103f] py-3 px-6 text-base font-medium text-white shadow-sm hover:bg-[#001b6d] focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:ring-offset-2 disabled:opacity-50 transition-colors"
                 >
                   {loading ? 'Guardando...' : 'Guardar y continuar'}

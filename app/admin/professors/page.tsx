@@ -79,11 +79,24 @@ export default function ProfessorsPage() {
         body: JSON.stringify({ professorId: professor.id }),
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al eliminar el profesor');
+      // Parse the response regardless of status
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (e) {
+        console.error('Error parsing JSON response:', e);
+        responseData = { message: 'Error de formato en la respuesta del servidor' };
       }
       
+      // Check if response was successful
+      if (!response.ok) {
+        console.error('Server response error:', responseData);
+        // Instead of throwing an error, just handle it directly
+        alert(`Error al eliminar el profesor: ${responseData.message || 'Error desconocido'}`);
+        return;
+      }
+      
+      // If we got here, deletion was successful
       setProfessors(prev => prev.filter(p => p.id !== professor.id));
       alert('Profesor eliminado con éxito');
     } catch (error) {

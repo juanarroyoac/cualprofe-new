@@ -55,8 +55,20 @@ export default function SettingsPage() {
         
         if (settingsDoc.exists()) {
           const settingsData = settingsDoc.data() as SystemSettings;
-          setSettings(settingsData);
-          setOriginalSettings(settingsData);
+          
+          // Ensure numeric values are valid numbers
+          const sanitizedSettings = {
+            ...settingsData,
+            maxTagsPerRating: typeof settingsData.maxTagsPerRating === 'number' && !isNaN(settingsData.maxTagsPerRating) 
+              ? settingsData.maxTagsPerRating 
+              : defaultSettings.maxTagsPerRating,
+            minCommentLength: typeof settingsData.minCommentLength === 'number' && !isNaN(settingsData.minCommentLength)
+              ? settingsData.minCommentLength
+              : defaultSettings.minCommentLength
+          };
+          
+          setSettings(sanitizedSettings);
+          setOriginalSettings(sanitizedSettings);
         } else {
           // If settings don't exist, create them with defaults
           await setDoc(doc(db, 'settings', 'system'), {
@@ -94,9 +106,10 @@ export default function SettingsPage() {
         [name]: checked
       });
     } else if (type === 'number') {
+      const parsedValue = parseInt(value, 10);
       setSettings({
         ...settings,
-        [name]: parseInt(value, 10)
+        [name]: isNaN(parsedValue) ? 0 : parsedValue
       });
     } else {
       setSettings({
@@ -120,13 +133,21 @@ export default function SettingsPage() {
         return;
       }
       
+      // Ensure numeric values are valid
+      const sanitizedSettings = {
+        ...settings,
+        maxTagsPerRating: isNaN(settings.maxTagsPerRating) ? defaultSettings.maxTagsPerRating : settings.maxTagsPerRating,
+        minCommentLength: isNaN(settings.minCommentLength) ? defaultSettings.minCommentLength : settings.minCommentLength
+      };
+      
       // Update settings document
       await updateDoc(doc(db, 'settings', 'system'), {
-        ...settings,
+        ...sanitizedSettings,
         updatedAt: serverTimestamp()
       });
       
-      setOriginalSettings(settings);
+      setOriginalSettings(sanitizedSettings);
+      setSettings(sanitizedSettings);
       setSuccess('Configuración guardada con éxito');
       
       // Clear success message after 3 seconds
@@ -159,6 +180,13 @@ export default function SettingsPage() {
       </div>
     );
   }
+
+  // Ensure values are not NaN for rendering
+  const safeSettings = {
+    ...settings,
+    maxTagsPerRating: isNaN(settings.maxTagsPerRating) ? '' : settings.maxTagsPerRating,
+    minCommentLength: isNaN(settings.minCommentLength) ? '' : settings.minCommentLength
+  };
 
   return (
     <div className="space-y-6">
@@ -296,7 +324,7 @@ export default function SettingsPage() {
                   type="number"
                   id="maxTagsPerRating"
                   name="maxTagsPerRating"
-                  value={settings.maxTagsPerRating}
+                  value={safeSettings.maxTagsPerRating}
                   onChange={handleInputChange}
                   min="1"
                   max="10"
@@ -312,7 +340,7 @@ export default function SettingsPage() {
                   type="number"
                   id="minCommentLength"
                   name="minCommentLength"
-                  value={settings.minCommentLength}
+                  value={safeSettings.minCommentLength}
                   onChange={handleInputChange}
                   min="0"
                   max="500"

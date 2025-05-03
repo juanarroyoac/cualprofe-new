@@ -1,46 +1,50 @@
-// middleware.js
+// app/admin/middleware.js
 import { NextResponse } from 'next/server';
+import { auth, db } from '@/lib/server/firebase-admin';
 
 export async function middleware(request) {
+  // Get session cookie from request
+  const sessionCookie = request.cookies.get('session')?.value;
+  
+  // Create a response object
   const response = NextResponse.next();
   
-  // Add pathname to headers
-  response.headers.set('x-pathname', request.nextUrl.pathname);
-  
-  // Only require login for rate and profile pages (non-admin)
-  const isRatingPath = request.nextUrl.pathname.startsWith('/rate');
-  const isUserProfilePath = request.nextUrl.pathname.startsWith('/profile');
-  const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
-  
-  // Skip authentication middleware for admin paths
-  if (isAdminPath) {
-    return response;
+  if (!sessionCookie) {
+    console.log('[ADMIN MIDDLEWARE] No session cookie found');
+    return NextResponse.redirect(new URL('/login?redirectTo=/admin', request.url));
   }
   
-  // Skip middleware for all other non-protected paths
-  if (!isRatingPath && !isUserProfilePath) {
+  try {
+    // Verify session
+    const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+    const uid = decodedClaims.uid;
+    
+    // Check admin status
+    const userDoc = await db.collection('users').doc(uid).get();
+    
+    if (!userDoc.exists) {
+      console.log('[ADMIN MIDDLEWARE] User document not found');
+      return NextResponse.redirect(new URL('/login?error=no_user', request.url));
+    }
+    
+    const userData = userDoc.data();
+    const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
+    
+    if (!isAdmin) {
+      console.log('[ADMIN MIDDLEWARE] User is not an admin');
+      return NextResponse.redirect(new URL('/?error=access_denied', request.url));
+    }
+    
+    // User is authenticated and is an admin, allow access
     return response;
+  } catch (error) {
+    console.error('[ADMIN MIDDLEWARE] Error verifying session:', error);
+    
+    // Clear the invalid session cookie
+    const redirectUrl = new URL('/login?error=session_expired', request.url);
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+    redirectResponse.cookies.delete('session');
+    
+    return redirectResponse;
   }
-  
-  // Check if user is logged in
-  const session = request.cookies.get('session')?.value;
-  
-  // If user is logged in, let them through
-  if (session) {
-    return response;
-  }
-  
-  // For rate and profile pages, always require login
-  console.log('[MIDDLEWARE] Protected route requires login');
-  const redirectUrl = new URL('/', request.url);
-  redirectUrl.searchParams.set('showLogin', 'true');
-  redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
-  return NextResponse.redirect(redirectUrl);
 }
-
-// Match all routes
-export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-};

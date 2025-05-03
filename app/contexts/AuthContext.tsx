@@ -73,6 +73,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState<boolean>(false);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'resetPassword'>('login');
   const [authModalRedirectPath, setAuthModalRedirectPath] = useState<string | null>(null);
@@ -83,8 +84,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Sync session with server
   const syncSessionWithServer = async (user: User) => {
     try {
-      // Get ID token
-      const idToken = await getIdToken(user);
+      // Get ID token with forceRefresh to ensure we get a fresh token
+      const idToken = await getIdToken(user, true);
       
       // Send ID token to server to create session cookie
       const response = await fetch('/api/auth', {
@@ -93,6 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ idToken }),
+        credentials: 'same-origin', // Important for cookie handling
       });
       
       if (!response.ok) {
@@ -105,19 +107,61 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Check for auth required param in URL
   useEffect(() => {
+    if (!initialLoadComplete) return; // Wait until initial auth check is complete
+    
     const authRequired = searchParams.get('authRequired');
     const redirectTo = searchParams.get('redirectTo');
     
     if (authRequired === 'true' && !currentUser && !loading) {
       openAuthModal('login', redirectTo || undefined);
     }
-  }, [searchParams, currentUser, loading]);
+  }, [searchParams, currentUser, loading, initialLoadComplete]);
 
+  // Initialize Firebase Auth listener
   useEffect(() => {
+    // Check for cached auth state to reduce flicker
+    if (typeof window !== 'undefined') {
+      const cachedAuthState = localStorage.getItem('cachedAuthState');
+      if (cachedAuthState) {
+        try {
+          const { user } = JSON.parse(cachedAuthState);
+          if (user) {
+            // Set a temporary user object to prevent UI flicker
+            setCurrentUser({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+              // Add minimal required properties to satisfy the User interface
+              getIdToken: () => Promise.resolve(''),
+              providerData: user.providerData || [],
+            } as User);
+          }
+        } catch (e) {
+          localStorage.removeItem('cachedAuthState');
+        }
+      }
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      
       if (user) {
+        // Cache auth state to localStorage for faster loading on refresh
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('cachedAuthState', JSON.stringify({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+              providerData: user.providerData,
+            }
+          }));
+        }
+        
+        setCurrentUser(user);
+        
         try {
           // Create session cookie on the server
           await syncSessionWithServer(user);
@@ -154,6 +198,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           console.error('Error fetching user profile:', error);
         }
       } else {
+        // Clear cached auth state
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('cachedAuthState');
+        }
+        
+        setCurrentUser(null);
         setUserProfile(null);
         
         // Initialize the view count for unauthenticated users
@@ -165,6 +215,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       
       setLoading(false);
+      setInitialLoadComplete(true);
     });
 
     return unsubscribe;
@@ -191,6 +242,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async () => {
     try {
+      // Clear cached auth state immediately for better UX
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('cachedAuthState');
+      }
+      
       // First, call the server API to clear the session cookie
       await fetch('/api/auth', {
         method: 'DELETE',
@@ -198,6 +254,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ uid: currentUser?.uid }),
+        credentials: 'same-origin' // Important for cookie handling
       });
       
       // Then sign out from Firebase client
@@ -253,9 +310,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isEmailVerified: currentUser?.emailVerified || false
   };
 
+  // Only render children once initial auth is determined or we have a cached state
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!initialLoadComplete && loading ? (
+        // You can add a loading spinner component here if desired
+        <div className="hidden">Loading...</div>
+      ) : (
+        children
+      )}
       {showProfileCompletion && currentUser && (
         <ProfileCompletionModal
           isOpen={showProfileCompletion}

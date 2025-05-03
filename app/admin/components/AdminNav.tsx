@@ -9,6 +9,7 @@ const navItems = [
   { name: 'Usuarios', href: '/admin/users' },
   { name: 'Profesores', href: '/admin/professors' },
   { name: 'Solicitudes', href: '/admin/professors/submissions' },
+  { name: 'Calificaciones', href: '/admin/ratings' },
   { name: 'Universidades', href: '/admin/universities' },
   { name: 'Etiquetas', href: '/admin/tags' },
   { name: 'Estadísticas', href: '/admin/analytics' },

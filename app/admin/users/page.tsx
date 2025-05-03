@@ -196,6 +196,8 @@ export default function UsersPage() {
     {
       key: 'displayName',
       label: 'Nombre',
+      width: 'w-1/4', // Ancho relativo
+      priority: 1, // Alta prioridad (siempre visible)
       render: (value: string, row: User) => (
         <div className="flex items-center">
           {row.photoURL && (
@@ -206,12 +208,12 @@ export default function UsersPage() {
             />
           )}
           <div>
-            <div className="text-sm font-medium text-gray-900">
+            <div className="text-sm font-medium text-gray-900 break-words">
               <Link href={`/admin/users/${row.id}`} className="hover:text-blue-600">
                 {value || 'Usuario sin nombre'}
               </Link>
             </div>
-            <div className="text-sm text-gray-500">{row.email}</div>
+            <div className="text-sm text-gray-500 break-words">{row.email}</div>
           </div>
         </div>
       )
@@ -219,13 +221,17 @@ export default function UsersPage() {
     {
       key: 'university',
       label: 'Universidad',
+      width: 'w-1/6',
+      priority: 3, // Baja prioridad (solo visible en pantallas grandes)
       render: (value: string) => (
-        <div className="text-sm text-gray-500">{value || '-'}</div>
+        <div className="text-sm text-gray-500 break-words">{value || '-'}</div>
       )
     },
     {
       key: 'role',
       label: 'Rol',
+      width: 'w-1/6',
+      priority: 1, // Alta prioridad
       render: (value: string, row: User) => (
         <div>
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -243,6 +249,8 @@ export default function UsersPage() {
     {
       key: 'emailVerified',
       label: 'Verificado',
+      width: 'w-16',
+      priority: 2, // Prioridad media
       render: (value: boolean) => (
         <div>
           {value ? (
@@ -264,6 +272,8 @@ export default function UsersPage() {
     {
       key: 'createdAt',
       label: 'Registrado',
+      width: 'w-24',
+      priority: 2, // Prioridad media
       render: (value: Timestamp) => (
         <div className="text-sm text-gray-500">
           {value instanceof Timestamp
@@ -275,6 +285,8 @@ export default function UsersPage() {
     {
       key: 'lastLogin',
       label: 'Último acceso',
+      width: 'w-24',
+      priority: 3, // Baja prioridad
       render: (value: Timestamp) => (
         <div className="text-sm text-gray-500">
           {value instanceof Timestamp
@@ -292,7 +304,7 @@ export default function UsersPage() {
         <p className="text-gray-600">Administra los usuarios registrados en la plataforma</p>
       </div>
       
-      {/* Search and Filters */}
+      {/* Search and Filters - Responsive */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="md:w-1/2">
           <label htmlFor="search" className="sr-only">

@@ -1,5 +1,5 @@
 // app/api/admin/recent-activity/route.js
-import { db } from '@/lib/server/firebase-admin';
+import { adminFirestore as db } from '@/lib/server/firebase-admin';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -7,19 +7,21 @@ export async function GET() {
     // Get recent ratings
     const recentRatingsSnapshot = await db.collection('ratings')
       .orderBy('createdAt', 'desc')
-      .limit(5)
+      .limit(10) // Increased limit to ensure we get enough valid ratings
       .get();
     
-    const recentRatings = recentRatingsSnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        type: 'rating',
-        createdAt: data.createdAt,
-        professorId: data.professorId,
-        ...data
-      };
-    });
+    const recentRatings = recentRatingsSnapshot.docs
+      .map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          type: 'rating',
+          createdAt: data.createdAt,
+          professorId: data.professorId,
+          ...data
+        };
+      })
+      .filter(rating => rating.professorId && rating.professorId !== 'undefined');
     
     // Get recent submissions
     const recentSubmissionsSnapshot = await db.collection('professorSubmissions')
@@ -39,18 +41,12 @@ export async function GET() {
     });
     
     // Combine and sort
-    const combinedActivity = [...recentRatings, ...recentSubmissions]
-      .filter(item => item.createdAt)
-      .sort((a, b) => {
-        const dateA = typeof a.createdAt.toDate === 'function' ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = typeof b.createdAt.toDate === 'function' ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
-      })
-      .slice(0, 5);
+        const combined = [...recentRatings, ...recentSubmissions]
+          .sort((a, b) => b.createdAt - a.createdAt);
     
-    return NextResponse.json(combinedActivity);
-  } catch (error) {
-    console.error('Error fetching recent activity:', error);
-    return NextResponse.json({ error: 'Error fetching activity' }, { status: 500 });
-  }
-}
+        return NextResponse.json(combined);
+      } catch (error) {
+        console.error('Error fetching recent activity:', error);
+        return NextResponse.json({ error: 'Failed to fetch recent activity' }, { status: 500 });
+      }
+    }

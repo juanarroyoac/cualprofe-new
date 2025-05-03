@@ -11,39 +11,77 @@ export async function POST(request) {
     
     if (!sessionCookie) {
       return NextResponse.json(
-        { message: 'No autenticado' },
+        { success: false, message: 'No autenticado' },
         { status: 401 }
       );
     }
 
     // Verificar la cookie de sesión y obtener datos del usuario
-    const userData = await verifySessionCookie(sessionCookie);
+    let userData;
+    try {
+      userData = await verifySessionCookie(sessionCookie);
+    } catch (error) {
+      console.error('Error verificando cookie de sesión:', error);
+      return NextResponse.json(
+        { success: false, message: 'Sesión inválida' },
+        { status: 401 }
+      );
+    }
     
     // Comprobar si el usuario es administrador
     if (!userData.admin) {
       return NextResponse.json(
-        { message: 'Permisos insuficientes' },
+        { success: false, message: 'Permisos insuficientes' },
         { status: 403 }
       );
     }
 
     // Obtener ID del profesor de la solicitud
-    const { professorId } = await request.json();
+    let professorId;
+    try {
+      const body = await request.json();
+      professorId = body.professorId;
+    } catch (error) {
+      console.error('Error al parsear la solicitud:', error);
+      return NextResponse.json(
+        { success: false, message: 'Formato de solicitud inválido' },
+        { status: 400 }
+      );
+    }
+    
     if (!professorId) {
       return NextResponse.json(
-        { message: 'ID de profesor no proporcionado' },
+        { success: false, message: 'ID de profesor no proporcionado' },
         { status: 400 }
       );
     }
 
-    // Eliminar el documento del profesor
-    await adminFirestore.collection('teachers').doc(professorId).delete();
+    // Verificar si el profesor existe antes de eliminarlo
+    try {
+      const professorDoc = await adminFirestore.collection('teachers').doc(professorId).get();
+      
+      if (!professorDoc.exists) {
+        return NextResponse.json(
+          { success: false, message: 'El profesor no existe en la base de datos' },
+          { status: 404 }
+        );
+      }
 
-    return NextResponse.json({ success: true });
+      // Eliminar el documento del profesor
+      await adminFirestore.collection('teachers').doc(professorId).delete();
+      
+      return NextResponse.json({ success: true, message: 'Profesor eliminado correctamente' });
+    } catch (firestoreError) {
+      console.error('Error de Firestore:', firestoreError);
+      return NextResponse.json(
+        { success: false, message: 'Error al acceder a la base de datos', error: firestoreError.message },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('Error eliminando profesor:', error);
+    console.error('Error general eliminando profesor:', error);
     return NextResponse.json(
-      { message: 'Error al eliminar el profesor', error: error.message },
+      { success: false, message: 'Error al eliminar el profesor', error: error.message },
       { status: 500 }
     );
   }

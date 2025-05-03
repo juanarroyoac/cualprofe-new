@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createSessionCookie, revokeAllSessions } from '@/lib/server/auth-utils';
 
+// Mover authOptions a un archivo separado en /lib/auth-config.js
+// NO exportar directamente del archivo de ruta
+
 // Login endpoint - creates a session cookie from Firebase ID token
 export async function POST(request) {
   try {
@@ -21,7 +24,7 @@ export async function POST(request) {
     
     // Set cookie
     const cookieStore = cookies();
-    await cookieStore.set({
+    cookieStore.set({
       name: 'session',
       value: sessionCookie,
       httpOnly: true,
@@ -52,7 +55,7 @@ export async function DELETE(request) {
     
     // Clear the session cookie
     const cookieStore = cookies();
-    await cookieStore.set({
+    cookieStore.set({
       name: 'session',
       value: '',
       maxAge: 0,
