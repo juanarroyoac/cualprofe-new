@@ -1,70 +1,63 @@
-// app/api/auth/route.js
+// app/api/admin/ratings/delete/route.js
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createSessionCookie, revokeAllSessions } from '@/lib/server/auth-utils';
+import { getServerSession } from 'next-auth';
+// Corregir la ruta de importación para authOptions
+import { authOptions } from '@/lib/auth-config.js';
+import { adminAuth, adminFirestore } from '@/lib/server/firebase-admin'; // Ensure this path is correct too
 
-// Mover authOptions a un archivo separado en /lib/auth-config.js
-// NO exportar directamente del archivo de ruta
-
-// Login endpoint - creates a session cookie from Firebase ID token
 export async function POST(request) {
   try {
-    const { idToken } = await request.json();
-    
-    if (!idToken) {
+    // Verify user is authenticated and has admin rights
+    const session = await getServerSession(authOptions); // Pass authOptions here
+    if (!session) {
       return NextResponse.json(
-        { error: 'ID token is required' },
+        { message: 'No autenticado' },
+        { status: 401 }
+      );
+    }
+
+    // Get user and check if they're an admin
+    const userEmail = session.user?.email; // Optional chaining for safety
+    if (!userEmail) {
+        return NextResponse.json(
+            { message: 'Correo electrónico del usuario no encontrado en la sesión' },
+            { status: 400 }
+        );
+    }
+    const userRecord = await adminAuth.getUserByEmail(userEmail);
+
+    // Check custom claims for admin role
+    const customClaims = userRecord.customClaims || {};
+    if (!customClaims.admin) {
+      return NextResponse.json(
+        { message: 'Permisos insuficientes' },
+        { status: 403 }
+      );
+    }
+
+    // Get rating ID from request
+    const { ratingId } = await request.json();
+    if (!ratingId) {
+      return NextResponse.json(
+        { message: 'ID de calificación no proporcionado' },
         { status: 400 }
       );
     }
-    
-    // Create session cookie
-    const expiresIn = 60 * 60 * 24 * 14; // 2 weeks
-    const sessionCookie = await createSessionCookie(idToken, expiresIn);
-    
-    // Set cookie
-    const cookieStore = cookies();
-    cookieStore.set({
-      name: 'session',
-      value: sessionCookie,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: expiresIn,
-      path: '/',
-    });
-    
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Session creation error:', error);
-    return NextResponse.json(
-      { error: 'Unauthorized request' },
-      { status: 401 }
-    );
-  }
-}
 
-// Logout endpoint - clears the session cookie
-export async function DELETE(request) {
-  try {
-    const { uid } = await request.json();
-    
-    // Revoke all sessions if uid is provided
-    if (uid) {
-      await revokeAllSessions(uid);
-    }
-    
-    // Clear the session cookie
-    const cookieStore = cookies();
-    cookieStore.set({
-      name: 'session',
-      value: '',
-      maxAge: 0,
-      path: '/',
-    });
-    
+    // Delete the rating document
+    await adminFirestore.collection('ratings').doc(ratingId).delete();
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Logout error:', error);
-    return NextResponse.json({ success: false, error: error.message });
+    console.error('Error deleting rating:', error);
+    // Improved error logging
+    let errorMessage = 'Error al eliminar la calificación';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
+    return NextResponse.json(
+      { message: 'Error al eliminar la calificación', error: errorMessage },
+      { status: 500 }
+    );
   }
 }
