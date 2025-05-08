@@ -2,16 +2,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, query, where, getDocs, limit, doc, getDoc, orderBy } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db } from '../../lib/firebase';
 
 export default function SearchBar({ 
-  textColor = "text-gray-800", 
-  largerHeading = false, 
-  headlineText = "Buscando con quién meter las materias este semestre?",
-  containerClass = "",
-  headingWeight = "font-semibold", 
-  headingSize = "",
-  hideUniversityDropdown = false
+  containerClass = ""
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -170,43 +164,26 @@ export default function SearchBar({
     }
   };
 
-  // Determine text color classes
-  const textColorClass = textColor === "white" ? "text-white" : "text-gray-800";
-  const dropdownTextClass = textColor === "white" ? "text-white hover:text-gray-200" : "text-gray-700 hover:text-[#00103f]";
-
-  // Determine heading size class - use headingSize if provided, otherwise use default
-  const headingSizeClass = headingSize || (largerHeading ? 'text-5xl md:text-6xl' : 'text-2xl');
-
   return (
-    <div className={`flex flex-col items-center max-w-2xl mx-auto ${containerClass}`}>
-      {/* Only show headline text if it's not empty */}
-      {headlineText && (
-        <h1 className={`${headingSizeClass} ${headingWeight} ${textColorClass} text-center mb-8`}>
-          {headlineText}
-        </h1>
-      )}
-      
+    <div className={`flex flex-col items-center max-w-xl mx-auto ${containerClass}`}>
       <div className="w-full flex flex-col">
-        {/* Search input with results */}
-        <div className="relative w-full mb-6">
+        <div className="relative w-full mb-2">
           <input
             type="text"
             placeholder="Buscar por profesor o materia..."
-            className="w-full py-4 px-6 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-transparent text-base"
+            className="w-full py-2 px-4 pr-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00103f] focus:border-transparent text-sm shadow-sm"
             value={searchQuery} 
             onChange={handleSearchInputChange}
           />
-          
-          {/* Search icon or loading spinner */}
-          <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2">
             {isLoading ? (
-              <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
               <svg 
-                className="h-5 w-5 text-gray-400"
+                className="h-4 w-4 text-gray-400"
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 20 20" 
                 fill="currentColor"
@@ -219,18 +196,16 @@ export default function SearchBar({
               </svg>
             )}
           </div>
-          
-          {/* Search results */}
           {results.length > 0 && (
-            <div className="absolute w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
+            <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
               {results.map((teacher) => (
                 <div
                   key={teacher.id}
-                  className="p-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                  className="p-2 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 text-sm"
                   onClick={() => handleTeacherSelect(teacher.id)}
                 >
                   <div className="font-medium">{teacher.name}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs text-gray-500">
                     {teacher.department && <span>{teacher.department}</span>}
                     {teacher.department && teacher.university && <span> • </span>}
                     {teacher.university && <span>{teacher.university}</span>}
@@ -238,76 +213,13 @@ export default function SearchBar({
                 </div>
               ))}
               {results.length === MAX_SUGGESTIONS && (
-                <div className="p-2 text-center text-sm text-gray-500 border-t border-gray-200">
+                <div className="p-2 text-center text-xs text-gray-500 border-t border-gray-200">
                   Mostrando {MAX_SUGGESTIONS} resultados. Refina tu búsqueda para ver más.
                 </div>
               )}
             </div>
           )}
         </div>
-        
-        {/* University selector - only shown if hideUniversityDropdown is false */}
-        {!hideUniversityDropdown && (
-          <div className="relative flex justify-center" ref={dropdownRef}>
-            <button
-              onClick={toggleDropdown}
-              className={`flex items-center gap-2 ${dropdownTextClass} transition-colors text-lg font-bold`}
-              disabled={loadingUniversities}
-            >
-              {loadingUniversities ? (
-                <div className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>Cargando universidades...</span>
-                </div>
-              ) : (
-                <>
-                  <span>
-                    {selectedUniversity 
-                      ? selectedUniversity.name 
-                      : "Elige tu universidad"}
-                  </span>
-                  {/* Inline SVG for dropdown arrow */}
-                  <svg 
-                    className={`h-5 w-5 ${textColor === "white" ? "text-white" : ""}`}
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 20 20" 
-                    fill="currentColor"
-                  >
-                    <path 
-                      fillRule="evenodd" 
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                      clipRule="evenodd" 
-                    />
-                  </svg>
-                </>
-              )}
-            </button>
-            
-            {/* Dropdown menu */}
-            {isDropdownOpen && !loadingUniversities && (
-              <div className="absolute left-1/2 transform -translate-x-1/2 mt-10 w-72 bg-white rounded-md shadow-lg z-40 overflow-hidden border border-gray-200 max-h-60 overflow-y-auto">
-                {universities.length === 0 ? (
-                  <div className="px-4 py-3 text-gray-500 text-center">
-                    No hay universidades disponibles
-                  </div>
-                ) : (
-                  universities.map((uni) => (
-                    <button
-                      key={uni.id}
-                      className="block w-full text-left px-4 py-3 text-base text-gray-700 hover:bg-gray-100 hover:text-[#00103f]"
-                      onClick={() => selectUniversity(uni)}
-                    >
-                      {uni.name}
-                    </button>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

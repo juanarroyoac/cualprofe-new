@@ -276,294 +276,80 @@ export default function UserProfile() {
   };
   
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
-        <div className="flex items-center text-sm text-gray-500">
-          <span className="mr-2">Estado de la cuenta:</span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            isEmailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
-            {isEmailVerified ? 'Verificada' : 'No verificada'}
-          </span>
+    <div className="max-w-2xl mx-auto px-4 py-12 bg-white">
+      {/* Profile Card */}
+      <div className="rounded-2xl shadow-lg p-8 mb-8" style={{ background: '#00248c', color: '#fff' }}>
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
+          {userProfile?.photoURL ? (
+            <img src={userProfile.photoURL} alt="Avatar" className="w-24 h-24 rounded-full object-cover" />
+          ) : (
+            (userProfile?.firstName?.[0] || currentUser?.email?.[0] || '?').toUpperCase()
+          )}
         </div>
-      </div>
-
-      {/* Personal Information Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-            <UserIcon className="mr-2 h-5 w-5 text-gray-500" />
-            Información Personal
-          </h2>
-        </div>
-        
-        <div className="p-6">
-          <Alert type="success" message={profileSuccess} />
-          <Alert type="error" message={profileError} />
-          
-          <form onSubmit={handleProfileUpdate} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre
-                </label>
-                <input
-                  id="firstName"
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Apellido
-                </label>
-                <input
-                  id="lastName"
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="university" className="block text-sm font-medium text-gray-700 mb-1">
-                  Universidad
-                </label>
-                <select
-                  id="university"
-                  value={university}
-                  onChange={(e) => setUniversity(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                  disabled={loadingUniversities}
-                >
-                  <option value="">Selecciona una universidad</option>
-                  {universities.map((uni) => (
-                    <option key={uni.id} value={uni.id}>
-                      {uni.name}
-                    </option>
-                  ))}
-                </select>
-                {loadingUniversities && (
-                  <p className="mt-1 text-sm text-gray-500">Cargando universidades...</p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="graduationYear" className="block text-sm font-medium text-gray-700 mb-1">
-                  Año de graduación previsto
-                </label>
-                <select
-                  id="graduationYear"
-                  value={graduationYear}
-                  onChange={(e) => setGraduationYear(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                >
-                  <option value="">Selecciona un año</option>
-                  {graduationYears.map((year) => (
-                    <option key={year} value={year.toString()}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4">
-              <div className="text-sm text-gray-500">
-                Correo electrónico: <span className="font-medium text-gray-900">{currentUser.email}</span>
-              </div>
-              <button
-                type="submit"
-                disabled={loading.profile || loadingUniversities}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {loading.profile ? 'Guardando...' : 'Guardar cambios'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      {/* Email Verification Section */}
-      {!isEmailVerified && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              <Mail className="mr-2 h-5 w-5 text-gray-500" />
-              Verificación de Correo
-            </h2>
-          </div>
-          
-          <div className="p-6">
-            <div className="bg-yellow-50 p-4 rounded-lg mb-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <AlertCircle className="h-5 w-5 text-yellow-400" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-yellow-700">
-                    Tu correo electrónico no ha sido verificado. Te recomendamos verificarlo para 
-                    acceder a todas las funcionalidades de CuálProfe.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <button
-              type="button"
-              onClick={handleSendVerificationEmail}
-              disabled={loading.verification || verificationSent}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {loading.verification ? 'Enviando...' : 
-               verificationSent ? 'Correo enviado' : 'Enviar correo de verificación'}
-            </button>
-            
-            {verificationSent && (
-              <p className="mt-2 text-sm text-gray-600">
-                Hemos enviado un correo de verificación a {currentUser.email}. 
-                Por favor, revisa tu bandeja de entrada y sigue las instrucciones.
-              </p>
-            )}
+        <div className="text-center">
+          <div className="text-2xl font-extrabold text-gray-900 mb-1">{userProfile?.firstName} {userProfile?.lastName}</div>
+          <div className="text-sm text-gray-500 mb-2">{currentUser.email}</div>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isEmailVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{isEmailVerified ? 'Verificada' : 'No verificada'}</span>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">{userProfile?.university || 'Universidad'}</span>
           </div>
         </div>
-      )}
-
-      {/* Email Update Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-            <Mail className="mr-2 h-5 w-5 text-gray-500" />
-            Cambiar Correo Electrónico
-          </h2>
-        </div>
-        
-        <div className="p-6">
-          <Alert type="success" message={emailSuccess} />
-          <Alert type="error" message={emailError} />
-          
-          <form onSubmit={handleEmailUpdate} className="space-y-6">
-            <div>
-              <label htmlFor="newEmail" className="block text-sm font-medium text-gray-700 mb-1">
-                Nuevo correo electrónico
-              </label>
-              <input
-                id="newEmail"
-                type="email"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Contraseña actual
-              </label>
-              <input
-                id="currentPassword"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={loading.email}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {loading.email ? 'Actualizando...' : 'Actualizar correo'}
-              </button>
-            </div>
-          </form>
-        </div>
       </div>
 
-      {/* Password Update Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-            <Lock className="mr-2 h-5 w-5 text-gray-500" />
-            Cambiar Contraseña
-          </h2>
-        </div>
-        
-        <div className="p-6">
-          <Alert type="success" message={passwordSuccess} />
-          <Alert type="error" message={passwordError} />
-          
-          <form onSubmit={handlePasswordUpdate} className="space-y-6">
-            <div>
-              <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Contraseña actual
-              </label>
-              <input
-                id="currentPassword"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nueva contraseña
-                </label>
-                <input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirmar nueva contraseña
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={loading.password}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {loading.password ? 'Actualizando...' : 'Actualizar contraseña'}
-              </button>
-            </div>
-          </form>
-        </div>
+      {/* Form Card */}
+      <div className="rounded-2xl shadow-lg p-8 mb-8" style={{ background: '#00248c', color: '#fff' }}>
+        <form onSubmit={handleProfileUpdate} className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input id="firstName" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Nombre" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+            <input id="lastName" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Apellido" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <select id="university" value={university} onChange={(e) => setUniversity(e.target.value)} className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required disabled={loadingUniversities}>
+              <option value="">Universidad</option>
+              {universities.map((uni) => (
+                <option key={uni.id} value={uni.id}>{uni.name}</option>
+              ))}
+            </select>
+            <select id="graduationYear" value={graduationYear} onChange={(e) => setGraduationYear(e.target.value)} className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required>
+              <option value="">Año de graduación</option>
+              {graduationYears.map((year) => (
+                <option key={year} value={year.toString()}>{year}</option>
+              ))}
+            </select>
+          </div>
+          <button type="submit" disabled={loading.profile || loadingUniversities} className="w-full py-3 rounded-xl font-bold text-white bg-blue-700 hover:bg-blue-800 transition disabled:opacity-50 text-base">{loading.profile ? 'Guardando...' : 'Guardar cambios'}</button>
+        </form>
+        <Alert type="success" message={profileSuccess} />
+        <Alert type="error" message={profileError} />
+      </div>
+
+      {/* Email/Password Card */}
+      <div className="rounded-2xl shadow-lg p-8 mb-8" style={{ background: '#00248c', color: '#fff' }}>
+        {/* Email Verification */}
+        {!isEmailVerified && (
+          <div className="flex flex-col gap-2 items-center mb-6">
+            <span className="text-sm text-yellow-700 font-semibold">Tu correo no está verificado</span>
+            <button type="button" onClick={handleSendVerificationEmail} disabled={loading.verification || verificationSent} className="px-5 py-2 rounded-xl font-semibold bg-yellow-400 text-white hover:bg-yellow-500 transition disabled:opacity-50 text-sm">{loading.verification ? 'Enviando...' : verificationSent ? 'Correo enviado' : 'Enviar verificación'}</button>
+            {verificationSent && <span className="text-xs text-yellow-700">Revisa tu bandeja de entrada</span>}
+          </div>
+        )}
+        {/* Email Update */}
+        <form onSubmit={handleEmailUpdate} className="flex flex-col gap-4">
+          <input id="newEmail" type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Nuevo correo electrónico" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+          <input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Contraseña actual" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+          <button type="submit" disabled={loading.email} className="w-full py-3 rounded-xl font-bold text-white bg-blue-700 hover:bg-blue-800 transition disabled:opacity-50 text-base">{loading.email ? 'Actualizando...' : 'Actualizar correo'}</button>
+        </form>
+        <Alert type="success" message={emailSuccess} />
+        <Alert type="error" message={emailError} />
+        {/* Password Update */}
+        <form onSubmit={handlePasswordUpdate} className="flex flex-col gap-4 mt-6">
+          <input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Contraseña actual" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+          <input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Nueva contraseña" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+          <input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirmar nueva contraseña" className="px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base" required />
+          <button type="submit" disabled={loading.password} className="w-full py-3 rounded-xl font-bold text-white bg-blue-700 hover:bg-blue-800 transition disabled:opacity-50 text-base">{loading.password ? 'Actualizando...' : 'Actualizar contraseña'}</button>
+        </form>
+        <Alert type="success" message={passwordSuccess} />
+        <Alert type="error" message={passwordError} />
       </div>
     </div>
   );

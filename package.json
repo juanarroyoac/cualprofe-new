@@ -18,9 +18,12 @@
     "@builder.io/react": "^8.0.10",
     "@headlessui/react": "^2.2.2",
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-slot": "^1.2.2",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "aos": "^2.3.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
     "firebase": "^11.6.0",
     "firebase-admin": "^13.2.0",
@@ -31,7 +34,9 @@
     "papaparse": "^5.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.15.3"
+    "recharts": "^2.15.3",
+    "tailwind-merge": "^3.2.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

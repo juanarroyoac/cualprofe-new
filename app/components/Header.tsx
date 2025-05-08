@@ -3,6 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Inter } from 'next/font/google';
+import { usePathname } from 'next/navigation';
+import CualProfeLogoBlue from '/public/CualProfeLogoBlue.png';
+const inter = Inter({ subsets: ['latin'] });
 
 interface HeaderProps {
   onAuthClick: () => void;
@@ -16,9 +20,10 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
   
-  // Extract first name from userName
-  const firstName = userName ? userName.split(' ')[0] : '';
+  // Extract first name from userName, all caps
+  const firstName = userName ? userName.split(' ')[0].toUpperCase() : '';
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -57,21 +62,22 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
 
   // Determine header background class
   const headerBgClass = transparent 
-    ? scrolled 
-      ? "header-scroll-transition header-scrolled" // scrolled state
-      : "header-scroll-transition bg-transparent" // initial transparent state
-    : "bg-gradient-to-r from-[#001d70] via-[#00248c] to-[#0033a8]"; // non-transparent header
+    ? 'bg-transparent' 
+    : 'bg-white';
+
+  // Determine which logo to use
+  const logoImg = CualProfeLogoBlue;
 
   return (
-    <header className={`w-full ${headerBgClass} text-white z-50 ${scrolled ? 'shadow-md' : ''} ${transparent ? 'absolute top-0 left-0 right-0' : ''}`}>
-      <div className="container mx-auto px-4 py-3">
+    <header className={`w-full ${headerBgClass} text-gray-900 z-50 ${transparent ? 'absolute top-0 left-0 right-0' : ''} ${inter.className}`}>
+      <div className="container mx-auto px-4 py-4">
         {/* Mobile Layout (left-aligned logo) */}
         <div className="sm:hidden flex items-center justify-between">
           {/* Left-aligned Logo */}
           <Link href="/" className="flex items-center">
-            <div className="w-[160px] h-[40px] relative">
+            <div className="w-[140px] h-[35px] relative">
               <Image 
-                src="/CualProfeLogoTransparent.png" 
+                src={logoImg}
                 alt="CuálProfe" 
                 fill
                 style={{ objectFit: 'contain' }}
@@ -86,7 +92,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center justify-center bg-white text-black font-bold p-2 rounded shadow-md hover:bg-gray-100 transition-colors w-10 h-10"
+                className="flex items-center justify-center text-gray-600 p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 w-10 h-10"
                 aria-expanded={showUserMenu}
                 aria-haspopup="true"
               >
@@ -106,20 +112,20 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
               </button>
               
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 text-gray-800">
-                  <div className="py-2 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 text-gray-800">
+                  <div className="py-3 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
                     {userName}
                   </div>
                   <Link 
                     href="/profile" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mi perfil
                   </Link>
                   <Link 
                     href="/my-ratings" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mis calificaciones
@@ -129,7 +135,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
                       onLogout();
                       setShowUserMenu(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
+                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-50 text-red-600 transition-colors duration-200"
                   >
                     Cerrar sesión
                   </button>
@@ -139,7 +145,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-white text-black px-3 py-1 rounded shadow-md text-xs font-bold hover:bg-gray-100 transition-colors"
+              className="bg-[#00248c] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#00103f] transition-colors duration-200"
             >
               INGRESAR
             </button>
@@ -149,9 +155,9 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
         {/* Desktop Layout */}
         <div className="hidden sm:flex sm:justify-between sm:items-center">
           <Link href="/" className="flex items-center">
-            <div className="w-[180px] h-[48px] relative">
+            <div className="w-[160px] h-[40px] relative">
               <Image 
-                src="/CualProfeLogoTransparent.png" 
+                src={logoImg}
                 alt="CuálProfe" 
                 fill
                 style={{ objectFit: 'contain' }}
@@ -165,14 +171,14 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
             <div className="relative" ref={userMenuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 bg-white text-black font-bold px-5 py-2 rounded-lg shadow-md hover:bg-gray-100 transition-colors min-h-[44px]"
+                className="flex items-center gap-2 bg-[#00248c] text-white font-bold px-5 py-2.5 rounded-lg hover:bg-[#00103f] transition-colors duration-200 min-h-[44px]"
                 aria-expanded={showUserMenu}
                 aria-haspopup="true"
               >
-                <span className="uppercase font-poppins">HOLA, {firstName}</span>
+                <span className="font-inter font-bold text-sm tracking-wide">HOLA, {firstName}</span>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  className="h-5 w-5" 
+                  className="h-4 w-4" 
                   viewBox="0 0 20 20" 
                   fill="currentColor"
                   aria-hidden="true"
@@ -186,20 +192,20 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
               </button>
               
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 text-gray-800">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 text-gray-800">
                   <div className="py-3 px-4 border-b border-gray-100 text-sm font-medium text-gray-600">
                     {userName}
                   </div>
                   <Link 
                     href="/profile" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
+                    className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mi perfil
                   </Link>
                   <Link 
                     href="/my-ratings" 
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 font-roboto"
+                    className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200"
                     onClick={() => setShowUserMenu(false)}
                   >
                     Mis calificaciones
@@ -209,7 +215,7 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
                       onLogout();
                       setShowUserMenu(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-600 font-roboto"
+                    className="block w-full text-left px-4 py-3 text-sm hover:bg-gray-50 text-red-600 transition-colors duration-200"
                   >
                     Cerrar sesión
                   </button>
@@ -219,9 +225,9 @@ export default function Header({ onAuthClick, isLoggedIn, onLogout, userName, tr
           ) : (
             <button 
               onClick={onAuthClick}
-              className="bg-white text-black px-5 py-2 rounded-lg shadow-md font-bold hover:bg-gray-100 transition-colors min-h-[44px] uppercase"
+              className="bg-[#00248c] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00103f] transition-colors duration-200 min-h-[44px]"
             >
-              Iniciar sesión
+              INICIAR SESIÓN
             </button>
           )}
         </div>
