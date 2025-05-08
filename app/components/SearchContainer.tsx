@@ -1,10 +1,20 @@
 // app/components/SearchContainer.tsx
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useUniversities } from '@/lib/hooks/useUniversities';
+import { filterTeachers } from '@/lib/utils/suggestions';
+import { normalizeText } from '@/lib/utils/textNormalization';
+import TeacherCard from './TeacherCard';
+import { useTeachers } from '@/lib/hooks/useTeachers';
+
+// Cache keys
+const SEARCH_CACHE_KEY = 'searchCache';
+const TEACHERS_CACHE_KEY = 'teachersCache';
+const CACHE_EXPIRY = 1000 * 60 * 60; // 1 hour
 
 // Map of common abbreviations to full university names
 const UNIVERSITY_ABBREVIATIONS: Record<string, string> = {
@@ -16,24 +26,25 @@ const UNIVERSITY_ABBREVIATIONS: Record<string, string> = {
 interface University {
   id: string;
   name: string;
+  abbreviation?: string;
+  isActive?: boolean;
 }
 
 interface Teacher {
   id: string;
   name: string;
-  school?: string;
-  university?: string;
+  university: string;
+  department: string;
   normalizedName: string;
-  department?: string;
-  [key: string]: string | number | boolean | undefined | null;
 }
 
 interface SearchContainerProps {
   headlineText?: string;
   hideUniversityDropdown?: boolean;
-  onProfessorSelect?: (professorId: string) => void;
+  onProfessorSelect?: (professor: Teacher) => void;
   textColor?: string;
   largerHeading?: boolean;
+  containerClass?: string;
 }
 
 export default function SearchContainer({
@@ -41,176 +52,121 @@ export default function SearchContainer({
   hideUniversityDropdown = false,
   onProfessorSelect,
   textColor,
-  largerHeading
+  largerHeading,
+  containerClass
 }: SearchContainerProps) {
   const router = useRouter();
-  const { currentUser, openAuthModal } = useAuth();
+  const { currentUser, userProfile, openAuthModal } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState<Teacher[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [allTeachers, setAllTeachers] = useState<Teacher[]>([]);
+  const [selectedUniversity, setSelectedUniversity] = useState<string | null>(null);
+  const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
   const [initialized, setInitialized] = useState(false);
-  const [selectedUniversity, setSelectedUniversity] = useState<University | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { universities, loading: loadingUniversities } = useUniversities();
   const [showResults, setShowResults] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const MAX_SUGGESTIONS = 4;
+  const { teachers: allTeachers, loading: loadingTeachers, error } = useTeachers();
 
-  const universities = [
-    { id: 'ucab', name: 'Universidad Católica Andrés Bello (UCAB)' },
-    { id: 'unimet', name: 'Universidad Metropolitana (UNIMET)' }
-  ];
-
-  // Close results when clicking outside
+  // Set user's university from profile
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (resultsRef.current && !resultsRef.current.contains(event.target as Node) &&
-          inputRef.current && !inputRef.current.contains(event.target as Node)) {
-        setShowResults(false);
-      }
+    if (userProfile?.university) {
+      setSelectedUniversity(userProfile.university);
     }
+  }, [userProfile]);
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+  // Initialize cache from localStorage
+  useEffect(() => {
+    const initializeCache = async () => {
+      try {
+        const cachedTeachers = localStorage.getItem(TEACHERS_CACHE_KEY);
+        if (cachedTeachers) {
+          const { data, timestamp } = JSON.parse(cachedTeachers);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setFilteredTeachers(data);
+            setInitialized(true);
+            return;
+          }
+        }
+        await loadTeachers();
+      } catch (error) {
+        console.error('Error initializing cache:', error);
+      }
+    };
+
+    initializeCache();
   }, []);
 
-  // Normalize text for comparison (remove accents, lowercase)
-  const normalizeText = (text: string): string => {
-    return text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, ""); // Remove diacritics (accents)
+  // Load teachers from Firestore
+  const loadTeachers = async () => {
+    if (initialized) return;
+
+    try {
+      const teachersCollection = collection(db, 'teachers');
+      const teachersSnapshot = await getDocs(teachersCollection);
+      const teachersList = teachersSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || '',
+          university: data.university || '',
+          department: data.department || '',
+          normalizedName: normalizeText(data.name || '')
+        } as Teacher;
+      });
+
+      // Cache the teachers data
+      localStorage.setItem(TEACHERS_CACHE_KEY, JSON.stringify({
+        data: teachersList,
+        timestamp: Date.now()
+      }));
+
+      setFilteredTeachers(teachersList);
+      setInitialized(true);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
   };
 
-  // Convert any abbreviation to full university name
-  const getFullUniversityName = (uniName: string): string | null => {
-    if (!uniName) return null;
-
-    const lowercaseName = uniName.toLowerCase();
-    if (UNIVERSITY_ABBREVIATIONS[lowercaseName]) {
-      return UNIVERSITY_ABBREVIATIONS[lowercaseName];
-    }
-
-    return uniName;
-  };
-
-  // Load all teachers once when component mounts
   useEffect(() => {
-    const loadAllTeachers = async () => {
-      if (initialized) return;
+    if (!allTeachers) return;
 
-      try {
-        const teachersCollection = collection(db, 'teachers');
-        const snapshot = await getDocs(teachersCollection);
-        const teachersList = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            normalizedName: normalizeText(data.name || '')
-          };
-        }) as Teacher[];
+    let results = allTeachers;
 
-        setAllTeachers(teachersList);
-        setInitialized(true);
-      } catch (error) {
-        console.error('Error loading teachers:', error);
-      }
-    };
-
-    loadAllTeachers();
-  }, [initialized]);
-
-  // Filter teachers based on search query
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setResults([]);
-      return;
+    // Aplicar filtro de universidad si está seleccionada
+    if (selectedUniversity) {
+      results = results.filter((teacher: Teacher) => 
+        normalizeText(teacher.university) === normalizeText(selectedUniversity)
+      );
     }
 
-    const filterTeachers = () => {
-      setIsLoading(true);
-      try {
-        // Get the proper university name (handling abbreviations)
-        const fullUniversityName = selectedUniversity ? getFullUniversityName(selectedUniversity.id) : null;
-        const normalizedQuery = normalizeText(searchQuery);
-
-        // Filter teachers client-side
-        const filteredTeachers = allTeachers.filter(teacher => {
-          // Check if name contains search query (case insensitive, accent insensitive)
-          const nameMatch = teacher.normalizedName.includes(normalizedQuery);
-
-          // Apply university filter if selected
-          const universityMatch = !fullUniversityName ||
-            normalizeText(teacher.university || '') === normalizeText(fullUniversityName);
-
-          return nameMatch && universityMatch;
-        });
-
-        // Sort by relevance (exact matches first)
-        filteredTeachers.sort((a, b) => {
-          // Exact match at start of name gets highest priority
-          const aStartsWithQuery = a.normalizedName.startsWith(normalizedQuery);
-          const bStartsWithQuery = b.normalizedName.startsWith(normalizedQuery);
-
-          if (aStartsWithQuery && !bStartsWithQuery) return -1;
-          if (!aStartsWithQuery && bStartsWithQuery) return 1;
-
-          // Then sort by name length (shorter names first)
-          return a.name.length - b.name.length;
-        });
-
-        // Limit to max suggestions
-        setResults(filteredTeachers.slice(0, MAX_SUGGESTIONS));
-      } catch (error) {
-        console.error('Error filtering teachers', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Only filter if we've loaded the teachers
-    if (initialized) {
-      // Add a small delay to prevent excessive filtering while typing
-      const timeoutId = setTimeout(() => {
-        filterTeachers();
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
+    // Aplicar búsqueda si hay query
+    if (searchQuery) {
+      results = filterTeachers(results, searchQuery);
     }
-  }, [searchQuery, selectedUniversity, allTeachers, initialized]);
 
-  // Handle professor selection with auth check
-  const handleProfessorSelect = (professorId: string) => {
+    setFilteredTeachers(results);
+  }, [searchQuery, selectedUniversity, allTeachers]);
+
+  const handleProfessorSelect = (professor: Teacher) => {
     setShowResults(false);
 
     if (typeof window !== 'undefined' && !currentUser) {
-      // Get current view count from sessionStorage (as per your code)
-      // CONSIDER: Using ViewTrackingContext might be more consistent here if available
       const count = parseInt(sessionStorage.getItem('professorViewCount') || '0');
-
-      // If they've viewed 1 or more professors already and aren't authenticated, show auth modal
       if (count >= 1) {
-        openAuthModal('login', `/teacher/${professorId}`);
+        openAuthModal('login', `/teacher/${professor.id}`);
         return;
       }
-
-      // Otherwise increment the counter and allow them to view the professor
       sessionStorage.setItem('professorViewCount', (count + 1).toString());
     }
 
-    // Navigate to professor page
     if (onProfessorSelect) {
-      onProfessorSelect(professorId);
+      onProfessorSelect(professor);
     } else {
-      router.push(`/teacher/${professorId}`);
+      router.push(`/teacher/${professor.id}`);
     }
-  };
-
-  const selectUniversity = (university: University) => {
-    setSelectedUniversity(university);
-    setIsDropdownOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,72 +174,60 @@ export default function SearchContainer({
     setShowResults(true);
   };
 
-  const handleInputFocus = () => {
-    if (searchQuery.trim() !== '') {
-      setShowResults(true);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (resultsRef.current && !resultsRef.current.contains(event.target as Node) &&
+          inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  if (loadingTeachers) return <div>Cargando...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Headline - conditional rendering based on prop */}
-      {headlineText !== "" && (
-        <h1 className={`text-5xl md:text-6xl font-semibold ${textColor || 'text-white'} text-center mb-10 ${largerHeading ? 'text-7xl' : ''}`}>
-          {headlineText}
-        </h1>
+    <div className={`w-full ${containerClass}`}>
+      {headlineText && (
+        <div className="text-center mb-8">
+          <h1 className={`${textColor || 'text-white'} ${largerHeading ? 'text-4xl' : 'text-3xl'} font-bold mb-4`}>
+            {headlineText}
+          </h1>
+        </div>
       )}
 
-      {/* Search input */}
-      <div className="relative w-full max-w-2xl mb-2">
+      <div className="relative max-w-2xl mx-auto">
         <input
           ref={inputRef}
           type="text"
-          placeholder="Buscar por profesor o materia..."
-          className="w-full py-4 px-6 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00248c] focus:border-transparent text-base"
           value={searchQuery}
           onChange={handleInputChange}
-          onFocus={handleInputFocus}
+          onFocus={() => setShowResults(true)}
+          placeholder="Buscar profesor, universidad o departamento..."
+          className="w-full px-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00103f] text-gray-900 placeholder-gray-500"
         />
 
-        {/* Search icon */}
-        <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-          {isLoading ? (
-            <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            <svg
-              className="h-5 w-5 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
-        </div>
-
-        {/* Search Results Dropdown */}
-        {showResults && results.length > 0 && (
+        {showResults && searchQuery.trim() !== '' && filteredTeachers.length > 0 && (
           <div
             ref={resultsRef}
-            className="absolute z-10 mt-2 w-full bg-white rounded-lg shadow-lg max-h-96 overflow-y-auto"
+            className="absolute z-10 w-full mt-1 bg-[#00103f]/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg max-h-96 overflow-y-auto"
           >
-            <ul className="py-2">
-              {results.map((professor) => (
+            <ul className="divide-y divide-white/10">
+              {filteredTeachers.slice(0, MAX_SUGGESTIONS).map(professor => (
                 <li
                   key={professor.id}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleProfessorSelect(professor.id)}
+                  className="px-4 py-3 hover:bg-white/10 cursor-pointer transition-colors duration-150"
+                  onClick={() => handleProfessorSelect(professor)}
                 >
-                  <div className="font-medium">{professor.name}</div>
-                  <div className="text-sm text-gray-500">
-                    {professor.department} • {universities.find(u => u.id === professor.university)?.name || professor.university}
+                  <div className="font-medium text-white">{professor.name}</div>
+                  <div className="text-sm text-white/70">
+                    {professor.university} - {professor.department}
                   </div>
                 </li>
               ))}
@@ -292,48 +236,84 @@ export default function SearchContainer({
         )}
       </div>
 
-      {/* University selector - only show if not hidden */}
       {!hideUniversityDropdown && (
-        <div className="relative mt-4">
+        <div className="relative mt-2 max-w-2xl mx-auto text-center">
           <button
-            className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors text-lg font-bold"
+            type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="inline-flex items-center text-sm text-white/80 hover:text-white transition-colors duration-200"
           >
-            <span>
-              {selectedUniversity
-                ? universities.find(u => u.id === selectedUniversity.id)?.name
-                : "Elige tu universidad"}
-            </span>
+            {selectedUniversity ? (
+              <>
+                <span className="mr-1">Universidad:</span>
+                <span className="font-medium">{selectedUniversity}</span>
+              </>
+            ) : (
+              <>
+                <span className="mr-1">Todas las universidades</span>
+              </>
+            )}
             <svg
-              className={`h-5 w-5 text-white transform transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              className={`ml-1 h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
-          {/* University dropdown */}
           {isDropdownOpen && (
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-10 mt-1 w-64 bg-white rounded-lg shadow-lg">
+            <div
+              ref={dropdownRef}
+              className="absolute z-10 mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-60 overflow-y-auto"
+            >
               <ul className="py-1">
-                {universities.map(uni => (
-                  <li
-                    key={uni.id}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
-                    onClick={() => selectUniversity(uni)}
+                <li>
+                  <button
+                    onClick={() => {
+                      setSelectedUniversity(null);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                      !selectedUniversity ? 'bg-gray-50' : ''
+                    }`}
                   >
-                    {uni.name}
-                  </li>
-                ))}
+                    Todas las universidades
+                  </button>
+                </li>
+                {universities
+                  .filter(u => u.isActive !== false)
+                  .map(university => (
+                    <li key={university.id}>
+                      <button
+                        onClick={() => {
+                          setSelectedUniversity(university.name);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                          selectedUniversity === university.name ? 'bg-gray-50' : ''
+                        }`}
+                      >
+                        {university.name}
+                      </button>
+                    </li>
+                  ))}
               </ul>
             </div>
           )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {filteredTeachers.map((teacher) => (
+          <TeacherCard key={teacher.id} teacher={teacher} />
+        ))}
+      </div>
+
+      {filteredTeachers.length === 0 && (
+        <div className="text-center text-gray-500 mt-8">
+          No se encontraron resultados para tu búsqueda.
         </div>
       )}
     </div>

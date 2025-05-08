@@ -5,6 +5,8 @@ import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { useUniversities } from '@/lib/hooks/useUniversities';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useRouter } from 'next/router';
 
 // Lista de años de graduación
 const graduationYears = [];
@@ -23,6 +25,8 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
   
   // Fetch universities using the custom hook
   const { universities, loading: loadingUniversities, error: universitiesError } = useUniversities();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -64,41 +68,45 @@ export default function ProfileCompletionModal({ isOpen, onClose, user }) {
     }
 
     if (!graduationYear) {
-      setError('Por favor, selecciona tu año de graduación previsto.');
+      setError('Por favor, selecciona tu año de graduación.');
       setLoading(false);
       return;
     }
-
-    if (!auth.currentUser) {
-      setError('Error: Usuario no autenticado.');
-      setLoading(false);
-      return;
-    }
-
-    // Construir el nombre completo para displayName
-    const displayName = `${firstName.trim()} ${lastName.trim()}`;
 
     try {
-      // Actualizar perfil de Firebase Auth
-      await updateProfile(auth.currentUser, {
-        displayName: displayName,
-      });
+      // Check if there are any teachers for the selected university
+      const teachersQuery = query(
+        collection(db, 'teachers'),
+        where('university', '==', university)
+      );
+      const teachersSnapshot = await getDocs(teachersQuery);
+      
+      if (teachersSnapshot.empty) {
+        // If no teachers exist, redirect to add professor page
+        router.push(`/add-professor?university=${encodeURIComponent(university)}`);
+        return;
+      }
 
-      // Actualizar documento de usuario en Firestore
-      const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
+      // Update user profile
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        displayName: displayName,
-        university: university,
-        graduationYear: graduationYear,
-        profileCompleted: true
+        university,
+        graduationYear,
+        profileCompleted: true,
+        lastUpdated: serverTimestamp()
       });
 
-      onClose(); // Cerrar modal al tener éxito
+      // Update auth display name
+      await updateProfile(auth.currentUser, {
+        displayName: `${firstName.trim()} ${lastName.trim()}`
+      });
+
+      onClose();
     } catch (error) {
-      console.error('Error al actualizar perfil:', error);
-      setError('Ocurrió un error al actualizar tu perfil. Intenta de nuevo.');
+      console.error('Error updating profile:', error);
+      setError('Hubo un error al guardar tu perfil. Por favor, intenta nuevamente.');
     } finally {
       setLoading(false);
     }

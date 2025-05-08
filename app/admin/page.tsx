@@ -5,14 +5,25 @@ import Link from 'next/link';
 import { Timestamp } from 'firebase/firestore';
 
 // Componente de tarjeta estadística
-function StatCard({ title, value, href }: { title: string; value: string | number; href: string }) {
+function StatCard({ title, value, href, trend }: { 
+  title: string; 
+  value: string | number; 
+  href: string;
+  trend?: { value: number; isPositive: boolean };
+}) {
   return (
-    <Link href={href} className="block bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-      <div className="flex items-center">
-        <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl font-semibold text-gray-900">{value}</p>
-        </div>
+    <Link href={href} className="block bg-white p-6 border border-gray-200 hover:border-gray-300">
+      <div>
+        <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
+        <p className="text-2xl font-semibold text-gray-900">{value}</p>
+        {trend && (
+          <div className="mt-2 flex items-center">
+            <span className={`text-sm font-medium ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+              {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
+            </span>
+            <span className="text-xs text-gray-500 ml-1">vs last month</span>
+          </div>
+        )}
       </div>
     </Link>
   );
@@ -97,99 +108,75 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
-        <p className="text-gray-600">Información general y actividad reciente</p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Panel de Administración</h1>
+          <p className="text-sm text-gray-500 mt-1">Información general y actividad reciente</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50">
+            Exportar
+          </button>
+        </div>
       </div>
       
       {/* Cuadrícula de estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Profesores" 
           value={stats.totalProfessors} 
           href="/admin/professors"
+          trend={{ value: 12, isPositive: true }}
         />
         <StatCard 
           title="Usuarios" 
           value={stats.totalUsers} 
           href="/admin/users"
+          trend={{ value: 8, isPositive: true }}
         />
         <StatCard 
           title="Calificaciones" 
           value={stats.totalRatings} 
           href="/admin/professors"
+          trend={{ value: 15, isPositive: true }}
         />
         <StatCard 
           title="Solicitudes Pendientes" 
           value={stats.pendingSubmissions} 
           href="/admin/professors/submissions"
+          trend={{ value: 5, isPositive: false }}
         />
       </div>
       
       {/* Actividad reciente */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Actividad Reciente</h2>
-        </div>
-        
-        {error && (
-          <div className="px-6 py-4 text-center text-red-500">
-            <p>Error: {error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Reintentar
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium text-gray-900">Actividad Reciente</h2>
+            <button className="text-sm text-gray-600 hover:text-gray-900">
+              Ver todo
             </button>
           </div>
-        )}
-        
+        </div>
         <div className="divide-y divide-gray-200">
-          {!error && recentActivity.length > 0 ? (
-            recentActivity.map((activity) => (
-              <div key={activity.id} className="px-6 py-4">
-                <div className="flex items-center">
-                  <div className={`w-2 h-2 rounded-full mr-3 ${
-                    activity.type === 'rating' ? 'bg-green-500' : 'bg-blue-500'
-                  }`}></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {activity.type === 'rating' 
-                        ? `Nueva calificación para profesor` 
-                        : `Nueva solicitud de profesor: ${activity.name}`}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formatFirestoreDate(activity.createdAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <Link 
-                      href={activity.type === 'rating' 
-                        ? (activity.professorId ? `/admin/professors/${activity.professorId}` : '/admin/professors')
-                        : `/admin/professors/submissions/${activity.id}`}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-800"
-                    >
-                      {activity.type === 'rating' && !activity.professorId
-                        ? "Ver profesores"
-                        : "Ver detalles →"}
-                    </Link>
-                  </div>
-                </div>
+          {recentActivity.length > 0 ? (
+            recentActivity.map((activity, index) => (
+              <div key={index} className="px-6 py-4 hover:bg-gray-50">
+                <p className="text-sm text-gray-900">{activity.description}</p>
+                <p className="text-xs text-gray-500 mt-1">{activity.timestamp}</p>
               </div>
             ))
           ) : (
-            !error && (
-              <div className="px-6 py-4 text-center text-gray-500">
-                No hay actividad reciente
-              </div>
-            )
+            <div className="px-6 py-8 text-center">
+              <p className="text-sm text-gray-500">No hay actividad reciente para mostrar.</p>
+            </div>
           )}
         </div>
       </div>

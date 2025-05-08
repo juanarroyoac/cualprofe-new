@@ -317,286 +317,149 @@ export default function Page() {
   // --- Page Render ---
   return (
     <LoginLimiter>
-      <div className="w-full bg-[#f1f5f9]">
-        <div className="container mx-auto px-4 py-6 max-w-5xl">
+      <div className="w-full bg-gray-50">
+        <div className="container mx-auto px-4 py-8 max-w-5xl">
           {/* Teacher Header Section */}
-          <section ref={headerRef} className="mb-8 bg-white rounded-xl shadow-md overflow-hidden">
+          <section className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="p-6 md:p-8">
-              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                <div className="flex-grow">
-                  <h1 className="text-4xl sm:text-5xl font-poppins font-bold text-[#00103f] mb-2">
+              <div className="flex flex-col md:flex-row gap-8">
+                {/* Left Column - Rating and Basic Info */}
+                <div className="flex-1">
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-5xl font-bold text-gray-900">{averageRating}</span>
+                    <span className="text-xl text-gray-500">/ 5</span>
+                  </div>
+                  
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
                     {teacher.name || 'Nombre no disponible'}
                   </h1>
-                  <p className="text-base text-gray-600 font-roboto">
+                  
+                  <p className="text-gray-600 mb-6">
                     Profesor/a en <span className="font-medium">{teacher.department || teacher.school || 'Departamento/Escuela no especificado'}</span> de la{' '}
-                    <span className="font-semibold text-[#00248c]">
+                    <span className="font-semibold text-gray-900">
                       {teacher.university || 'Universidad no especificada'}
                       {universityAbbreviation && ` (${universityAbbreviation})`}
                     </span>
                   </p>
-                </div>
-                <div className="flex-shrink-0 mt-3 sm:mt-0">
-                  <button
-                    onClick={handleRateClick}
-                    className={`${hasUserRated ? 'bg-[#00248c]' : 'bg-[#00103f]'} hover:bg-[#001c6f] text-white rounded-lg px-5 py-3 text-sm font-medium transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto flex items-center justify-center gap-2`}
-                    disabled={!(typeof id === 'string' && id)}
-                    aria-label={`Calificar a ${firstName}`}
-                  >
-                    {hasUserRated && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                    Calificar a {firstName}
+                  
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="text-sm text-gray-500 mb-1">Calificaciones</div>
+                      <div className="text-xl font-semibold text-gray-900">{ratings.length}</div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="text-sm text-gray-500 mb-1">Recomendación</div>
+                      <div className="text-xl font-semibold text-gray-900">{wouldTakeAgainPercent}%</div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="text-sm text-gray-500 mb-1">Dificultad</div>
+                      <div className="text-xl font-semibold text-gray-900">{averageDifficulty}/5</div>
+                    </div>
+                  </div>
+                  
+                  <button className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm">
+                    Guardar profesor
                   </button>
                 </div>
-              </div>
-              {topTags.length > 0 && (
-                <div className="mt-6">
-                  <TagsList tags={topTags} selectable={false} small={true} uppercase={true} />
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Stats & Distribution Section */}
-          <section className="mb-8">
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left Side: Overall Score & Key Stats */}
-              <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-center items-center md:items-start">
-                <div className="mb-6 text-center md:text-left">
-                  {/* Rating score */}
-                  <div className="flex items-center justify-center md:justify-start mb-2">
-                    <span className="text-7xl font-poppins font-bold text-[#00103f]">
-                      {totalRatingsCount > 0 ? averageRating.toFixed(1) : 'N/A'}
-                    </span>
-                    {totalRatingsCount > 0 && 
-                      <span className="text-3xl font-poppins text-gray-400 ml-1 mt-3">/5</span>
-                    }
-                  </div>
-                  <p className="text-sm text-gray-500 mt-2 font-roboto">
-                    {totalRatingsCount > 0
-                      ? `Calidad General basada en ${totalRatingsCount} ${totalRatingsCount === 1 ? 'calificación' : 'calificaciones'}`
-                      : 'Aún no hay calificaciones para calcular la calidad general.'}
-                  </p>
-                </div>
-                <div className="flex flex-row justify-center md:justify-start gap-4 w-full">
-                  {/* Would Take Again Stat */}
-                  <div className="bg-white p-4 rounded-xl text-center shadow-sm flex-1 border border-gray-100">
-                    <div className="text-3xl font-poppins font-bold text-[#00103f]">
-                      {totalRatingsCount > 0 ? `${wouldTakeAgainPercent}%` : 'N/A'}
-                    </div>
-                    <div className="text-xs uppercase tracking-wide text-gray-600 mt-1 font-poppins">Lo escogería otra vez</div>
-                  </div>
-                  {/* Difficulty Stat */}
-                  <div className="bg-white p-4 rounded-xl text-center shadow-sm flex-1 border border-gray-100">
-                    <div className="text-3xl font-poppins font-bold text-[#00103f]">
-                      {totalRatingsCount > 0 ? averageDifficulty.toFixed(1) : 'N/A'}
-                      {totalRatingsCount > 0 && 
-                        <span className="text-xl text-gray-400">/5</span>
-                      }
-                    </div>
-                    <div className="text-xs uppercase tracking-wide text-gray-600 mt-1 font-poppins">Nivel de Dificultad</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Right Side: Rating Distribution */}
-              <div className="bg-white rounded-xl p-6 shadow-md overflow-hidden">
-                <h3 className="text-lg font-semibold font-poppins text-[#00103f] mb-4 text-center md:text-left">
-                  Distribución de Calificaciones
-                </h3>
-                {totalRatingsCount > 0 ? (
-                  <div className="space-y-4">
-                    {ratingLabels.map((label, index) => {
-                      const count = distributionData[index] || 0;
+                
+                {/* Right Column - Rating Distribution */}
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Distribución de Calificaciones</h2>
+                  <div className="space-y-3">
+                    {distributionData.map((count, index) => {
                       const percentage = totalRatingsCount > 0 ? (count / totalRatingsCount) * 100 : 0;
-                      
+                      const rating = 5 - index;
                       return (
-                        <div key={label} className="flex items-center text-sm">
-                          <div className="w-6 font-roboto font-medium text-gray-700 text-center">{label}</div>
-                          <div className="flex-1 mx-3 bg-gray-200 h-6 rounded-full overflow-hidden">
+                        <div key={rating} className="flex items-center gap-3">
+                          <span className="w-8 text-sm font-medium text-gray-600">{rating}</span>
+                          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                             <div 
-                              className={`h-full bg-[#00103f] rating-bar ${animateDistribution ? 'animate-bar' : ''}`} 
-                              style={{ '--rating-percentage': `${percentage}%` }} 
-                              title={`${count} calificación${count !== 1 ? 'es' : ''} (${percentage.toFixed(0)}%)`}
-                              role="progressbar"
-                              aria-valuenow={percentage}
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                            ></div>
+                              className="h-full bg-gray-900 transition-all duration-500"
+                              style={{ width: `${percentage}%` }}
+                            />
                           </div>
-                          <div className="w-8 text-right font-medium text-gray-700 font-roboto">{count}</div>
+                          <span className="w-12 text-sm text-gray-500">{count}</span>
                         </div>
                       );
                     })}
                   </div>
-                ) : (
-                  <div className="flex items-center justify-center h-32">
-                    <p className="text-sm text-gray-500 italic text-center font-roboto">
-                      Aún no hay calificaciones para mostrar la distribución.
-                    </p>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </section>
 
-          {/* --- Ratings Feed Section --- */}
-          <section className="mb-10">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-              <div className="p-6 border-b border-gray-100">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <h2 className="text-2xl md:text-3xl font-poppins font-bold text-[#00103f]">
-                    {totalRatingsCount} {totalRatingsCount === 1 ? 'Calificación' : 'Calificaciones'} de Estudiantes
-                  </h2>
+          {/* Tags Section */}
+          {topTags.length > 0 && (
+            <section className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Etiquetas Principales</h2>
+              <TagsList tags={topTags} selectable={false} />
+            </section>
+          )}
+
+          {/* Ratings Section */}
+          <section className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {ratings.length} Calificaciones de Estudiantes
+                </h2>
+                <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+                  <option value="newest">Más recientes</option>
+                  <option value="highest">Mejor calificadas</option>
+                  <option value="lowest">Peor calificadas</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="divide-y divide-gray-200">
+              {ratings.map((rating) => (
+                <div key={rating.id} className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-4 h-4 rounded-full ${
+                              i < rating.quality ? 'bg-gray-900' : 'bg-gray-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {rating.createdAt.toLocaleDateString('es-ES')}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="bg-gray-50 px-3 py-1 rounded-lg text-sm text-gray-600">
+                        Dificultad: {rating.difficulty}/5
+                      </div>
+                      <div className="bg-gray-50 px-3 py-1 rounded-lg text-sm text-gray-600">
+                        {rating.wouldTakeAgain ? 'Lo recomendaría' : 'No lo recomendaría'}
+                      </div>
+                    </div>
+                  </div>
                   
-                  {/* Filter Options */}
-                  {ratings.length > 1 && (
-                    <div className="flex items-center">
-                      <label htmlFor="rating-filter" className="mr-2 text-sm font-medium text-gray-700">Ordenar por:</label>
-                      <select 
-                        id="rating-filter"
-                        value={filterOption}
-                        onChange={handleFilterChange}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#00103f] focus:border-[#00103f] p-2"
-                        aria-label="Filtrar calificaciones"
-                      >
-                        <option value="newest">Más recientes</option>
-                        <option value="highest">Mayor calificación</option>
-                        <option value="lowest">Menor calificación</option>
-                      </select>
+                  <p className="text-gray-700 mb-4">{rating.comment}</p>
+                  
+                  {rating.tags && rating.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {rating.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   )}
                 </div>
-              </div>
-
-              {ratings.length > 0 ? (
-                <div className="divide-y divide-gray-100">
-                  {ratings.map(rating => (
-                    <div key={rating.id} className="p-6 hover:bg-gray-50 transition-colors rating-card">
-                      <div className="flex flex-col md:flex-row justify-between gap-4">
-                        {/* Left side: Course info, comment, tags */}
-                        <div className="flex-grow">
-                          <div className="mb-4">
-                            {/* Display Subject Name if available */}
-                            {rating.subjectName && (
-                              <h5 className="text-lg font-semibold font-poppins text-[#00103f] uppercase mb-1">
-                                {rating.subjectName}
-                              </h5>
-                            )}
-                            {/* Display Course Code if available */}
-                            {rating.course && (
-                              <h4 className="font-medium text-gray-600 text-sm mb-1 font-roboto">{rating.course}</h4>
-                            )}
-                            {/* Display Date with icon */}
-                            <p className="text-xs text-gray-500 font-roboto flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                              {rating.createdAt instanceof Date && !isNaN(rating.createdAt.getTime())
-                                ? rating.createdAt.toLocaleDateString('es-VE', { year: 'numeric', month: 'long', day: 'numeric' })
-                                : 'Fecha inválida'}
-                            </p>
-                          </div>
-
-                          {/* Comment with quote styling */}
-                          {rating.comment && (
-                            <div className="relative pl-4 mb-4 border-l-2 border-gray-200">
-                              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap font-roboto">
-                                {rating.comment}
-                              </p>
-                            </div>
-                          )}
-
-                          {/* Tags */}
-                          {rating.tags && Array.isArray(rating.tags) && rating.tags.length > 0 && (
-                            <div className="mb-4">
-                              <TagsList tags={rating.tags.filter(tag => typeof tag === 'string')} selectable={false} small={true} uppercase={true} />
-                            </div>
-                          )}
-                          
-                          {/* Rating Details Grid (Optional fields) */}
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-sm border-t border-gray-100 pt-4 mt-4 font-roboto">
-                            <div className="flex items-center">
-                              <span className="text-gray-500 mr-1">Lo tomaría otra vez:</span>
-                              <span className="font-medium text-gray-800">
-                                {typeof rating.wouldTakeAgain === 'boolean' 
-                                  ? (rating.wouldTakeAgain ? 'Sí' : 'No')
-                                  : 'N/A'}
-                              </span>
-                            </div>
-                            {rating.modalidad && (
-                              <div><span className="text-gray-500 mr-1">Modalidad:</span><span className="font-medium">{rating.modalidad}</span></div>
-                            )}
-                            {rating.nrc && (
-                              <div><span className="text-gray-500 mr-1">NRC:</span><span className="font-medium">{rating.nrc}</span></div>
-                            )}
-                            {rating.grade && (
-                              <div><span className="text-gray-500 mr-1">Nota Obtenida:</span><span className="font-medium">{rating.grade}</span></div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Right Column: Rating Scores */}
-                        <div className="flex-shrink-0 flex flex-row md:flex-col items-center justify-center md:justify-end gap-4 mt-2 md:mt-0">
-                          {/* Quality Score */}
-                          <div className="text-center">
-                            <p className="text-xs font-poppins text-gray-500 uppercase tracking-wide mb-1">Calidad</p>
-                            <div className={`${getRatingColor(rating.quality)} text-white inline-block px-4 py-2 rounded-lg text-center min-w-[70px] shadow-sm`}>
-                              <span className="text-2xl font-poppins font-bold">{(rating.quality ?? 0).toFixed(1)}</span>
-                            </div>
-                          </div>
-                          {/* Difficulty Score */}
-                          <div className="text-center">
-                            <p className="text-xs font-poppins text-gray-500 uppercase tracking-wide mb-1">Dificultad</p>
-                            <div className="bg-gray-700 text-white inline-block px-4 py-2 rounded-lg text-center min-w-[70px] shadow-sm">
-                              <span className="text-2xl font-poppins font-bold">{(rating.difficulty ?? 0).toFixed(1)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                // Empty state when no ratings exist
-                <div className="text-center py-12 px-6 border-t border-gray-100">
-                  <div className="inline-block p-4 bg-[#f1f5f9] rounded-full mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#00103f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold font-poppins text-[#00103f] mb-2">Aún no hay calificaciones</h3>
-                  <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto font-roboto">
-                    Sé el primero en calificar a {firstName} y ayuda a otros estudiantes a elegir sus clases con confianza.
-                  </p>
-                  <button
-                    onClick={handleRateClick}
-                    className="bg-[#00103f] hover:bg-[#00248c] text-white rounded-lg px-6 py-3 text-sm font-medium transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!(typeof id === 'string' && id)}
-                    aria-label={`Calificar a ${firstName}`}
-                  >
-                    Calificar ahora
-                  </button>
-                </div>
-              )}
+              ))}
             </div>
           </section>
         </div>
       </div>
-
-      {/* Animation styles */}
-      <style jsx>{`
-        .rating-bar {
-          transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-          width: 0;
-        }
-        
-        .animate-bar {
-          width: var(--rating-percentage);
-        }
-      `}</style>
     </LoginLimiter>
   );
 }

@@ -81,27 +81,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   
   const searchParams = useSearchParams();
 
-  // Sync session with server
-  const syncSessionWithServer = async (user: User) => {
+  const syncSessionWithServer = async () => {
     try {
-      // Get ID token with forceRefresh to ensure we get a fresh token
-      const idToken = await getIdToken(user, true);
-      
-      // Send ID token to server to create session cookie
-      const response = await fetch('/api/auth', {
+      const response = await fetch('/api/auth/session', {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-        credentials: 'same-origin', // Important for cookie handling
+          'Content-Type': 'application/json'
+        }
       });
-      
+
       if (!response.ok) {
-        console.error('Failed to create session cookie');
+        console.error('Error syncing session with server:', response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        console.error('Failed to sync session:', data.error);
       }
     } catch (error) {
-      console.error('Error syncing session with server:', error);
+      console.error('Error syncing session:', error);
     }
   };
 
@@ -164,7 +164,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         try {
           // Create session cookie on the server
-          await syncSessionWithServer(user);
+          await syncSessionWithServer();
           
           // Get user profile from Firestore
           const userDocRef = doc(db, 'users', user.uid);

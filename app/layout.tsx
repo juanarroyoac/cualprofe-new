@@ -13,6 +13,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ViewTrackingProvider } from './contexts/ViewTrackingContext';
 import { Analytics } from "@vercel/analytics/react";
 import AOSInitializer from './components/AOSInitializer';
+import LoadingBar from './components/LoadingBar';
 
 // Font definitions stay the same
 const nunito_sans = Nunito_Sans({
@@ -58,7 +59,8 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className="flex flex-col min-h-screen font-inter">
-        <Suspense fallback={<div>Loading authentication...</div>}>
+        <LoadingBar />
+        <Suspense fallback={null}>
           <AuthProvider>
             <ViewTrackingProvider>
               <Suspense fallback={null}>
@@ -66,7 +68,7 @@ export default function RootLayout({
               </Suspense>
 
               {!isAdminRoute && (
-                <Suspense fallback={<div className="h-16 w-full bg-gray-200"></div>}>
+                <Suspense fallback={null}>
                   <HeaderWrapper />
                 </Suspense>
               )}

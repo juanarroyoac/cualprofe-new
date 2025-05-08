@@ -28,6 +28,18 @@ export default function AddProfessorPage() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Check for pre-filled university from profile creation
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const preFilledUniversity = urlParams.get('university');
+    if (preFilledUniversity) {
+      setFormData(prev => ({
+        ...prev,
+        university: preFilledUniversity
+      }));
+    }
+  }, []);
+
   // Fetch active universities
   useEffect(() => {
     const fetchUniversities = async () => {
@@ -93,43 +105,33 @@ export default function AddProfessorPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-    
+    setSuccessMessage('');
+
     try {
-      // Validate required fields
-      if (!formData.name || !formData.university || !formData.department) {
-        throw new Error('Por favor, complete todos los campos requeridos.');
-      }
-
-      // Create submission object
-      const submission = {
+      // Add professor to database
+      const docRef = await addDoc(collection(db, 'teachers'), {
         ...formData,
-        courses: formData.courses.split(',').map(course => course.trim()).filter(course => course),
-        status: 'pending',
-        createdAt: serverTimestamp()
-      };
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
 
-      // Add to professorSubmissions collection
-      await addDoc(collection(db, 'professorSubmissions'), submission);
-      
-      // Show success message
-      setSuccessMessage('¡Gracias! Tu solicitud ha sido enviada y será revisada pronto.');
-      
-      // Reset form
+      setSuccessMessage('¡Profesor agregado exitosamente!');
       setFormData({
         name: '',
         university: '',
         department: '',
         courses: ''
       });
-      
-      // Redirect after 3 seconds
-      setTimeout(() => {
-        router.push('/');
-      }, 3000);
-      
-    } catch (err) {
-      console.error('Error submitting professor:', err);
-      setError(err.message || 'Ocurrió un error al enviar el formulario. Inténtalo de nuevo.');
+
+      // If this was from profile creation, redirect back to complete profile
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromProfile = urlParams.get('fromProfile');
+      if (fromProfile === 'true') {
+        router.push('/profile');
+      }
+    } catch (error) {
+      console.error('Error adding professor:', error);
+      setError('Hubo un error al agregar el profesor. Por favor, intenta nuevamente.');
     } finally {
       setIsSubmitting(false);
     }

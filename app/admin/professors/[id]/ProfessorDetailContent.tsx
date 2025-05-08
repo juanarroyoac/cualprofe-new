@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { 
   doc, 
   getDoc, 
-  updateDoc, 
+  updateDoc,
   collection, 
   getDocs, 
   query, 
@@ -16,7 +16,6 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { updateDocument, deleteDocument } from '../../lib/firestore-helpers';
 
 interface Professor {
   id: string;
@@ -59,7 +58,7 @@ export default function ProfessorDetail({ id }: { id: string }) {
       try {
         setLoading(true);
         
-        // Get professor document
+        // Get professor document from teachers collection
         const professorDoc = await getDoc(doc(db, 'teachers', id));
         if (!professorDoc.exists()) {
           setError('Profesor no encontrado');
@@ -93,7 +92,9 @@ export default function ProfessorDetail({ id }: { id: string }) {
       }
     };
     
-    fetchProfessorData();
+    if (id) {
+      fetchProfessorData();
+    }
   }, [id]);
 
   // Handle form input changes
@@ -121,18 +122,30 @@ export default function ProfessorDetail({ id }: { id: string }) {
         setError('Los campos Nombre, Universidad y Departamento son obligatorios');
         return;
       }
+
+      // Update professor document directly in Firestore
+      const professorRef = doc(db, 'teachers', id);
       
-      // Update document
-      await updateDocument('teachers', id, {
+      await updateDoc(professorRef, {
         name: professor.name,
         university: professor.university,
-        department: professor.department
+        department: professor.department,
+        updatedAt: serverTimestamp()
       });
       
       setSuccess('Profesor actualizado con éxito');
+      
+      // Refresh the data
+      const professorDoc = await getDoc(professorRef);
+      if (professorDoc.exists()) {
+        setProfessor({
+          id: professorDoc.id,
+          ...professorDoc.data()
+        } as Professor);
+      }
     } catch (error) {
-      console.error('Error updating professor:', error);
-      setError('Error al actualizar el profesor');
+      console.error('Error detallado:', error);
+      setError(`Error al actualizar el profesor: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setSaving(false);
     }
@@ -145,7 +158,7 @@ export default function ProfessorDetail({ id }: { id: string }) {
       setError('');
       
       // Use API route for deletion instead of direct Firestore access
-      const response = await fetch(`/api/admin/professors/delete`, {
+      const response = await fetch('/api/admin/professors/delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +188,7 @@ export default function ProfessorDetail({ id }: { id: string }) {
     
     try {
       // Use API route for deletion
-      const response = await fetch(`/api/admin/ratings/delete`, {
+      const response = await fetch('/api/admin/ratings/delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
